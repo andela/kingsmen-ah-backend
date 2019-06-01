@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  description: "Authors Haven - A Social platform for the creative at heart."
+  description: "Authors Haven - A social platform for the creative at heart."
   version: "1.0.0"
   title: "Authors Haven"
   license:
@@ -9,7 +9,7 @@ info:
 host: "www.kingsmen-ah-backend-staging.herokuapp.com"
 basePath: "/"
 tags:
-- name: "User"
+- name: "user"
   description: "User operations"
   externalDocs:
     description: "Find out more about our Author's Haven"
@@ -19,3 +19,4 @@ schemes:
 - "http"
 paths:
   /register
+  /login
