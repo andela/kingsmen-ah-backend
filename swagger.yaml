@@ -11,12 +11,88 @@ basePath: "/"
 tags:
 - name: "user"
   description: "User operations"
-  externalDocs:
-    description: "Find out more about our Author's Haven"
-    url: "http://kingsmen-ah-frontend-staging.herokuapp.com"
 schemes:
 - "https"
 - "http"
 paths:
-  /register
-  /login
+  /api/users:
+    post:
+      tags:
+      - "user"
+      summary: "Create user"
+      description: "Creates a new user in the application"
+      operationId: "createUser"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        default:
+          description: "User created successfully"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+  /api/user:
+    post:
+      tags:
+      - "user"
+      summary: "User login"
+      description: "Logs user into the system"
+      operationId: "loginUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "email"
+        in: "query"
+        description: "The email for login"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "The password for login in clear text"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "login successful"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "Invalid email/password supplied"
+definitions:
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      username:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      bio:
+        type: "string"
+      image:
+        type: "string"
+      favorites:
+        type: "string"
+      following:
+        type: "integer"
+        format: "int64"
+  ApiResponse:
+    type: "object"
+    properties:
+      status:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about Author's Haven"
+  url: "https://github.com/andela/kingsmen-ah-backend"

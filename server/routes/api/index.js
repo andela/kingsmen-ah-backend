@@ -1,21 +1,13 @@
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from '../../config/swagger';
 import userRoutes from './users';
 
 const apiRoutes = express.Router();
 
 apiRoutes.use('/', userRoutes);
 
-apiRoutes.use((err, req, res, next) => {
-  if (err.name === 'ValidationError') {
-    return res.status(422).json({
-      errors: Object.keys(err.errors).reduce((errors, key) => {
-        errors[key] = err.errors[key].message;
-        return errors;
-      }, {})
-    });
-  }
-
-  return next(err);
-});
+// swagger-ui-express for API endpoint documentation
+apiRoutes.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 export default apiRoutes;

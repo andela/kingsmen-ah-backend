@@ -3,9 +3,8 @@ import debug from 'debug';
 import logger from 'morgan';
 import { config } from 'dotenv';
 import bodyParser from 'body-parser';
-import swaggerUi from 'swagger-ui-express';
 import apiRoutes from './routes';
-import swaggerSpec from './config/swagger';
+import errorHandler from './middlewares/errorHandler';
 
 const debugged = debug('app');
 config();
@@ -20,8 +19,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use('/', apiRoutes);
-// swagger-ui-express for API endpoint documentation
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(errorHandler);
 
 app.listen(port, () => {
   debugged(`Listening from port ${port}`);

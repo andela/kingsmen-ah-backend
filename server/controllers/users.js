@@ -1,5 +1,6 @@
 import passport from 'passport';
 import models from '../models';
+import { validateLogin, validateSignup, updateDetails } from '../validations/auth';
 
 const { User } = models;
 
@@ -19,13 +20,40 @@ class UserController {
   * @static
   */
   static async create(req, res, next) {
-    const { username, email, password } = req.body;
-
     try {
-      const user = await User.create({ username, email, password });
-      return res.status(201).send({ user });
-    } catch (error) {
-      next(error);
+      const userDetails = await validateSignup(req.body);
+      const user = await User.create(userDetails);
+
+      return res.status(201).send({ status: 'success', message: 'User created successfully', user });
+    } catch (err) {
+      if (err.isJoi && err.name === 'ValidationError') {
+        return res.status(400).json({
+          status: 400,
+          errors: err.details.reduce((result, currentValue) => {
+            if (!Object.hasOwnProperty.call(result, currentValue.context.key)) {
+              result[currentValue.context.key] = currentValue.message;
+            }
+            return result;
+          }, {})
+        });
+      }
+
+      if (err.errors && err.errors[0].type === 'unique violation') {
+        return res.status(400).json({
+          status: 400,
+          errors: err.errors.reduce((result, currentValue) => {
+            if (result.type === 'unique violation') {
+              result[currentValue.path] = `${currentValue.path} has already been taken`;
+            } else if (currentValue.path) {
+              result[currentValue.path] = currentValue.message;
+            } else {
+              result.global = currentValue.message;
+            }
+            return result;
+          }, {})
+        });
+      }
+      next(err);
     }
   }
 
@@ -39,12 +67,10 @@ class UserController {
   * @static
   */
   static async login(req, res, next) {
-    if (!req.body.email) {
-      return res.status(422).json({ errors: { email: "can't be blank" } });
-    }
-
-    if (!req.body.password) {
-      return res.status(422).json({ errors: { password: "can't be blank" } });
+    const { error } = validateLogin(req.body);
+    if (error !== null) {
+      const errorValue = error.details[0].message.replace(/\"/g, '');
+      return res.status(400).json({ status: 400, error: errorValue });
     }
     passport.authenticate('local', { session: false }, (
       err,
@@ -56,9 +82,9 @@ class UserController {
       }
 
       if (user) {
-        return res.json({ user: user.toAuthJSON() });
+        return res.json({ user });
       }
-      return res.status(422).json(info);
+      return res.status(400).json(info);
     })(req, res, next);
   }
 
@@ -72,28 +98,32 @@ class UserController {
   * @static
   */
   static async updateUser(req, res, next) {
-    const {
-      username, email, bio, image, password
-    } = req.body;
-
     try {
+      const { error } = updateDetails(req.body);
+      if (error !== null) {
+        const errorValue = error.details[0].message.replace(/\"/g, '');
+        return res.status(400).json({ status: 400, error: errorValue });
+      }
+
+      const {
+        username, email, bio, image, password
+      } = req.body;
+
       const user = await User.findByPk(req.payload.id);
 
-      if (!user) {
-        return res.sendStatus(401);
-      }
+      if (!user) return res.status(400).json({ status: 400, message: 'User does not exists' });
 
       const updatedUserDetails = await user.update({
         username: username || user.username,
-        email: email || user.email,
+        email: email.toLowerCase() || user.email,
         bio: bio || user.bio,
         image: image || user.image,
         password: password || user.password
       });
 
-      return res.send({ updatedUserDetails });
-    } catch (error) {
-      next(error);
+      return res.send({ status: 'success', user: updatedUserDetails });
+    } catch (err) {
+      next(err);
     }
   }
 
@@ -111,10 +141,10 @@ class UserController {
       const user = await User.findByPk(req.payload.id);
 
       if (!user) {
-        return res.sendStatus(401);
+        return res.sendStatus(400);
       }
 
-      return res.send({ user });
+      return res.send({ status: 'success', user });
     } catch (error) {
       next(error);
     }
