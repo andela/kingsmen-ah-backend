@@ -8,7 +8,7 @@ const swaggerDefinition = {
     description: 'A Social platform for the creative at heart',
   },
   host: 'https://kingsmen-ah-backend-staging.herokuapp.com/',
-  basePath: 'api/api-docs'
+  basePath: 'api-docs'
 };
 
 // Options for the swagger docs
