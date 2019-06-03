@@ -5,17 +5,17 @@ info:
   title: "Authors Haven"
   license:
     name: "MIT"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "www.kingsmen-ah-backend-staging.herokuapp.com"
-basePath: "/"
+    url: "https://www.apache.org/licenses/LICENSE-2.0.html"
+host: "kingsmen-ah-backend-staging.herokuapp.com"
+basePath: "/api"
 tags:
 - name: "user"
   description: "User operations"
 schemes:
-- "https"
-- "http"
+  - "https"
+  - "http"
 paths:
-  /api/users:
+  /users:
     post:
       tags:
       - "user"
@@ -36,7 +36,7 @@ paths:
           description: "User created successfully"
           schema:
             $ref: "#/definitions/ApiResponse"
-  /api/user:
+  /user:
     post:
       tags:
       - "user"
@@ -96,3 +96,4 @@ definitions:
 externalDocs:
   description: "Find out more about Author's Haven"
   url: "https://github.com/andela/kingsmen-ah-backend"
+  
