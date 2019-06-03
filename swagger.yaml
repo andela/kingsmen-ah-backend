@@ -22,15 +22,54 @@ paths:
       summary: "Create user"
       description: "Creates a new user in the application"
       operationId: "createUser"
+      consumes:
+      - "multipart/form-data"
       produces:
       - "application/json"
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
+      - name: "username"
+        in: "query"
+        description: "The unique user name"
         required: true
-        schema:
-          $ref: "#/definitions/User"
+        type: "string"
+        format: "username"
+      - name: "email"
+        in: "query"
+        description: "The unique user email"
+        required: true
+        type: "string"
+        format: "email"
+      - name: "password"
+        in: "query"
+        description: "The user password"
+        required: true
+        type: "string"
+        format: "password"
+      - name: "bio"
+        in: "query"
+        description: "Brief information about the user"
+        required: false
+        type: "string"
+        format: "bio"
+      - name: "image"
+        in: "formData"
+        description: "The user image"
+        required: false
+        type: "file"
+        format: "jpeg"
+      - name: "favorites"
+        in: "query"
+        description: "The user's favorite article"
+        required: false
+        type: array
+        items:
+          type: "string"
+      - name: "following"
+        in: "query"
+        description: "Number of people user is following"
+        required: false
+        type: "integer"
+        format: "int32"
       responses:
         default:
           description: "User created successfully"
@@ -51,11 +90,13 @@ paths:
         description: "The email for login"
         required: true
         type: "string"
+        format: "email"
       - name: "password"
         in: "query"
         description: "The password for login in clear text"
         required: true
         type: "string"
+        format: "password"
       responses:
         200:
           description: "login successful"
@@ -81,7 +122,9 @@ definitions:
       image:
         type: "string"
       favorites:
-        type: "string"
+        type: "array"
+        items:
+          type: "string"
       following:
         type: "integer"
         format: "int64"
