@@ -3,7 +3,7 @@ import apiRoutes from './api';
 
 const router = express.Router();
 
-router.use('/api', apiRoutes);
+router.use('/api/v1', apiRoutes);
 
 router.use('*', (req, res) => res.status(404).send({
   status: 404,

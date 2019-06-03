@@ -23,7 +23,7 @@ class UserController {
     try {
       const userDetails = await validateSignup(req.body);
       const user = await User.create(userDetails);
-
+      // Create a token off the payload
       return res.status(201).send({ status: 'success', message: 'User created successfully', user });
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
