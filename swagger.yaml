@@ -33,24 +33,32 @@ paths:
         required: true
         type: "string"
         format: "username"
+        minLength: 4
+        maxLength: 100
       - name: "email"
         in: "query"
         description: "The unique user email"
         required: true
         type: "string"
         format: "email"
+        minLength: 5
+        maxLength: 255
       - name: "password"
         in: "query"
         description: "The user password"
         required: true
         type: "string"
         format: "password"
+        minLength: 5
+        maxLength: 255
       - name: "bio"
         in: "query"
         description: "Brief information about the user"
         required: false
         type: "string"
         format: "bio"
+        minLength: 5
+        maxLength: 500
       - name: "image"
         in: "formData"
         description: "The user image"
@@ -91,12 +99,16 @@ paths:
         required: true
         type: "string"
         format: "email"
+        minLength: 5
+        maxLength: 255
       - name: "password"
         in: "query"
         description: "The password for login in clear text"
         required: true
         type: "string"
         format: "password"
+        minLength: 5
+        maxLength: 255
       responses:
         200:
           description: "login successful"
