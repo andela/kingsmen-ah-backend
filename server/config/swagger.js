@@ -1,4 +1,8 @@
 import swaggerJSDoc from 'swagger-jsdoc';
+import { config } from 'dotenv';
+
+// Initialize dotenv
+config();
 
 // Swagger Definitions
 const swaggerDefinition = {
@@ -7,7 +11,7 @@ const swaggerDefinition = {
     version: '1.0.0',
     description: 'A Social platform for the creative at heart',
   },
-  host: 'kingsmen-ah-backend-staging.herokuapp.com',
+  host: `${process.env.HOST_NAME}` || 'localhost: 3000',
   basePath: '/api'
 };
 
@@ -17,7 +21,7 @@ const options = {
   apis: ['swagger.yaml']
 };
 
-// initialize swagger-jsdoc
+// Initialize swagger-jsdoc
 const swaggerSpec = swaggerJSDoc(options);
 
 export default swaggerSpec;

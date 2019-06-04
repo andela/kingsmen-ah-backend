@@ -22,16 +22,62 @@ paths:
       summary: "Create user"
       description: "Creates a new user in the application"
       operationId: "createUser"
+      consumes:
+      - "multipart/form-data"
       produces:
       - "application/json"
-      - "application/xml"
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
+      - name: "username"
+        in: "formData"
+        description: "The unique user name"
         required: true
-        schema:
-          $ref: "#/definitions/User"
+        type: "string"
+        format: "username"
+        minLength: 4
+        maxLength: 100
+      - name: "email"
+        in: "formData"
+        description: "The unique user email"
+        required: true
+        type: "string"
+        format: "email"
+        minLength: 5
+        maxLength: 255
+      - name: "password"
+        in: "formData"
+        description: "The user password"
+        required: true
+        type: "string"
+        format: "password"
+        minLength: 5
+        maxLength: 255
+      - name: "bio"
+        in: "formData"
+        description: "Brief information about the user"
+        required: false
+        type: "string"
+        format: "bio"
+        minLength: 5
+        maxLength: 500
+      - name: "image"
+        in: "formData"
+        description: "The user image"
+        required: false
+        type: "file"
+        format: "jpeg"
+      - name: "favorites"
+        in: "formData"
+        description: "The user's favorite article"
+        required: false
+        type: array
+        items:
+          type: "string"
+      - name: "following"
+        in: "formData"
+        description: "Number of people user is following"
+        required: false
+        type: "integer"
+        format: "int32"
       responses:
         default:
           description: "User created successfully"
@@ -44,11 +90,13 @@ paths:
       summary: "User login"
       description: "Logs user into the system"
       operationId: "loginUser"
+      consumes: 
+      - "application/x-www-form-urlencoded"
       produces:
       - "application/json"
       parameters:
       - name: "email"
-        in: "query"
+        in: "formData"
         description: "The email for login"
         required: true
         type: "string"
@@ -56,7 +104,7 @@ paths:
         minLength: 5
         maxLength: 255
       - name: "password"
-        in: "query"
+        in: "formData"
         description: "The password for login in clear text"
         required: true
         type: "string"
@@ -73,34 +121,20 @@ paths:
 definitions:
   User:
     type: "object"
-    required:
-    - username
-    - email
-    - password
     properties:
       id:
         type: "integer"
         format: "int64"
       username:
         type: "string"
-        format: username
-        minLength: 4
-        maxLength: 100
       email:
         type: "string"
-        format: "email"
-        minLength: 5
-        maxLength: 255
       password:
         type: "string"
-        format: "password"
-        minLength: 5
-        maxLength: 255
       bio:
         type: "string"
       image:
         type: "string"
-        format: "photourl.jpeg"
       favorites:
         type: "array"
         items:
@@ -108,8 +142,6 @@ definitions:
       following:
         type: "integer"
         format: "int64"
-    xml:
-      name: "User"
   ApiResponse:
     type: "object"
     properties:
