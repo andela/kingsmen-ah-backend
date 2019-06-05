@@ -11,7 +11,7 @@ const swaggerDefinition = {
     version: '1.0.0',
     description: 'A Social platform for the creative at heart',
   },
-  host: `${process.env.HOST_NAME}` || 'localhost: 3000',
+  host: `${process.env.HOST_NAME}` || 'localhost:3000',
   basePath: '/api'
 };
 

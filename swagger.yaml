@@ -22,67 +22,65 @@ paths:
       summary: "Create user"
       description: "Creates a new user in the application"
       operationId: "createUser"
-      consumes:
-      - "multipart/form-data"
       produces:
       - "application/json"
+      - "application/xml"
       parameters:
-      - name: "username"
-        in: "formData"
-        description: "The unique user name"
+      - in: "formData"
+        name: "username"
+        description: "The unique username"
         required: true
         type: "string"
-        format: "username"
+        format: "text"
         minLength: 4
         maxLength: 100
-      - name: "email"
-        in: "formData"
+      - in: "formData"
+        name: "email"
         description: "The unique user email"
         required: true
         type: "string"
         format: "email"
         minLength: 5
         maxLength: 255
-      - name: "password"
-        in: "formData"
+      - in: "formData"
+        name: "password"
         description: "The user password"
         required: true
         type: "string"
         format: "password"
         minLength: 5
         maxLength: 255
-      - name: "bio"
-        in: "formData"
+      - in: "formData"
+        name: "bio"
         description: "Brief information about the user"
         required: false
         type: "string"
-        format: "bio"
+        format: "text"
         minLength: 5
         maxLength: 500
-      - name: "image"
-        in: "formData"
+      - in: "formData"
+        name: "image"
         description: "The user image"
         required: false
-        type: "file"
-        format: "jpeg"
-      - name: "favorites"
-        in: "formData"
+      - in: "formData"
+        name: "favorites"
         description: "The user's favorite article"
         required: false
         type: array
         items:
           type: "string"
-      - name: "following"
-        in: "formData"
+      - in: "formData"
+        name: "following"
         description: "Number of people user is following"
         required: false
         type: "integer"
-        format: "int32"
       responses:
-        default:
+        201:
           description: "User created successfully"
           schema:
             $ref: "#/definitions/ApiResponse"
+        400:
+          description: "Invalid email/password supplied"
   /user:
     post:
       tags:
@@ -90,8 +88,6 @@ paths:
       summary: "User login"
       description: "Logs user into the system"
       operationId: "loginUser"
-      consumes: 
-      - "application/x-www-form-urlencoded"
       produces:
       - "application/json"
       parameters:
@@ -148,8 +144,10 @@ definitions:
       status:
         type: "integer"
         format: "int32"
-      message:
-        type: "string"
+      errors:
+        type: "object"
+        items:
+          type: "object"
 externalDocs:
   description: "Find out more about Author's Haven"
   url: "https://github.com/andela/kingsmen-ah-backend"
