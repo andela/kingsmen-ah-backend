@@ -3,7 +3,7 @@ import debug from 'debug';
 import logger from 'morgan';
 import { config } from 'dotenv';
 import bodyParser from 'body-parser';
-import apiRoutes from './routes';
+import authRoutes from './routes/api/users';
 import errorHandler from './middlewares/errorHandler';
 
 const debugged = debug('app');
@@ -18,7 +18,11 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-app.use('/', apiRoutes);
+app.use('/api/v1/auth', authRoutes);
+app.use('*', (req, res) => res.status(404).send({
+  status: 404,
+  message: 'Page Not Found'
+}));
 app.use(errorHandler);
 
 app.listen(port, () => {

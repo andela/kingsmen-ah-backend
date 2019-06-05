@@ -1,4 +1,7 @@
 import jwt from 'jsonwebtoken';
+import { config } from 'dotenv';
+
+config();
 /**
  * @class Token
  */
@@ -16,6 +19,23 @@ class Token {
       email,
     }, process.env.SECRET);
     return token;
+  }
+
+  /**
+   * @static
+   * @param {*} req the request object
+   * @param {*} res the response object
+   * @param {*} next middleware
+   * @returns {function} next
+   * @memberof Token
+   */
+  static async verifyToken(req, res, next) {
+    const { token } = req.headers;
+    if (typeof token === 'undefined') return res.status(400).json();
+    const validToken = await jwt.verify(token, process.env.SECRET);
+    if (!validToken) return res.status(401).json();
+    req.validToken = validToken;
+    return next();
   }
 }
 export default Token;

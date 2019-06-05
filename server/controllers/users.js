@@ -1,6 +1,8 @@
-import passport from 'passport';
+import bcrypt from 'bcrypt';
 import models from '../models';
 import { validateLogin, validateSignup, updateDetails } from '../validations/auth';
+import Token from '../helpers/Token';
+import userExtractor from '../helpers/userExtractor';
 
 const { User } = models;
 
@@ -24,7 +26,8 @@ class UserController {
       const userDetails = await validateSignup(req.body);
       const user = await User.create(userDetails);
       // Create a token off the payload
-      return res.status(201).send({ status: 'success', message: 'User created successfully', user });
+      const token = await Token.create(user);
+      return res.status(201).json({ status: 'success', message: 'User created successfully', user: userExtractor(user, token) });
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
         return res.status(400).json({
@@ -72,20 +75,22 @@ class UserController {
       const errorValue = error.details[0].message.replace(/\"/g, '');
       return res.status(400).json({ status: 400, error: errorValue });
     }
-    passport.authenticate('local', { session: false }, (
-      err,
-      user,
-      info
-    ) => {
-      if (err) {
-        return next(err);
-      }
-
-      if (user) {
-        return res.json({ user });
-      }
-      return res.status(400).json(info);
-    })(req, res, next);
+    try {
+      const { email, password } = req.body;
+      const user = await User.findOne({
+        where: {
+          email,
+        }
+      });
+      if (!user) return res.status(400).json({ status: 400, error: 'Invalid email or password' });
+      // verify password
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) return res.status(400).json({ status: 400, error: 'Invalid email or password' });
+      const token = await Token.create(user);
+      return res.status(200).json({ status: 'success', message: 'User successfully logged in', user: userExtractor(user, token) });
+    } catch (err) {
+      next(err);
+    }
   }
 
   /**
