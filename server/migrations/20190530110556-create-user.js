@@ -6,6 +6,18 @@ module.exports = {
       primaryKey: true,
       type: Sequelize.INTEGER
     },
+    firstname: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    lastname: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    middlename: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
     username: {
       type: Sequelize.CITEXT,
       unique: true,
@@ -16,21 +28,9 @@ module.exports = {
       unique: true,
       allowNull: false
     },
-    bio: {
-      type: Sequelize.STRING,
-      allowNull: true
-    },
-    image: {
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
-    favorites: {
-      type: Sequelize.INTEGER,
-      allowNull: true
-    },
-    following: {
-      type: Sequelize.INTEGER,
-      allowNull: true
+    active: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false
     },
     password: {
       type: Sequelize.STRING,
