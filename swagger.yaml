@@ -6,7 +6,6 @@ info:
   license:
     name: "MIT"
     url: "https://www.apache.org/licenses/LICENSE-2.0.html"
-host: "kingsmen-ah-backend-staging.herokuapp.com"
 basePath: "/api"
 tags:
 - name: "user"
