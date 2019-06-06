@@ -5,9 +5,6 @@
     "postdeploy": "heroku config:set HOST_NAME=${HEROKU_APP_NAME}.herokuapp.com --app ${HEROKU_APP_NAME} && npm run refreshdb"
   },
   "env": {
-    "HOST_NAME": {
-      "required": true
-    },
     "SALT": {
       "required": true
     },
@@ -22,9 +19,7 @@
     }
   },
   "formation": {},
-  "addons": [
-    "heroku-postgresql"
-  ],
+  "addons": ["heroku-postgresql"],
   "buildpacks": [
     {
       "url": "heroku/nodejs"
