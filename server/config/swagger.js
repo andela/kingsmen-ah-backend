@@ -5,7 +5,7 @@ import { config } from 'dotenv';
 config();
 
 // define host url
-const host = process.env.HOST_NAME || 'localhost:3000';
+const host = process.env.HOST_NAME || (process.env.HEROKU_APP_NAME ? `${process.env.HEROKU_APP_NAME}.herokuapp.com` : 'localhost:3000');
 
 // Swagger Definitions
 const swaggerDefinition = {
