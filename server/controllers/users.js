@@ -26,8 +26,11 @@ class UserController {
     try {
       const userDetails = await validateSignup(req.body);
       const user = await User.create(userDetails);
-      // Create a token off the payload
-      const token = await Token.create(user);
+      const payload = {
+        id: user.id,
+        email: user.email
+      };
+      const token = await Token.create(payload);
       return res.status(201).json({ status: 'success', message: 'User created successfully', user: userExtractor(user, token) });
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
@@ -69,11 +72,15 @@ class UserController {
           email,
         }
       });
-      if (!user) return res.status(400).json({ status: 400, error: 'Invalid email or password' });
+      if (!user) return res.status(400).json({ status: 400, errors: { global: 'Invalid email or password' } });
       // verify password
       const match = await bcrypt.compare(password, user.password);
-      if (!match) return res.status(400).json({ status: 400, error: 'Invalid email or password' });
-      const token = await Token.create(user);
+      if (!match) return res.status(400).json({ status: 400, errors: { global: 'Invalid email or password' } });
+      const payload = {
+        id: user.id,
+        email: user.email
+      };
+      const token = await Token.create(payload);
       return res.status(200).json({ status: 'success', message: 'User successfully logged in', user: userExtractor(user, token) });
     } catch (err) {
       next(err);

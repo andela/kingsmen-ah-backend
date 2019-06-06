@@ -8,12 +8,12 @@ config();
 class Token {
   /**
    * @static
-   * @param {user} user object from the database
-   * @returns {string} returns thetoken
+   * @param {payload} payload object
+   * @returns {string} returns the token
    * @memberof Token
    */
-  static async create(user) {
-    const { id, email } = user;
+  static async create(payload) {
+    const { id, email } = payload;
     const token = await jwt.sign({
       userId: id,
       email,
@@ -42,8 +42,8 @@ class Token {
           }
         });
       }
-      const validToken = await jwt.verify(token, process.env.SECRET);
-      if (!validToken) {
+      const verifiedToken = await jwt.verify(token, process.env.SECRET);
+      if (!verifiedToken) {
         return res.status(401).json({
           status: 401,
           errors: {
@@ -51,7 +51,7 @@ class Token {
           }
         });
       }
-      req.decoded = validToken;
+      req.decoded = verifiedToken;
       return next();
     } catch (err) {
       next(err);

@@ -110,7 +110,8 @@ describe('TESTS TO LOGIN A USER', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(400);
-          expect(res.body).to.be.an('object');
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.global).to.equal('Invalid email or password');
           expect(res.body).to.have.property('status');
           const returnStatus = 400;
           expect(res.body).to.have.property('status', returnStatus);
