@@ -1,4 +1,4 @@
-import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerJsdoc from 'swagger-jsdoc';
 import { config } from 'dotenv';
 
 // Initialize dotenv
@@ -22,6 +22,6 @@ const options = {
 };
 
 // Initialize swagger-jsdoc
-const swaggerSpec = swaggerJSDoc(options);
+const swaggerSpec = swaggerJsdoc(options);
 
 export default swaggerSpec;
