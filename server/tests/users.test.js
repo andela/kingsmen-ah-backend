@@ -6,6 +6,46 @@ chai.use(chaiHttp);
 const { expect } = chai;
 
 describe('TESTS TO SIGNUP A USER', () => {
+  it('should return `username is required` if username is absent ', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/register')
+        .send({
+          email: 'justsine@snqwst.com',
+          password: '1234567'
+        })
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.username).to.eql('username is required');
+          expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should return email is required if email is absent ', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/register')
+        .send({
+          username: 'Sanchezqwst',
+          password: '1234567'
+        })
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.email).to.eql('email is required');
+          expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
   it('should return success status 201', (done) => {
     try {
       chai.request(app)
@@ -120,4 +160,24 @@ describe('TESTS TO LOGIN A USER', () => {
       throw err.message;
     }
   });
+
+  it('should return `email is required` if email is absent ', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          password: '1234567'
+        })
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.email).to.eql('email is required');
+          expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
 });

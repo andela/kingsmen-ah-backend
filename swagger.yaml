@@ -6,7 +6,7 @@ info:
   license:
     name: "MIT"
     url: "https://www.apache.org/licenses/LICENSE-2.0.html"
-basePath: "/api"
+basePath: "/api/v1"
 tags:
 - name: "user"
   description: "User operations"
@@ -14,7 +14,7 @@ schemes:
   - "https"
   - "http"
 paths:
-  /users:
+  /auth/register:
     post:
       tags:
       - "user"
@@ -80,7 +80,7 @@ paths:
             $ref: "#/definitions/ApiResponse"
         400:
           description: "Invalid email/password supplied"
-  /user:
+  /auth/login:
     post:
       tags:
       - "user"
