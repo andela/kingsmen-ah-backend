@@ -179,5 +179,4 @@ describe('TESTS TO LOGIN A USER', () => {
       throw err.message;
     }
   });
-
 });
