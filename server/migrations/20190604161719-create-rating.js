@@ -7,7 +7,7 @@ module.exports = {
       type: Sequelize.INTEGER
     },
     userId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false,
       references: {
         model: 'Users',
@@ -15,7 +15,7 @@ module.exports = {
       }
     },
     articleId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
@@ -26,7 +26,7 @@ module.exports = {
     },
     ratings: {
       type: Sequelize.INTEGER,
-      allowNull: true,
+      allowNull: false,
       defaultValue: 1,
       validate: { min: 0, max: 5 },
     },
@@ -36,6 +36,10 @@ module.exports = {
     },
     updatedAt: {
       allowNull: false,
+      type: Sequelize.DATE
+    },
+    deletedAt: {
+      allowNull: true,
       type: Sequelize.DATE
     }
   }),

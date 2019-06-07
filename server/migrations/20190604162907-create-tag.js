@@ -7,7 +7,7 @@ module.exports = {
       type: Sequelize.INTEGER
     },
     articleId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false,
       references: {
         model: 'Articles',

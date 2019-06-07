@@ -1,11 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
   const Follower = sequelize.define('Follower', {
     followerId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     followingId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     }
   }, {});

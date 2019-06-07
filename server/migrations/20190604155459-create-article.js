@@ -1,13 +1,13 @@
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Articles', {
     id: {
-      allowNull: false,
-      autoIncrement: true,
+      type: Sequelize.UUID,
       primaryKey: true,
-      type: Sequelize.INTEGER
+      defaultValue: Sequelize.UUIDV4,
+      allowNull: false
     },
     userId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false,
       references: {
         model: 'Users',
@@ -16,6 +16,7 @@ module.exports = {
     },
     slug: {
       type: Sequelize.STRING,
+      unique: true,
       allowNull: false
     },
     title: {

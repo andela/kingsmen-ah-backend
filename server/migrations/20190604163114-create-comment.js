@@ -7,7 +7,7 @@ module.exports = {
       type: Sequelize.INTEGER
     },
     userId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false,
       references: {
         model: 'Users',
@@ -15,7 +15,7 @@ module.exports = {
       }
     },
     articleId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false,
       references: {
         model: 'Articles',
@@ -23,7 +23,8 @@ module.exports = {
       }
     },
     body: {
-      type: Sequelize.TEXT
+      type: Sequelize.TEXT,
+      allowNull: false
     },
     createdAt: {
       allowNull: false,

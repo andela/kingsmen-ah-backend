@@ -7,7 +7,7 @@ module.exports = {
       type: Sequelize.INTEGER
     },
     userId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       references: {
         model: 'Users',
         key: 'id'

@@ -1,11 +1,18 @@
 module.exports = (sequelize, DataTypes) => {
   const Article = sequelize.define('Article', {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false
+    },
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     slug: {
       type: DataTypes.STRING,
+      unique: true,
       allowNull: false
     },
     title: {
@@ -38,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'articleId',
     });
 
-    Article.hasMany(Rating, {
+    Article.hasOne(Rating, {
       foreignKey: 'articleId',
     });
 

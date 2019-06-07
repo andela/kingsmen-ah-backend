@@ -7,7 +7,7 @@ module.exports = {
       type: Sequelize.INTEGER
     },
     userId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       allowNull: false,
       references: {
         model: 'Users',
@@ -19,7 +19,7 @@ module.exports = {
       allowNull: true
     },
     resetPasswordExpiry: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.DATE,
       allowNull: true
     },
     createdAt: {

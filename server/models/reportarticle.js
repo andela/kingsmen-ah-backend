@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const ReportArticle = sequelize.define('ReportArticle', {
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     articleId: {

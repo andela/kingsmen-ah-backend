@@ -1,15 +1,15 @@
 module.exports = (sequelize, DataTypes) => {
   const PasswordReset = sequelize.define('PasswordReset', {
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     resetPasswordoken: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     resetPasswordExpiry: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DATE,
       allowNull: true
     }
   }, {});

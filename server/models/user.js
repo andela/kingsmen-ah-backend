@@ -7,6 +7,12 @@ const SALT_ROUNDS = Number(process.env.SALT);
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false
+    },
     username: {
       type: DataTypes.CITEXT,
       allowNull: false,

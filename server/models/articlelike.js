@@ -1,11 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
   const ArticleLike = sequelize.define('ArticleLike', {
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     articleId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     }
   }, {});
