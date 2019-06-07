@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
   CommentLike.associate = (models) => {
     const { User, Comment } = models;
 
-    CommentLike.belongTo(User, {
+    CommentLike.belongsTo(User, {
       foreignKey: 'userId',
       as: 'user'
     });
