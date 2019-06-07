@@ -1,11 +1,26 @@
-'use strict';
 module.exports = (sequelize, DataTypes) => {
   const UsersPermission = sequelize.define('UsersPermission', {
-    userId: DataTypes.INTEGER,
-    permissionId: DataTypes.INTEGER
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    permissionId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {});
-  UsersPermission.associate = function(models) {
-    // associations can be defined here
+
+  UsersPermission.associate = (models) => {
+    const { User, Permission } = models;
+
+    UsersPermission.belongsTo(User, {
+      foreignKey: 'userId'
+    });
+
+    UsersPermission.belongsTo(Permission, {
+      foreignKey: 'permissionId'
+    });
   };
+
   return UsersPermission;
 };

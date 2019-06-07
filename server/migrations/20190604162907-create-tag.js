@@ -7,10 +7,17 @@ module.exports = {
       type: Sequelize.INTEGER
     },
     articleId: {
-      type: Sequelize.INTEGER
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Articles',
+        key: 'id',
+      },
+      onDelete: 'CASCADE',
     },
     name: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false
     },
     createdAt: {
       allowNull: false,

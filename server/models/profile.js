@@ -1,14 +1,34 @@
-'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Profile = sequelize.define('Profile', {
-    userId: DataTypes.INTEGER,
-    bio: DataTypes.STRING,
-    avatar: DataTypes.STRING,
-    phone: DataTypes.STRING,
-    location: DataTypes.STRING
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    bio: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    avatar: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    location: {
+      type: DataTypes.STRING,
+      allowNull: true
+    }
   }, {});
-  Profile.associate = function(models) {
-    // associations can be defined here
+
+  Profile.associate = (models) => {
+    const { User } = models;
+
+    Profile.belongsTo(User, {
+      foreignKey: 'userId',
+    });
   };
+
   return Profile;
 };

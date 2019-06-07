@@ -1,11 +1,23 @@
-'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Tag = sequelize.define('Tag', {
-    articleId: DataTypes.INTEGER,
-    name: DataTypes.STRING
+    articleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
   }, {});
-  Tag.associate = function(models) {
-    // associations can be defined here
+
+  Tag.associate = (models) => {
+    const { Article } = models;
+
+    Tag.belongsTo(Article, {
+      foreignKey: 'articleId',
+      as: 'articles'
+    });
   };
+
   return Tag;
 };

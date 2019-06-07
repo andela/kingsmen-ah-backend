@@ -1,12 +1,26 @@
-'use strict';
 module.exports = (sequelize, DataTypes) => {
   const PasswordReset = sequelize.define('PasswordReset', {
-    userId: DataTypes.INTEGER,
-    resetPasswordoken: DataTypes.STRING,
-    resetPasswordExpiry: DataTypes.INTEGER
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    resetPasswordoken: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    resetPasswordExpiry: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    }
   }, {});
-  PasswordReset.associate = function(models) {
-    // associations can be defined here
+
+  PasswordReset.associate = (models) => {
+    const { User } = models;
+
+    PasswordReset.belongsTo(User, {
+      foreignKey: 'userId'
+    });
   };
+
   return PasswordReset;
 };

@@ -7,13 +7,20 @@ module.exports = {
       type: Sequelize.INTEGER
     },
     userId: {
-      type: Sequelize.INTEGER
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'id'
+      }
     },
-    resetPasswordoken: {
-      type: Sequelize.STRING
+    resetPasswordToken: {
+      type: Sequelize.STRING,
+      allowNull: true
     },
     resetPasswordExpiry: {
-      type: Sequelize.INTEGER
+      type: Sequelize.INTEGER,
+      allowNull: true
     },
     createdAt: {
       allowNull: false,

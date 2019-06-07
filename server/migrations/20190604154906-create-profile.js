@@ -9,21 +9,25 @@ module.exports = {
     userId: {
       type: Sequelize.INTEGER,
       references: {
-        model: 'Profile',
+        model: 'Users',
         key: 'id'
       }
     },
     bio: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: true
     },
     avatar: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: true
     },
     phone: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: true
     },
     location: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: true
     },
     createdAt: {
       allowNull: false,

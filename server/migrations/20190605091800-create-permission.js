@@ -7,7 +7,8 @@ module.exports = {
       type: Sequelize.INTEGER
     },
     access: {
-      type: Sequelize.ARRAY
+      type: Sequelize.STRING,
+      allowNull: false
     },
     createdAt: {
       allowNull: false,
