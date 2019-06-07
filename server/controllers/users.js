@@ -4,6 +4,7 @@ import { validateLogin, validateSignup, updateDetails } from '../validations/aut
 import Token from '../helpers/Token';
 import userExtractor from '../helpers/userExtractor';
 import { validationResponse, validateUniqueResponse } from '../helpers/validationResponse';
+import Response from '../helpers/Response';
 
 const { User } = models;
 
@@ -60,22 +61,18 @@ class UserController {
   * @static
   */
   static async login(req, res, next) {
-    const { error } = validateLogin(req.body);
-    if (error !== null) {
-      const errorValue = error.details[0].message.replace(/\"/g, '');
-      return res.status(400).json({ status: 400, error: errorValue });
-    }
     try {
-      const { email, password } = req.body;
+      const logindetails = await validateLogin(req.body);
+      const { email, password } = logindetails;
+      // console.log(logindetails);
       const user = await User.findOne({
         where: {
           email,
         }
       });
-      if (!user) return res.status(400).json({ status: 400, errors: { global: 'Invalid email or password' } });
-      // verify password
+      if (!user) return Response.error(res, 400, 'Invalid email or password');
       const match = await bcrypt.compare(password, user.password);
-      if (!match) return res.status(400).json({ status: 400, errors: { global: 'Invalid email or password' } });
+      if (!match) return Response.error(res, 400, 'Invalid email or password');
       const payload = {
         id: user.id,
         email: user.email
@@ -83,6 +80,12 @@ class UserController {
       const token = await Token.create(payload);
       return res.status(200).json({ status: 'success', message: 'User successfully logged in', user: userExtractor(user, token) });
     } catch (err) {
+      if (err.isJoi && err.name === 'ValidationError') {
+        return res.status(400).json({
+          status: 400,
+          errors: validationResponse(err)
+        });
+      }
       next(err);
     }
   }

@@ -104,7 +104,6 @@ describe('TESTS TO LOGIN A USER', () => {
       chai.request(app)
         .post('/api/v1/auth/login')
         .send({
-          username: 'Sanchezqwst',
           email: 'justsine@snqwfssst.com',
           password: '1234d567'
         })
