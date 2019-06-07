@@ -27,8 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       User, ArticleLike, Favourite, Rating, Comment, Tag, ReportArticle
     } = models;
     Article.belongsTo(User, {
-      foreignKey: 'userId',
-      as: 'author',
+      foreignKey: 'userId'
     });
 
     Article.hasMany(ArticleLike, {

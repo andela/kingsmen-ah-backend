@@ -15,13 +15,11 @@ module.exports = (sequelize, DataTypes) => {
 
     ArticleLike.belongsTo(Article, {
       foreignKey: 'articleId',
-      as: 'article',
       onDelete: 'CASCADE',
     });
 
     ArticleLike.belongsTo(User, {
       foreignKey: 'userId',
-      as: 'user',
       onDelete: 'CASCADE',
     });
   };

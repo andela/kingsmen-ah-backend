@@ -19,13 +19,11 @@ module.exports = (sequelize, DataTypes) => {
 
     Comment.belongsTo(Article, {
       foreignKey: 'articleId',
-      as: 'article',
       onDelete: 'CASCADE',
     });
 
     Comment.belongsTo(User, {
       foreignKey: 'userId',
-      as: 'user',
       onDelete: 'CASCADE',
     });
 
