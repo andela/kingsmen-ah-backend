@@ -7,10 +7,20 @@ module.exports = {
       type: Sequelize.INTEGER
     },
     userId: {
-      type: Sequelize.INTEGER
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'id'
+      }
     },
     articleId: {
-      type: Sequelize.INTEGER
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Articles',
+        key: 'id'
+      }
     },
     report: {
       type: Sequelize.TEXT
