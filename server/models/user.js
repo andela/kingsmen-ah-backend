@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = (models) => {
     const {
       Follower, Article, Profile, Social, ReportArticle, Rating, PasswordReset,
-      ArticleLike, CommentLike, Permission
+      ArticleLike, CommentLike, Role
     } = models;
 
     User.hasOne(Profile, {
@@ -102,9 +102,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId'
     });
 
-    User.belongsToMany(Permission, {
-      through: 'UsersPermission',
-      as: 'permission',
+    User.belongsToMany(Role, {
+      through: 'UserRole',
+      as: 'role',
       foreignKey: 'userId'
     });
   };

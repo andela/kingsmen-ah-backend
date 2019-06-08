@@ -7,13 +7,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
 
   Permission.associate = (models) => {
-    const { User, Role } = models;
-
-    Permission.belongsToMany(User, {
-      through: 'UsersPermission',
-      as: 'users',
-      foreignKey: 'permissionId'
-    });
+    const { Role } = models;
 
     Permission.belongsToMany(Role, {
       through: 'PermissionRoles',

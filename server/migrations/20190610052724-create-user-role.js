@@ -1,5 +1,5 @@
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('UsersPermissions', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('UserRoles', {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -14,11 +14,11 @@ module.exports = {
         key: 'id'
       }
     },
-    permissionId: {
+    roleId: {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
-        model: 'Permissions',
+        model: 'Roles',
         key: 'id'
       }
     },
@@ -31,5 +31,5 @@ module.exports = {
       type: Sequelize.DATE
     }
   }),
-  down: queryInterface => queryInterface.dropTable('UsersPermissions')
+  down: queryInterface => queryInterface.dropTable('UserRoles')
 };
