@@ -3,6 +3,8 @@ import { config } from 'dotenv';
 import Response from './Response';
 
 config();
+const tokenSecret = process.env.SECRET || 'secret';
+const tokenExpiration = process.env.TOKEN_EXPIRE || '1d';
 /**
  * @class Token
  */
@@ -14,8 +16,8 @@ class Token {
    * @memberof Token
    */
   static async create(payload) {
-    const token = await jwt.sign(payload, process.env.SECRET, {
-      expiresIn: process.env.TOKEN_EXPIRE || '1d'
+    const token = await jwt.sign(payload, tokenSecret, {
+      expiresIn: tokenExpiration
     });
     return token;
   }
@@ -34,7 +36,7 @@ class Token {
       if (typeof token === 'undefined') {
         return Response.error(res, 400, 'No token provided!');
       }
-      const verifiedToken = await jwt.verify(token, process.env.SECRET);
+      const verifiedToken = await jwt.verify(token, tokenSecret);
       if (!verifiedToken) {
         return Response.error(res, 401, 'Token cannot be verified!');
       }
