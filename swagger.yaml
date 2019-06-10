@@ -52,7 +52,7 @@ paths:
       - in: "formData"
         name: "firstname"
         description: "First name of user"
-        required: true
+        required: false
         type: "string"
         format: "text"
         minLength: 2
