@@ -3,6 +3,10 @@ module.exports = (sequelize, DataTypes) => {
     access: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false
     }
   }, {});
 
