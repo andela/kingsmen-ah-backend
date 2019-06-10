@@ -137,6 +137,40 @@ class UserController {
       next(error);
     }
   }
+
+  /**
+  * Get users and their corresponding profiles
+  * @async
+  * @param {object} res - Response object
+  * @param {object} next The next middleware
+  * @return {json} Returns json object
+  * @static
+  */
+  static async getUsers(res, next) {
+    try {
+      const users = await User.findAll({
+        include: [
+          {
+            model: models.Profile,
+            as: 'profile',
+          }
+        ]
+      });
+
+      if (!users) {
+        return res.sendStatus(400);
+      }
+
+      return res.status(200)
+        .send({
+          status: 'success',
+          message: 'Users and corresponding profiles retrieved successfully',
+          users
+        });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default UserController;
