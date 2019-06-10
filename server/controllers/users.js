@@ -3,8 +3,9 @@ import models from '../models';
 import { validateLogin, validateSignup, updateDetails } from '../validations/auth';
 import { validationResponse, validateUniqueResponse } from '../helpers/validationResponse';
 import getUserObject from '../helpers/getMinUserObject';
+import Authorization from '../middlewares/Authorization';
 
-const { User } = models;
+const { User, DroppedToken } = models;
 
 /**
  * @exports UserController
@@ -135,6 +136,27 @@ class UserController {
       return res.send({ status: 'success', user });
     } catch (error) {
       next(error);
+    }
+  }
+
+  /**
+   * Signuout user and blacklist tokens
+   * @param {object} req
+   * @param {object} res
+   * @param {object} next
+   * @returns {object} res message
+   */
+  static async signOut(req, res) {
+    const token = await Authorization.getToken(req);
+    try {
+      await DroppedToken.create({ token });
+      return res.status(201).json({
+        status: 201, message: 'You are now logged out'
+      });
+    } catch (error) {
+      return res.status(401).json({
+        status: 401, error: 'You need to login'
+      });
     }
   }
 }
