@@ -39,3 +39,4 @@ node_modules
 
 server/database_test.sqlite
 server/seeders/
+dist/

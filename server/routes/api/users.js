@@ -6,8 +6,8 @@ const userRoutes = express.Router();
 
 userRoutes.get('/user', UserController.getUserDetails);
 userRoutes.put('/user', trim, UserController.updateUser);
-userRoutes.post('/users/login', trim, UserController.login);
-userRoutes.post('/users', trim, UserController.create);
+userRoutes.post('/login', trim, UserController.login);
+userRoutes.post('/register', trim, UserController.create);
 
 // Get all Users and their corresponding profile
 userRoutes.get('/users', UserController.getUsers);
