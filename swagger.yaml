@@ -50,29 +50,29 @@ paths:
         minLength: 5
         maxLength: 255
       - in: "formData"
-        name: "bio"
-        description: "Brief information about the user"
+        name: "firstname"
+        description: "First name of user"
+        required: true
+        type: "string"
+        format: "text"
+        minLength: 2
+        maxLength: 100
+      - in: "formData"
+        name: "lastname"
+        description: "Last name of user"
         required: false
         type: "string"
         format: "text"
-        minLength: 5
-        maxLength: 500
+        minLength: 2
+        maxLength: 100
       - in: "formData"
-        name: "image"
-        description: "The user image"
+        name: "middlename"
+        description: "Middle name of user"
         required: false
-      - in: "formData"
-        name: "favorites"
-        description: "The user's favorite article"
-        required: false
-        type: array
-        items:
-          type: "string"
-      - in: "formData"
-        name: "following"
-        description: "Number of people user is following"
-        required: false
-        type: "integer"
+        type: "string"
+        format: "text"
+        minLength: 2
+        maxLength: 100
       responses:
         201:
           description: "User created successfully"
