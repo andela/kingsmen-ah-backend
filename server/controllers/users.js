@@ -64,7 +64,6 @@ class UserController {
     try {
       const logindetails = await validateLogin(req.body);
       const { email, password } = logindetails;
-      // console.log(logindetails);
       const user = await User.findOne({
         where: {
           email,
