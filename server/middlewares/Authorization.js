@@ -5,6 +5,7 @@ import models from '../models';
 config();
 
 const { User, DroppedToken } = models;
+const secret = process.env.SECRET || 'kingsmen';
 
 /**
  * Middleware to check user access
@@ -36,9 +37,10 @@ class Authorization {
     */
   static async authorize(req, res, next) {
     const token = Authorization.getToken(req);
+    if (!token) return res.status(400).json({ status: 400, error: 'No token specified' });
 
     try {
-      const decoded = jwt.verify(token, process.env.SECRET);
+      const decoded = jwt.verify(token, secret);
       const user = await User.findOne({ where: { id: decoded.id } });
       if (!user) {
         return res.status(401).json({
@@ -61,10 +63,13 @@ class Authorization {
       req.user = decoded;
       next();
     } catch (error) {
-      return res.status(401).json({
-        status: 401,
-        error
-      });
+      if (error.name === 'JsonWebTokenError') {
+        return res.status(401).json({
+          status: 401,
+          error: 'Invalid Token'
+        });
+      }
+      next(error);
     }
   }
 }

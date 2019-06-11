@@ -4,8 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE
   }, {});
-  DroppedToken.associate = (models) => {
-    // associations can be defined here
-  };
+
+  // DroppedToken.associate = (models) => {
+  //   // associations can be defined here
+  // };
   return DroppedToken;
 };
