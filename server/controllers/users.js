@@ -6,7 +6,7 @@ import userExtractor from '../helpers/userExtractor';
 import { validationResponse, validateUniqueResponse } from '../helpers/validationResponse';
 import Response from '../helpers/Response';
 
-const { User } = models;
+const { User, Follower } = models;
 
 /**
  * @exports UserController
@@ -148,6 +148,60 @@ class UserController {
       return res.send({ status: 'success', user });
     } catch (error) {
       next(error);
+    }
+  }
+
+  /**
+   * Users can follow each other
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   * @memberof UserController
+   * @returns {json} Returns json object
+   */
+  static async follow(req, res, next) {
+    try {
+      const { followid } = req.params;
+      const { id } = req.decoded;
+      if (followid === id) {
+        return res.status(400).json({
+          status: 400,
+          error: 'you cannot follow yourself',
+        });
+      }
+      const userToFollow = await User.findByPk(followid);
+      if (!userToFollow) {
+        return res.status(404).json({
+          status: 404,
+          error: 'User not found',
+        });
+      }
+      const [followed, created] = await Follower.findOrCreate({
+        where: {
+          followerId: id,
+          followingId: followid
+        },
+        defaults: {
+          followerId: id,
+          followingId: followid
+        }
+      });
+      if (!created) {
+        return res.status(400).json({
+          status: 400,
+          message: 'user was followed already!',
+        });
+      }
+      if (followed) {
+        return res.status(201).json({
+          status: 201,
+          message: 'User followed successfully',
+        });
+      }
+    } catch (err) {
+      return next(err);
     }
   }
 }
