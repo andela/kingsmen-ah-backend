@@ -64,10 +64,7 @@ class Token {
         }
       });
       if (droppedToken) {
-        return res.status(401).json({
-          status: 401,
-          error: 'This token has been dropped'
-        });
+        return Response.error(res, 401, 'This token has been blacklisted');
       }
       req.decoded = decoded;
       next();
