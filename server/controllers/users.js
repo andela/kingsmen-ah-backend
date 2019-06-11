@@ -3,6 +3,7 @@ import models from '../models';
 import { validateLogin, validateSignup, updateDetails } from '../validations/auth';
 import Token from '../helpers/Token';
 import userExtractor from '../helpers/userExtractor';
+import isEmpty from '../helpers/isEmpty';
 import { validationResponse, validateUniqueResponse } from '../helpers/validationResponse';
 import Response from '../helpers/Response';
 
@@ -154,24 +155,29 @@ class UserController {
   /**
   * Get users and their corresponding profiles
   * @async
+  * @param {object} req - Request object
   * @param {object} res - Response object
   * @param {object} next The next middleware
   * @return {json} Returns json object
   * @static
   */
-  static async getUsers(res, next) {
+  static async getUsers(req, res, next) {
     try {
       const users = await User.findAll({
         include: [
           {
             model: models.Profile,
-            as: 'profile',
+            as: 'profile'
           }
         ]
       });
 
-      if (!users) {
-        return res.sendStatus(400);
+      if (isEmpty(users)) {
+        return res.status(400)
+          .send({
+            status: 'fail',
+            message: 'No user found'
+          });
       }
 
       return res.status(200)
