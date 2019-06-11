@@ -163,13 +163,13 @@ class UserController {
   static async getUsers(req, res, next) {
     try {
       const users = await User.findAll({
-        attributes: { exclude: ['createdAt', 'updatedAt', 'password', 'email'] },
+        attributes: { exclude: ['createdAt', 'updatedAt', 'password', 'email', 'middlename'] },
         include: [
           {
             model: models.Profile,
             as: 'profile',
             attributes: {
-              exclude: ['createdAt', 'updatedAt']
+              exclude: ['createdAt', 'updatedAt', 'userId', 'id', 'phone']
             }
           },
         ],
@@ -179,7 +179,7 @@ class UserController {
         .send({
           status: 'success',
           message: 'Users and corresponding profiles retrieved successfully',
-          users
+          payload: users
         });
     } catch (error) {
       next(error);

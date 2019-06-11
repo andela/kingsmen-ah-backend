@@ -1,9 +1,11 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import faker from 'faker';
+import models from '@models';
 import app from '../app';
 import generateToken from './factory/user-factory';
 
+const { User } = models;
 chai.use(chaiHttp);
 const { expect } = chai;
 
@@ -12,10 +14,14 @@ let userToken;
 
 describe('TESTS TO SIGNUP A USER', () => {
   before(async () => {
-    userToken = await generateToken({
+    const newUser = await User.create({
+      id: faker.random.uuid(),
+      username: faker.internet.userName(),
       email: faker.internet.email(),
       password: faker.internet.password()
     });
+
+    userToken = await generateToken({ id: newUser.id });
   });
   it('should return `username is required` if username is absent ', (done) => {
     try {
@@ -221,7 +227,7 @@ describe('TEST TO GET ALL USERS', () => {
         .set('token', userToken)
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          expect(res.body.users).to.be.an('array');
+          expect(res.body.payload).to.be.an('array');
           expect(res.body).to.have.property('status');
           const returnStatus = 'success';
           expect(res.body).to.have.property('status', returnStatus);
