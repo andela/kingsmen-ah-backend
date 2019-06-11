@@ -163,7 +163,7 @@ class UserController {
   static async getUsers(req, res, next) {
     try {
       const users = await User.findAll({
-        attributes: { exclude: ['createdAt', 'updatedAt', 'password', 'active'] },
+        attributes: { exclude: ['createdAt', 'updatedAt', 'password', 'email'] },
         include: [
           {
             model: models.Profile,
