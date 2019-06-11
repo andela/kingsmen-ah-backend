@@ -130,13 +130,13 @@ paths:
             $ref: "#/definitions/ApiResponse"
         400:
           description: "fail"
-          schema:
-            $ref: "#/definitions/ApiResponse"
       security:
-      - authentication: []
+      - api_key: []
 securityDefinitions:
-  authentication:
-    type: basic
+  api_key:
+    type: "apiKey"
+    name: "token"
+    in: "header"
 definitions:
   User:
     type: "object"

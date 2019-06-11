@@ -1,14 +1,21 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../app';
+import generateToken from './factory/user-factory';
 
 chai.use(chaiHttp);
 const { expect } = chai;
 
 // define the token variable
-let authToken;
+let userToken;
 
 describe('TESTS TO SIGNUP A USER', () => {
+  before(async () => {
+    userToken = await generateToken({
+      email: 'justsine@snqwst.com',
+      password: '1234567'
+    });
+  });
   it('should return `username is required` if username is absent ', (done) => {
     try {
       chai.request(app)
@@ -132,8 +139,6 @@ describe('TESTS TO LOGIN A USER', () => {
           expect(res.status).to.equal(200);
           expect(res.body.user).to.be.an('object');
           expect(res.body.user.token).to.be.a('string');
-          const { token } = res.body;
-          authToken = token;
           expect(res.body).to.have.property('status');
           const returnStatus = 'success';
           expect(res.body).to.have.property('status', returnStatus);
@@ -186,11 +191,12 @@ describe('TESTS TO LOGIN A USER', () => {
   });
 });
 
-describe('TESTS TO GET ALL USERS', () => {
+describe('TEST TO GET ALL USERS', () => {
   it('should return all users', (done) => {
     try {
       chai.request(app)
         .get('/api/v1/users')
+        .set('token', userToken)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body.users).to.be.an('array');

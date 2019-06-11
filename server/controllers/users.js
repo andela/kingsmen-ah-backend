@@ -173,11 +173,7 @@ class UserController {
       });
 
       if (isEmpty(users)) {
-        return res.status(400)
-          .send({
-            status: 'fail',
-            message: 'No user found'
-          });
+        return Response.error(res, 400, 'No user found');
       }
 
       return res.status(200)

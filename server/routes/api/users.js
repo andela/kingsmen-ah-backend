@@ -11,6 +11,6 @@ userRoutes.post('/auth/login', trim, UserController.login);
 userRoutes.post('/auth/register', trim, UserController.create);
 
 // Get all users and their corresponding profile
-userRoutes.get('/users', UserController.getUsers);
+userRoutes.get('/users', Token.verifyToken, UserController.getUsers);
 
 export default userRoutes;
