@@ -33,7 +33,7 @@ class Token {
   */
   static getToken(req) {
     const bearerToken = req.headers.authorization;
-    const token = bearerToken.startsWith('Bearer ') && bearerToken.replace('Bearer ', '');
+    const token = bearerToken !== undefined && bearerToken.startsWith('Bearer ') && bearerToken.replace('Bearer ', '');
 
     return token;
   }
@@ -64,10 +64,7 @@ class Token {
         }
       });
       if (droppedToken) {
-        return res.status(401).json({
-          status: 401,
-          error: 'This token has been dropped'
-        });
+        return Response.error(res, 401, 'This token has been blacklisted');
       }
       req.decoded = decoded;
       next();
