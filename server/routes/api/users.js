@@ -1,6 +1,6 @@
 import express from 'express';
-import UserController from '../../controllers/users';
-import Token from '../../helpers/Token';
+import Token from '@helpers/Token';
+import UserController from '@controllers/users';
 import trim from '../../middlewares/trim';
 
 const userRoutes = express.Router();

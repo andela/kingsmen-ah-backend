@@ -3,7 +3,6 @@ import models from '@models';
 import { validateLogin, validateSignup, updateDetails } from '@validations/auth';
 import Token from '@helpers/Token';
 import userExtractor from '@helpers/userExtractor';
-import isEmpty from '@helpers/isEmpty';
 import { validationResponse, validateUniqueResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
 
@@ -164,17 +163,17 @@ class UserController {
   static async getUsers(req, res, next) {
     try {
       const users = await User.findAll({
+        attributes: { exclude: ['createdAt', 'updatedAt', 'password', 'active'] },
         include: [
           {
             model: models.Profile,
-            as: 'profile'
-          }
-        ]
+            as: 'profile',
+            attributes: {
+              exclude: ['createdAt', 'updatedAt']
+            }
+          },
+        ],
       });
-
-      if (isEmpty(users)) {
-        return Response.error(res, 400, 'No user found');
-      }
 
       return res.status(200)
         .send({

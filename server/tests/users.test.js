@@ -1,5 +1,6 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import faker from 'faker';
 import app from '../app';
 import generateToken from './factory/user-factory';
 
@@ -12,8 +13,8 @@ let userToken;
 describe('TESTS TO SIGNUP A USER', () => {
   before(async () => {
     userToken = await generateToken({
-      email: 'justsine@snqwst.com',
-      password: '1234567'
+      email: faker.internet.email(),
+      password: faker.internet.password()
     });
   });
   it('should return `username is required` if username is absent ', (done) => {
