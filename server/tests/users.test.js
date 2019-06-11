@@ -205,8 +205,8 @@ describe('TESTS TO LOGIN A USER', () => {
         .set('Authorization', '')
         .end((err, res) => {
           expect(res.statusCode).to.be.equal(400);
-          expect(res.body).to.have.property('error');
-          expect(res.body.error).to.be.equal('No token specified');
+          expect(res.body).to.have.property('errors');
+          expect(res.body.errors.global).to.be.equal('Invalid token supplied: format Bearer <token>');
           done();
         });
     } catch (err) {
@@ -221,8 +221,8 @@ describe('TESTS TO LOGIN A USER', () => {
         .set('Authorization', `Bearer ${invalidToken}`)
         .end((err, res) => {
           expect(res.statusCode).to.be.equal(401);
-          expect(res.body).to.have.property('error');
-          expect(res.body.error).to.be.equal('Invalid Token');
+          expect(res.body).to.have.property('errors');
+          expect(res.body.errors.global).to.be.equal('Invalid Token');
           done();
         });
     } catch (err) {

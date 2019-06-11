@@ -4,7 +4,6 @@ import { validateLogin, validateSignup, updateDetails } from '../validations/aut
 import Token from '../helpers/Token';
 import userExtractor from '../helpers/userExtractor';
 import { validationResponse, validateUniqueResponse } from '../helpers/validationResponse';
-import Authorization from '../middlewares/Authorization';
 import Response from '../helpers/Response';
 
 const { User, DroppedToken } = models;
@@ -160,7 +159,7 @@ class UserController {
    * @returns {object} res message
    */
   static async logout(req, res) {
-    const token = await Authorization.getToken(req);
+    const token = await Token.getToken(req);
     try {
       await DroppedToken.create({ token });
       return res.status(201).json({
