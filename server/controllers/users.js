@@ -1,11 +1,11 @@
 import bcrypt from 'bcrypt';
-import models from '../models';
-import { validateLogin, validateSignup, updateDetails } from '../validations/auth';
-import Token from '../helpers/Token';
-import userExtractor from '../helpers/userExtractor';
-import isEmpty from '../helpers/isEmpty';
-import { validationResponse, validateUniqueResponse } from '../helpers/validationResponse';
-import Response from '../helpers/Response';
+import models from '@models';
+import { validateLogin, validateSignup, updateDetails } from '@validations/auth';
+import Token from '@helpers/Token';
+import userExtractor from '@helpers/userExtractor';
+import isEmpty from '@helpers/isEmpty';
+import { validationResponse, validateUniqueResponse } from '@helpers/validationResponse';
+import Response from '@helpers/Response';
 
 const { User } = models;
 
