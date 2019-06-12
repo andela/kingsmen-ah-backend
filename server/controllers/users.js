@@ -1,12 +1,14 @@
 import bcrypt from 'bcrypt';
 import models from '@models';
-import { validateLogin, validateSignup, updateDetails } from '@validations/auth';
+import { validateLogin, validateSignup } from '@validations/auth';
 import Token from '@helpers/Token';
 import userExtractor from '@helpers/userExtractor';
 import { validationResponse, validateUniqueResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
 
-const { User, Follower, DroppedToken } = models;
+const {
+  User, Follower, Profile, DroppedToken
+} = models;
 
 /**
  * @exports UserController
@@ -90,76 +92,11 @@ class UserController {
   }
 
   /**
-  * Update user details
-  * @async
-  * @param  {object} req - Request object
-  * @param {object} res - Response object
-  * @param {object} next The next middleware
-  * @return {json} Returns json object
-  * @static
-  */
-  static async updateUser(req, res, next) {
-    try {
-      const { error } = updateDetails(req.body);
-      if (error !== null) {
-        const errorValue = error.details[0].message.replace(/\"/g, '');
-        return res.status(400).json({ status: 400, error: errorValue });
-      }
-
-      const {
-        username, email, bio, image, password
-      } = req.body;
-
-      const user = await User.findByPk(req.payload.id);
-
-      if (!user) return res.status(400).json({ status: 400, message: 'User does not exists' });
-
-      const updatedUserDetails = await user.update({
-        username: username || user.username,
-        email: email.toLowerCase() || user.email,
-        bio: bio || user.bio,
-        image: image || user.image,
-        password: password || user.password
-      });
-
-      return res.send({ status: 'success', user: updatedUserDetails });
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  /**
-  * Get user details
-  * @async
-  * @param  {object} req - Request object
-  * @param {object} res - Response object
-  * @param {object} next The next middleware
-  * @return {json} Returns json object
-  * @static
-  */
-  static async getUserDetails(req, res, next) {
-    try {
-      const user = await User.findByPk(req.payload.id);
-
-      if (!user) {
-        return res.sendStatus(400);
-      }
-
-      return res.send({ status: 'success', user });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * Users can follow each other
-   *
-   * @static
-   * @param {*} req
-   * @param {*} res
-   * @param {*} next
-   * @memberof UserController
-   * @returns {json} Returns json object
+   * Users can follow each ither
+   * @param {object} req
+   * @param {object} res
+   * @param {object} next
+   * @returns {object} res message
    */
   static async follow(req, res, next) {
     try {
@@ -191,12 +128,75 @@ class UserController {
       if (!created) {
         return Response.error(res, 400, 'user was followed already!');
       }
+      const profileData = await Profile.findOne({
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        },
+        where: {
+          userId: followid,
+        }
+      });
       if (followed) {
         return res.status(201).json({
           status: 201,
           message: 'User followed successfully',
+          data: profileData || []
         });
       }
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  /**
+   * Users should be able to unfollow each other
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   * @memberof UserController
+   * @return {json} Returns json object
+   */
+  static async unfollow(req, res, next) {
+    try {
+      const { username } = req.params;
+      const { id } = req.decoded;
+
+      const userToUnfollow = await User.findOne({
+        where: {
+          username,
+        }
+      });
+      if (!userToUnfollow) {
+        return Response.error(res, 404, 'User not found');
+      }
+      const unfollowid = userToUnfollow.dataValues.id;
+      if (unfollowid === id) {
+        return Response.error(res, 400, 'you cannot unfollow yourself');
+      }
+      const unfollowed = await Follower.destroy({
+        where: {
+          followerId: id,
+          followingId: unfollowid
+        }
+      });
+      const profileData = await Profile.findOne({
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        },
+        where: {
+          userId: userToUnfollow.id,
+        }
+      });
+      if (unfollowed) {
+        return res.status(200).json({
+          status: 200,
+          message: 'User unfollowed successfully',
+          data: profileData || []
+        });
+      }
+      if (!unfollowed) return Response.error(res, 400, 'user was not followed before');
     } catch (err) {
       return next(err);
     }

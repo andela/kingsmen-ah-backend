@@ -39,7 +39,7 @@ describe('TESTS TO FOLLOW A USER', () => {
   it('first-user should follow second-user', (done) => {
     try {
       chai.request(app)
-        .post(`/api/v1/profile/${secondUsername}/follow`)
+        .post(`/api/v1/profiles/${secondUsername}/follow`)
         .set('authorization', `Bearer ${firstUserToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(201);
@@ -56,7 +56,7 @@ describe('TESTS TO FOLLOW A USER', () => {
   it('second-user should follow first-user', (done) => {
     try {
       chai.request(app)
-        .post(`/api/v1/profile/${firstUsername}/follow`)
+        .post(`/api/v1/profiles/${firstUsername}/follow`)
         .set('authorization', `Bearer ${secondUserToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(201);
@@ -73,7 +73,7 @@ describe('TESTS TO FOLLOW A USER', () => {
   it('second-user cannot follow first-user more than once', (done) => {
     try {
       chai.request(app)
-        .post(`/api/v1/profile/${firstUsername}/follow`)
+        .post(`/api/v1/profiles/${firstUsername}/follow`)
         .set('authorization', `Bearer ${secondUserToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(400);
@@ -90,7 +90,7 @@ describe('TESTS TO FOLLOW A USER', () => {
   it('should return user not found when wrong username is passed', (done) => {
     try {
       chai.request(app)
-        .post('/api/v1/profile/nhhg/follow')
+        .post('/api/v1/profiles/nhhg/follow')
         .set('authorization', `Bearer ${firstUserToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(404);
@@ -107,12 +107,100 @@ describe('TESTS TO FOLLOW A USER', () => {
   it('first-user cannot follow himself', (done) => {
     try {
       chai.request(app)
-        .post(`/api/v1/profile/${firstUsername}/follow`)
+        .post(`/api/v1/profiles/${firstUsername}/follow`)
         .set('authorization', `Bearer ${firstUserToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(400);
           expect(res.body).to.be.an('object');
           expect(res.body.errors.global).to.eql('you cannot follow yourself');
+          expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+});
+
+describe('TESTS TO UNFOLLOW A USER', () => {
+
+  it('first-user should unfollow second-user', (done) => {
+    try {
+      chai.request(app)
+        .delete(`/api/v1/profiles/${secondUsername}/follow`)
+        .set('authorization', `Bearer ${firstUserToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.be.an('object');
+          expect(res.body.message).to.eql('User unfollowed successfully');
+          expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('second-user should unfollow first-user', (done) => {
+    try {
+      chai.request(app)
+        .delete(`/api/v1/profiles/${firstUsername}/follow`)
+        .set('authorization', `Bearer ${secondUserToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.be.an('object');
+          expect(res.body.message).to.eql('User unfollowed successfully');
+          expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('second-user cannot unfollow first-user more than once', (done) => {
+    try {
+      chai.request(app)
+        .delete(`/api/v1/profiles/${firstUsername}/follow`)
+        .set('authorization', `Bearer ${secondUserToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.be.an('object');
+          expect(res.body.errors.global).to.eql('user was not followed before');
+          expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should return user not found when wrong username is passed', (done) => {
+    try {
+      chai.request(app)
+        .delete('/api/v1/profiles/rbbwgeghrdegwrgebge/follow')
+        .set('authorization', `Bearer ${firstUserToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body).to.be.an('object');
+          expect(res.body.errors.global).to.eql('User not found');
+          expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('first-user cannot unfollow himself', (done) => {
+    try {
+      chai.request(app)
+        .delete(`/api/v1/profiles/${firstUsername}/follow`)
+        .set('authorization', `Bearer ${firstUserToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.be.an('object');
+          expect(res.body.errors.global).to.eql('you cannot unfollow yourself');
           expect(res.body).to.have.property('status');
           done();
         });
