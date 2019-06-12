@@ -123,7 +123,6 @@ describe('TESTS TO FOLLOW A USER', () => {
 });
 
 describe('TESTS TO UNFOLLOW A USER', () => {
-
   it('first-user should unfollow second-user', (done) => {
     try {
       chai.request(app)
