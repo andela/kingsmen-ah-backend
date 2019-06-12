@@ -113,7 +113,7 @@ module.exports = (sequelize, DataTypes) => {
 
   User.hashPassword = async (user) => {
     const hash = await bcrypt.hash(user.dataValues.password, SALT_ROUNDS);
-    await user.setDataValue('password', hash);
+    await user.getDataValue('password', hash);
   };
 
   return User;

@@ -1,3 +1,5 @@
+import slugCreator from '../helpers/slugCreator';
+
 module.exports = (sequelize, DataTypes) => {
   const Article = sequelize.define('Article', {
     id: {
@@ -23,11 +25,20 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false
     },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     readTime: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      defaultValue: '1 min'
     }
-  }, {});
+  }, {
+    hooks: {
+      beforeCreate: article => Article.createSlug(article)
+    }
+  });
 
   Article.associate = (models) => {
     const {
@@ -61,5 +72,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'articleId'
     });
   };
+
+  Article.createSlug = async (article) => {
+    const slug = await slugCreator(article.dataValues.slug);
+    await article.setDataValue('slug', slug);
+  };
+
   return Article;
 };

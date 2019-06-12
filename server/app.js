@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import swaggerUi from 'swagger-ui-express';
 import apis from '@routes/api';
 import errorHandler from '@middlewares/errorHandler';
+import articlesRoutes from './routes/api/articles';
 import swaggerSpec from './config/swagger';
 
 const debugged = debug('app');
@@ -21,7 +22,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use('/api/v1', apis);
-
+app.use('/api/v1', articlesRoutes);
 
 // swagger-ui-express for API endpoint documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
