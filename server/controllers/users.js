@@ -6,7 +6,7 @@ import userExtractor from '@helpers/userExtractor';
 import { validationResponse, validateUniqueResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
 
-const { User, Follower } = models;
+const { User, Follower, DroppedToken } = models;
 
 /**
  * @exports UserController
@@ -202,6 +202,27 @@ class UserController {
       }
     } catch (err) {
       return next(err);
+    }
+  }
+
+  /**
+ * Signuout user and blacklist tokens
+ *
+ * @static
+ * @param {*} req
+ * @param {*} res
+ * @returns {json} returns json object
+ * @memberof UserController logout
+ */
+  static async logout(req, res) {
+    const token = await Token.getToken(req);
+    try {
+      await DroppedToken.create({ token });
+      return res.status(201).json({
+        status: 201, message: 'You are now logged out'
+      });
+    } catch (error) {
+      return Response.error(res, 401, 'You are not logged in');
     }
   }
 }
