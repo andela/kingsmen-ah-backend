@@ -302,4 +302,33 @@ describe('TEST TO GET ALL USERS', () => {
       throw err.message;
     }
   });
+  it('should return errors if no token was provided', (done) => {
+    try {
+      chai.request(app)
+        .get('/api/v1/users')
+        .set('Authorization', '')
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.have.property('errors');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+  it('should return invalid token', (done) => {
+    try {
+      chai.request(app)
+        .get('/api/v1/users')
+        .set('Authorization', authToken)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.global).to.eql('Invalid token supplied: format Bearer <token>');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
 });
