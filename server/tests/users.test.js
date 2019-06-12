@@ -8,8 +8,8 @@ import generateToken from './factory/user-factory';
 const { User } = models;
 chai.use(chaiHttp);
 const { expect } = chai;
+const invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZjZDAwNDBmLTI3MDktNGU0Yi05YjU2LWYzZDk3MmRhNjk4OTg5IiwiZW1haWwiOiJqdXN0c2luZUBzbnF3c3QuY29tIiwiaWF0IjoxNTYwMjA3NTAyLCJleHAiOjE1NjAyOTM5MDJ9.FpXu8SrboezKr57MNcrEA_pGhsMRm0G5ptUGqQje12I';
 
-// define the token variable
 let userToken;
 
 describe('TESTS TO SIGNUP A USER', () => {
@@ -26,7 +26,7 @@ describe('TESTS TO SIGNUP A USER', () => {
   it('should return `username is required` if username is absent ', (done) => {
     try {
       chai.request(app)
-        .post('/api/v1/auth/register')
+        .post('/api/v1/register')
         .send({
           email: 'justsine@snqwst.com',
           password: '1234567'
@@ -46,7 +46,7 @@ describe('TESTS TO SIGNUP A USER', () => {
   it('should return email is required if email is absent ', (done) => {
     try {
       chai.request(app)
-        .post('/api/v1/auth/register')
+        .post('/api/v1/register')
         .send({
           username: 'Sanchezqwst',
           password: '1234567'
@@ -66,7 +66,7 @@ describe('TESTS TO SIGNUP A USER', () => {
   it('should return success status 201', (done) => {
     try {
       chai.request(app)
-        .post('/api/v1/auth/register')
+        .post('/api/v1/register')
         .send({
           username: 'Sanchezqwst',
           email: 'justsine@snqwst.com',
@@ -89,7 +89,7 @@ describe('TESTS TO SIGNUP A USER', () => {
   it('should return a duplicate signup', (done) => {
     try {
       chai.request(app)
-        .post('/api/v1/auth/register')
+        .post('/api/v1/register')
         .send({
           username: 'Sanchezqwst',
           email: 'justsine@snqwst.com',
@@ -111,7 +111,7 @@ describe('TESTS TO SIGNUP A USER', () => {
   it('should return an empty entry error', (done) => {
     try {
       chai.request(app)
-        .post('/api/v1/auth/register')
+        .post('/api/v1/register')
         .send({
           username: '',
           email: '',
@@ -137,12 +137,13 @@ describe('TESTS TO LOGIN A USER', () => {
   it('should login with status 200', (done) => {
     try {
       chai.request(app)
-        .post('/api/v1/auth/login')
+        .post('/api/v1/login')
         .send({
           email: 'justsine@snqwst.com',
           password: '1234567'
         })
         .end((err, res) => {
+          userToken = res.body.user.token;
           expect(res.status).to.equal(200);
           expect(res.body.user).to.be.an('object');
           expect(res.body.user.token).to.be.a('string');
@@ -159,7 +160,7 @@ describe('TESTS TO LOGIN A USER', () => {
   it('should return an invalid login', (done) => {
     try {
       chai.request(app)
-        .post('/api/v1/auth/login')
+        .post('/api/v1/login')
         .send({
           email: 'justsine@snqwfssst.com',
           password: '1234d567'
@@ -180,7 +181,7 @@ describe('TESTS TO LOGIN A USER', () => {
   it('should return an invalid login when password does not match', (done) => {
     try {
       chai.request(app)
-        .post('/api/v1/auth/login')
+        .post('/api/v1/login')
         .send({
           email: 'justsine@snqwst.com',
           password: '11224b'
@@ -202,7 +203,7 @@ describe('TESTS TO LOGIN A USER', () => {
   it('should return `email is required` if email is absent ', (done) => {
     try {
       chai.request(app)
-        .post('/api/v1/auth/login')
+        .post('/api/v1/login')
         .send({
           password: '1234567'
         })
@@ -217,6 +218,53 @@ describe('TESTS TO LOGIN A USER', () => {
       throw err.message;
     }
   });
+
+  it('should create a dropped token', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/logout')
+        .set('Authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res.status).to.be.equal(201);
+          expect(res.body).to.have.property('message');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should return error for empty token', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/logout')
+        .set('Authorization', '')
+        .end((err, res) => {
+          expect(res.statusCode).to.be.equal(400);
+          expect(res.body).to.have.property('errors');
+          expect(res.body.errors.global).to.be.equal('Invalid token supplied: format Bearer <token>');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should return error for invalid token', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/logout')
+        .set('Authorization', `Bearer ${invalidToken}`)
+        .end((err, res) => {
+          expect(res.statusCode).to.be.equal(401);
+          expect(res.body).to.have.property('errors');
+          expect(res.body.errors.global).to.be.equal('Invalid Token');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
 });
 
 describe('TEST TO GET ALL USERS', () => {
@@ -224,7 +272,7 @@ describe('TEST TO GET ALL USERS', () => {
     try {
       chai.request(app)
         .get('/api/v1/users')
-        .set('token', userToken)
+        .set('authorization', userToken)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body.payload).to.be.an('array');
