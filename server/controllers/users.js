@@ -120,7 +120,7 @@ class UserController {
   static async getUsers(req, res, next) {
     try {
       const users = await User.findAll({
-        attributes: ['id', 'username', 'firstname', 'lastname', 'active'],
+        attributes: ['id', 'username', 'firstname', 'lastname'],
         where: {
           active: true
         },

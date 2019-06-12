@@ -134,7 +134,7 @@ paths:
 securityDefinitions:
   api_key:
     type: "apiKey"
-    name: "token"
+    name: "Authorization"
     in: "header"
 definitions:
   User:
