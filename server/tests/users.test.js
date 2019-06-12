@@ -5,12 +5,13 @@ import models from '@models';
 import app from '../app';
 import generateToken from './factory/user-factory';
 
+let userToken;
 const { User } = models;
 chai.use(chaiHttp);
 const { expect } = chai;
 const invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZjZDAwNDBmLTI3MDktNGU0Yi05YjU2LWYzZDk3MmRhNjk4OTg5IiwiZW1haWwiOiJqdXN0c2luZUBzbnF3c3QuY29tIiwiaWF0IjoxNTYwMjA3NTAyLCJleHAiOjE1NjAyOTM5MDJ9.FpXu8SrboezKr57MNcrEA_pGhsMRm0G5ptUGqQje12I';
 
-let userToken;
+let authToken;
 
 describe('TESTS TO SIGNUP A USER', () => {
   before(async () => {
@@ -21,7 +22,7 @@ describe('TESTS TO SIGNUP A USER', () => {
       password: faker.internet.password()
     });
 
-    userToken = await generateToken({ id: newUser.id });
+    authToken = await generateToken({ id: newUser.id });
   });
   it('should return `username is required` if username is absent ', (done) => {
     try {
@@ -272,7 +273,7 @@ describe('TEST TO GET ALL USERS', () => {
     try {
       chai.request(app)
         .get('/api/v1/users')
-        .set('authorization', userToken)
+        .set('Authorization', `Bearer ${authToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body.payload).to.be.an('array');
