@@ -163,20 +163,20 @@ class UserController {
    */
   static async follow(req, res, next) {
     try {
-      const { followid } = req.params;
+      const { username } = req.params;
       const { id } = req.decoded;
-      if (followid === id) {
-        return res.status(400).json({
-          status: 400,
-          error: 'you cannot follow yourself',
-        });
-      }
-      const userToFollow = await User.findByPk(followid);
+
+      const userToFollow = await User.findOne({
+        where: {
+          username,
+        }
+      });
       if (!userToFollow) {
-        return res.status(404).json({
-          status: 404,
-          error: 'User not found',
-        });
+        return Response.error(res, 404, 'User not found');
+      }
+      const followid = userToFollow.dataValues.id;
+      if (followid === id) {
+        return Response.error(res, 400, 'you cannot follow yourself');
       }
       const [followed, created] = await Follower.findOrCreate({
         where: {
@@ -189,10 +189,7 @@ class UserController {
         }
       });
       if (!created) {
-        return res.status(400).json({
-          status: 400,
-          message: 'user was followed already!',
-        });
+        return Response.error(res, 400, 'user was followed already!');
       }
       if (followed) {
         return res.status(201).json({

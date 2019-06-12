@@ -1,11 +1,10 @@
 import express from 'express';
 import userRoutes from './users';
-import Token from '../../helpers/Token';
-import UserController from '../../controllers/users';
+import profileRoutes from './profile';
 
 const apiRoutes = express.Router();
 
 apiRoutes.use('/auth', userRoutes);
-apiRoutes.use('/users/:followid/follow', Token.authorize, UserController.follow);
+apiRoutes.use('/profile', profileRoutes);
 
 export default apiRoutes;
