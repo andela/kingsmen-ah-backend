@@ -27,7 +27,8 @@ describe('TESTS TO CREATE AN ARTICLES', () => {
         .set('Authorization', `Bearer ${userToken}`)
         .send({
           title: faker.lorem.words(),
-          body: faker.lorem.sentences()
+          body: faker.lorem.sentences(),
+          image: faker.image.imageUrl()
         })
         .end((err, res) => {
           const returnStatus = 'success';

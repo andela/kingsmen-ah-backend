@@ -128,7 +128,6 @@ describe('TESTS TO LOGIN A USER', () => {
           password: '1234567'
         })
         .end((err, res) => {
-          console.log(req.body);
           userToken = res.body.user.token;
           expect(res.status).to.equal(200);
           expect(res.body.user).to.be.an('object');
