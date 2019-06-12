@@ -14,7 +14,7 @@ schemes:
   - "https"
   - "http"
 paths:
-  /auth/register:
+  /users:
     post:
       tags:
       - "user"
@@ -80,6 +80,24 @@ paths:
             $ref: "#/definitions/ApiResponse"
         400:
           description: "Invalid email/password supplied"
+    get:
+      tags:
+      - "users"
+      summary: "Users with profiles"
+      description: "Returns all users and their corresponding profiles"
+      operationId: "getUsers"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "fail"
+      security:
+      - api_key: []
   /auth/login:
     post:
       tags:
@@ -113,25 +131,6 @@ paths:
             $ref: "#/definitions/ApiResponse"
         400:
           description: "Invalid email/password supplied"
-  /users:
-    get:
-      tags:
-      - "users"
-      summary: "Users with profiles"
-      description: "Returns all users and their corresponding profiles"
-      operationId: "getUsers"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "success"
-          schema:
-            $ref: "#/definitions/ApiResponse"
-        400:
-          description: "fail"
-      security:
-      - api_key: []
 securityDefinitions:
   api_key:
     type: "apiKey"
@@ -187,4 +186,3 @@ definitions:
 externalDocs:
   description: "Find out more about Author's Haven"
   url: "https://github.com/andela/kingsmen-ah-backend"
-  
