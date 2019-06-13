@@ -9,10 +9,6 @@ const { expect } = chai;
 const invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZjZDAwNDBmLTI3MDktNGU0Yi05YjU2LWYzZDk3MmRhNjk4OTg5IiwiZW1haWwiOiJqdXN0c2luZUBzbnF3c3QuY29tIiwiaWF0IjoxNTYwMjA3NTAyLCJleHAiOjE1NjAyOTM5MDJ9.FpXu8SrboezKr57MNcrEA_pGhsMRm0G5ptUGqQje12I';
 
 describe('TESTS TO SIGNUP A USER', () => {
-  before(async () => {
-    const testUser = await createTestUser({});
-    authToken = await generateToken({ id: testUser.id });
-  });
   it('should return `username is required` if username is absent ', (done) => {
     try {
       chai.request(app)
@@ -274,6 +270,10 @@ describe('TESTS TO LOGIN A USER', () => {
 });
 
 describe('TEST TO GET ALL USERS', () => {
+  before(async () => {
+    const testUser = await createTestUser({});
+    authToken = await generateToken({ id: testUser.id });
+  });
   it('should return all users', (done) => {
     try {
       chai.request(app)
