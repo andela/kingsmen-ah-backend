@@ -9,16 +9,14 @@ const generateToken = async (userDetails) => {
   return token;
 };
 
-const createTestUser = async () => {
+const createTestUser = async ({ username, email }) => {
   const newUser = await User.create({
     id: faker.random.uuid(),
-    username: faker.internet.userName(),
-    email: faker.internet.email(),
+    username: username || faker.internet.userName(),
+    email: email || faker.internet.email(),
     password: faker.internet.password()
   });
-  const authToken = await generateToken({ id: newUser.id });
-
-  return authToken;
+  return newUser;
 };
 
-export default createTestUser;
+export { createTestUser, generateToken };

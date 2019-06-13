@@ -1,7 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../app';
-import createTestUser from './factory/user-factory';
+import { createTestUser, generateToken } from './factory/user-factory';
 
 let userToken, authToken;
 chai.use(chaiHttp);
@@ -10,7 +10,8 @@ const invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZjZDAwNDBmL
 
 describe('TESTS TO SIGNUP A USER', () => {
   before(async () => {
-    authToken = await createTestUser();
+    const testUser = await createTestUser({});
+    authToken = await generateToken({ id: testUser.id });
   });
   it('should return `username is required` if username is absent ', (done) => {
     try {
