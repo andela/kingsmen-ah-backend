@@ -1,28 +1,16 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import faker from 'faker';
-import models from '@models';
 import app from '../app';
-import generateToken from './factory/user-factory';
+import createTestUser from './factory/user-factory';
 
-let userToken;
-const { User } = models;
+let userToken, authToken;
 chai.use(chaiHttp);
 const { expect } = chai;
 const invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZjZDAwNDBmLTI3MDktNGU0Yi05YjU2LWYzZDk3MmRhNjk4OTg5IiwiZW1haWwiOiJqdXN0c2luZUBzbnF3c3QuY29tIiwiaWF0IjoxNTYwMjA3NTAyLCJleHAiOjE1NjAyOTM5MDJ9.FpXu8SrboezKr57MNcrEA_pGhsMRm0G5ptUGqQje12I';
 
-let authToken;
-
 describe('TESTS TO SIGNUP A USER', () => {
   before(async () => {
-    const newUser = await User.create({
-      id: faker.random.uuid(),
-      username: faker.internet.userName(),
-      email: faker.internet.email(),
-      password: faker.internet.password()
-    });
-
-    authToken = await generateToken({ id: newUser.id });
+    authToken = await createTestUser();
   });
   it('should return `username is required` if username is absent ', (done) => {
     try {
