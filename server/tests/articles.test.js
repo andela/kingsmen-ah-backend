@@ -216,10 +216,8 @@ describe('TESTS TO GET ARTICLES', () => {
 });
 
 describe('TESTS TO DELETE AN ARTICLE', () => {
-  let newArticle, userToken, tokenForUserWithoutDeletePermission;
-  before(async () => {
-    const testUser = await createTestUser({});
-    tokenForUserWithoutDeletePermission = generateToken(testUser);
+  let newArticle, userToken;
+  before(async () => {;
     const { id, email } = await testUserNoArgumentPassed();
     const payload = {
       id,
