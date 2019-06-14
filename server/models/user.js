@@ -104,6 +104,12 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId'
     });
 
+    User.belongsToMany(Article, {
+      through: Rating,
+      as: 'Ratings',
+      foreignKey: 'userId'
+    });
+
     User.belongsToMany(Role, {
       through: 'UserRole',
       as: 'role',

@@ -1,16 +1,17 @@
+import sequelize from 'sequelize';
 import models from '@models';
 import { validateArticle } from '@validations/auth';
 import { validationResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
 
-const { Article, User } = models;
+const { Article, User, Rating } = models;
 
 /**
- * @exports ArticlesController
- * @class ArticlesController
+ * @exports ArticleController
+ * @class ArticleController
  * @description Handles creation, modification, reading and deletion of Articles
  * */
-class ArticlesController {
+class ArticleController {
   /**
   * Create a new article
   * @async
@@ -30,7 +31,9 @@ class ArticlesController {
       };
 
       const createdArticle = await Article.create(createArticleDetails);
-      const { dataValues: payload } = createdArticle;
+      const { slug } = createdArticle.dataValues;
+      const payload = await ArticleController.findArticle({ slug });
+
       return res.status(201).json({ status: 'success', message: 'Article created successfully', payload });
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
@@ -56,10 +59,10 @@ class ArticlesController {
     try {
       const articleDetails = await validateArticle(req.body);
       const { id: userId } = req.decoded;
-      const { slug } = req.params;
+      const { slug: updatedSlug } = req.params;
 
       const user = await User.findByPk(userId);
-      const getArticle = await Article.findOne({ where: { slug } });
+      const getArticle = await Article.findOne({ where: { slug: updatedSlug } });
 
       const canUpdate = await user.hasArticle(getArticle);
 
@@ -73,8 +76,9 @@ class ArticlesController {
       }
 
       const updateArticle = await getArticle.update(articleDetails);
+      const { slug } = updateArticle.dataValues;
+      const payload = await ArticleController.findArticle({ slug });
 
-      const { dataValues: payload } = updateArticle;
       return res.status(200).json({ status: 'success', message: 'Article successfully updated', payload });
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
@@ -130,13 +134,138 @@ class ArticlesController {
   */
   static async getAll(req, res, next) {
     try {
-      const getAllArticles = await Article.findAll();
+      const getAllArticles = await ArticleController.findAllArticle();
       const payload = getAllArticles;
       return res.status(200).json({ status: 'success', message: 'Articles successfully retrieved', payload });
     } catch (err) {
       next(err);
     }
   }
+
+  /**
+  * Gets an article
+  * @async
+  * @param  {object} req - Request object
+  * @param {object} res - Response object
+  * @param {object} next The next middleware
+  * @return {json} Returns json object
+  * @static
+  */
+  static async getOne(req, res, next) {
+    try {
+      const { slug } = req.params;
+      const payload = await ArticleController.findArticle({ slug });
+      return res.status(200).json({ status: 'success', message: 'Article successfully retrieved', payload });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  /**
+   *
+   *
+   * @static
+   * @param {*} { articleId, slug }
+   * @returns {object} article details
+   * @memberof ArticleController
+   */
+  static async findArticle({ articleId, slug }) {
+    const where = {};
+    if (articleId) {
+      where.articleId = articleId;
+    } else if (slug) {
+      where.slug = slug;
+    }
+
+    return Article.findOne({
+      where,
+      attributes: [
+        'id',
+        'slug',
+        'title',
+        'body',
+        'image',
+        'createdAt',
+        'updatedAt',
+        'deletedAt',
+        [sequelize.fn('AVG', sequelize.col('articleRatings.ratings')), 'averageRating']
+      ],
+      include: [
+        {
+          model: Rating,
+          as: 'articleRatings',
+          required: false,
+          attributes: []
+        },
+        {
+          model: User,
+          as: 'author',
+          attributes: [
+            'id',
+            'username',
+            'email',
+            'firstname',
+            'lastname',
+            'middlename'
+          ]
+        }
+      ],
+      group: [
+        'Article.id',
+        'author.id'
+      ]
+    });
+  }
+
+  /**
+ *
+ *
+ * @static
+ * @param {*} { articleId, slug }
+ * @returns {object} finds all articles
+ * @memberof ArticleController
+ */
+  static async findAllArticle() {
+    const where = {};
+    return Article.findAll({
+      where,
+      attributes: [
+        'id',
+        'slug',
+        'title',
+        'body',
+        'image',
+        'createdAt',
+        'updatedAt',
+        'deletedAt',
+        [sequelize.fn('AVG', sequelize.col('articleRatings.ratings')), 'averageRating']
+      ],
+      include: [
+        {
+          model: Rating,
+          as: 'articleRatings',
+          required: false,
+          attributes: []
+        },
+        {
+          model: User,
+          as: 'author',
+          attributes: [
+            'id',
+            'username',
+            'email',
+            'firstname',
+            'lastname',
+            'middlename'
+          ]
+        }
+      ],
+      group: [
+        'Article.id',
+        'author.id'
+      ]
+    });
+  }
 }
 
-export default ArticlesController;
+export default ArticleController;

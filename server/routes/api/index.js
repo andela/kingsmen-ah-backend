@@ -10,6 +10,6 @@ apiRouter.get('/', (request, response) => response.status(200).send('Welcome to 
 
 apiRouter.use('/users', userRouter);
 apiRouter.use('/auth', authRouter);
-apiRouter.use('/', articlesRouter);
+apiRouter.use('/articles', articlesRouter);
 
 export default apiRouter;
