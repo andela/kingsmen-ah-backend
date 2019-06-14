@@ -1,6 +1,6 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import { generateToken, createTestUser, testUserNoArgumentPassed } from './factory/user-factory';
+import { generateToken, testUserNoArgumentPassed } from './factory/user-factory';
 import createArticles from './factory/articles-factory';
 import app from '../app';
 
@@ -217,7 +217,7 @@ describe('TESTS TO GET ARTICLES', () => {
 
 describe('TESTS TO DELETE AN ARTICLE', () => {
   let newArticle, userToken;
-  before(async () => {;
+  before(async () => {
     const { id, email } = await testUserNoArgumentPassed();
     const payload = {
       id,
