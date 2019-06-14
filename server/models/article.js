@@ -1,4 +1,4 @@
-import slugCreator from '../helpers/slugCreator';
+import slugCreator from '@helpers/slugCreator';
 
 module.exports = (sequelize, DataTypes) => {
   const Article = sequelize.define('Article', {
@@ -37,7 +37,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     hooks: {
       beforeCreate: article => Article.createSlug(article)
-    }
+    },
+    paranoid: true
   });
 
   Article.associate = (models) => {
@@ -45,7 +46,8 @@ module.exports = (sequelize, DataTypes) => {
       User, ArticleLike, Favourite, Rating, Comment, Tag, ReportArticle
     } = models;
     Article.belongsTo(User, {
-      foreignKey: 'userId'
+      foreignKey: 'userId',
+      as: 'author'
     });
 
     Article.hasMany(ArticleLike, {
