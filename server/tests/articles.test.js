@@ -1,9 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import faker from 'faker';
-import models from '@models';
-import { generateToken, createTestUser } from './factory/userFactory';
-import createArticles from './factory/articlesFactory';
+import { generateToken, createTestUser, testUserNoArgumentPassed } from './factory/user-factory';
+import createArticles from './factory/articles-factory';
 import app from '../app';
 
 chai.use(chaiHttp);
@@ -15,7 +13,7 @@ let wrongToken;
 describe('TESTS TO CREATE AN ARTICLE', () => {
   let newArticle, userToken;
   before(async () => {
-    const { id, email } = await createTestUser();
+    const { id, email } = await testUserNoArgumentPassed();
     const payload = {
       id,
       email
@@ -96,7 +94,7 @@ describe('TESTS TO CREATE AN ARTICLE', () => {
 describe('TESTS TO UPDATE AN ARTICLE', () => {
   let newArticle, userToken;
   before(async () => {
-    const { id, email } = await createTestUser();
+    const { id, email } = await testUserNoArgumentPassed();
     const payload = {
       id,
       email
@@ -217,10 +215,12 @@ describe('TESTS TO GET ARTICLES', () => {
   });
 });
 
-describe('TESTS TO UPDATE AN ARTICLE', () => {
-  let newArticle, userToken;
+describe('TESTS TO DELETE AN ARTICLE', () => {
+  let newArticle, userToken, tokenForUserWithoutDeletePermission;
   before(async () => {
-    const { id, email } = await createTestUser();
+    const testUser = await createTestUser({});
+    tokenForUserWithoutDeletePermission = generateToken(testUser);
+    const { id, email } = await testUserNoArgumentPassed();
     const payload = {
       id,
       email
@@ -235,14 +235,7 @@ describe('TESTS TO UPDATE AN ARTICLE', () => {
         .delete(`/api/v1/articles/${newArticle.slug}`)
         .set('Authorization', `Bearer ${userToken}`)
         .end((err, res) => {
-          const returnStatus = 'success';
           expect(res.status).to.equal(200);
-          // expect(res.body.payload).to.be.an('object');
-          // expect(res.body.payload.title).to.be.a('string');
-          // expect(res.body).to.have.property('status');
-          // expect(res.body.status).to.eql(returnStatus);
-          // expect(res.body).to.have.property('status', returnStatus);
-          // expect(res.body).to.have.property('status');
           done();
         });
     } catch (err) {

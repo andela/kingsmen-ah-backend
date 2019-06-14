@@ -99,14 +99,21 @@ class ArticlesController {
   static async delete(req, res, next) {
     try {
       const { slug } = req.params;
+      const { id: userId } = req.decoded;
 
-      const deletedArticle = await Article.destroy({ where: { slug } });
+      const getArticle = await Article.findOne({ where: { slug } });
 
-      if (!deletedArticle) {
+      if (!getArticle) {
         return Response.error(res, 404, 'Article does not exist');
       }
-      const { dataValues: payload } = deletedArticle;
-      return res.status(200).json({ status: 'success', message: 'Article successfully deleted', payload });
+
+      const deletedArticle = await Article.destroy({ where: { slug, userId } });
+
+      if (!deletedArticle) {
+        return Response.error(res, 401, 'You do not have permission to delete this article!');
+      }
+
+      return res.status(200).json({ status: 'success', message: 'Article successfully deleted' });
     } catch (err) {
       next(err);
     }
