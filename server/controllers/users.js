@@ -102,13 +102,12 @@ class UserController {
     try {
       const { username } = req.params;
       const { id } = req.decoded;
-
-      const me = await User.findByPk(id);
-
+      const me = req.user;
 
       const userToFollow = await User.findOne({
         where: {
           username,
+          active: true
         }
       });
 
@@ -121,29 +120,12 @@ class UserController {
       }
 
       await me.addFollowers(userToFollow);
-      const myFollowing = await me.getFollowers();
-
-      const myfollowings = myFollowing.map(item => ({
-        id: item.id,
-        email: item.email,
-        lastname: item.lastname,
-        following: item.UserFollowers
-      }));
-
-      const myFollowed = await me.getFollowed();
-
-      const myfollowed = myFollowed.map(item => ({
-        id: item.id,
-        email: item.email,
-        lastname: item.lastname,
-        followed: item.UserFollowers
-      }));
+      const followedUserProfile = [];
 
       return res.status(201).json({
         status: 201,
         message: 'User followed successfully',
-        data: myfollowings || [],
-        followers: myfollowed || []
+        payload: followedUserProfile || [],
       });
     } catch (err) {
       return next(err);
@@ -164,10 +146,12 @@ class UserController {
     try {
       const { username } = req.params;
       const { id } = req.decoded;
-      const me = await User.findByPk(id);
+      const me = req.user;
+
       const userToUnfollow = await User.findOne({
         where: {
           username,
+          active: true
         }
       });
       if (!userToUnfollow) {
@@ -179,28 +163,13 @@ class UserController {
       }
 
       await me.removeFollowers(userToUnfollow);
-      const myFollowing = await me.getFollowers();
-      const myfollowings = myFollowing.map(item => ({
-        id: item.id,
-        email: item.email,
-        lastname: item.lastname,
-        following: item.UserFollowers
-      }));
 
-      const myFollowed = await me.getFollowed();
-
-      const myfollowed = myFollowed.map(item => ({
-        id: item.id,
-        email: item.email,
-        lastname: item.lastname,
-        followed: item.UserFollowers
-      }));
+      const followedUserProfile = [];
 
       return res.status(200).json({
         status: 200,
         message: 'User unfollowed successfully',
-        data: myfollowings || [],
-        followers: myfollowed || []
+        payload: followedUserProfile || [],
       });
     } catch (err) {
       return next(err);
