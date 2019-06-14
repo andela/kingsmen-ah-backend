@@ -52,23 +52,6 @@ describe('TESTS TO FOLLOW A USER', () => {
     }
   });
 
-  it('second-user cannot follow first-user more than once', (done) => {
-    try {
-      chai.request(app)
-        .post(`/api/v1/profiles/${firstUsername}/follow`)
-        .set('authorization', `Bearer ${secondUserToken}`)
-        .end((err, res) => {
-          expect(res.status).to.equal(400);
-          expect(res.body).to.be.an('object');
-          expect(res.body.errors.global).to.eql('user was followed already!');
-          expect(res.body).to.have.property('status');
-          done();
-        });
-    } catch (err) {
-      throw err.message;
-    }
-  });
-
   it('should return user not found when wrong username is passed', (done) => {
     try {
       chai.request(app)
@@ -77,7 +60,7 @@ describe('TESTS TO FOLLOW A USER', () => {
         .end((err, res) => {
           expect(res.status).to.equal(404);
           expect(res.body).to.be.an('object');
-          expect(res.body.errors.global).to.eql('User not found');
+          expect(res.body.errors.global).to.eql('User to follow not found');
           expect(res.body).to.have.property('status');
           done();
         });
@@ -139,24 +122,7 @@ describe('TESTS TO UNFOLLOW A USER', () => {
     }
   });
 
-  it('second-user cannot unfollow first-user more than once', (done) => {
-    try {
-      chai.request(app)
-        .delete(`/api/v1/profiles/${firstUsername}/follow`)
-        .set('authorization', `Bearer ${secondUserToken}`)
-        .end((err, res) => {
-          expect(res.status).to.equal(400);
-          expect(res.body).to.be.an('object');
-          expect(res.body.errors.global).to.eql('user was not followed before');
-          expect(res.body).to.have.property('status');
-          done();
-        });
-    } catch (err) {
-      throw err.message;
-    }
-  });
-
-  it('should return user not found when wrong username is passed', (done) => {
+  it('should return user to unfollow not found when wrong username is passed', (done) => {
     try {
       chai.request(app)
         .delete('/api/v1/profiles/rbbwgeghrdegwrgebge/follow')
@@ -164,7 +130,7 @@ describe('TESTS TO UNFOLLOW A USER', () => {
         .end((err, res) => {
           expect(res.status).to.equal(404);
           expect(res.body).to.be.an('object');
-          expect(res.body.errors.global).to.eql('User not found');
+          expect(res.body.errors.global).to.eql('User to unfollow not found');
           expect(res.body).to.have.property('status');
           done();
         });

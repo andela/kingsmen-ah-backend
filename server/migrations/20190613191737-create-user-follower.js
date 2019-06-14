@@ -1,5 +1,5 @@
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Followers', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('UserFollowers', {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -14,22 +14,14 @@ module.exports = {
         key: 'id'
       }
     },
-    followingId: {
+    userId: {
       type: Sequelize.UUID,
       allowNull: false,
       references: {
         model: 'Users',
         key: 'id'
       }
-    },
-    createdAt: {
-      allowNull: false,
-      type: Sequelize.DATE
-    },
-    updatedAt: {
-      allowNull: false,
-      type: Sequelize.DATE
     }
   }),
-  down: queryInterface => queryInterface.dropTable('Followers')
+  down: queryInterface => queryInterface.dropTable('UserFollowers')
 };

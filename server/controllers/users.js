@@ -7,7 +7,7 @@ import { validationResponse, validateUniqueResponse } from '@helpers/validationR
 import Response from '@helpers/Response';
 
 const {
-  User, Follower, Profile, DroppedToken
+  User, DroppedToken
 } = models;
 
 /**
@@ -103,47 +103,48 @@ class UserController {
       const { username } = req.params;
       const { id } = req.decoded;
 
+      const me = await User.findByPk(id);
+
+
       const userToFollow = await User.findOne({
         where: {
           username,
-          active: true
         }
       });
+
       if (!userToFollow) {
-        return Response.error(res, 404, 'User not found');
+        return Response.error(res, 404, 'User to follow not found');
       }
-      const followid = userToFollow.dataValues.id;
-      if (followid === id) {
+      const userToFollowId = userToFollow.id;
+      if (userToFollowId === id) {
         return Response.error(res, 400, 'you cannot follow yourself');
       }
-      const [followed, created] = await Follower.findOrCreate({
-        where: {
-          followerId: id,
-          followingId: followid
-        },
-        defaults: {
-          followerId: id,
-          followingId: followid
-        }
+
+      await me.addFollowers(userToFollow);
+      const myFollowing = await me.getFollowers();
+
+      const myfollowings = myFollowing.map(item => ({
+        id: item.id,
+        email: item.email,
+        lastname: item.lastname,
+        following: item.UserFollowers
+      }));
+
+      const myFollowed = await me.getFollowed();
+
+      const myfollowed = myFollowed.map(item => ({
+        id: item.id,
+        email: item.email,
+        lastname: item.lastname,
+        followed: item.UserFollowers
+      }));
+
+      return res.status(201).json({
+        status: 201,
+        message: 'User followed successfully',
+        data: myfollowings || [],
+        followers: myfollowed || []
       });
-      if (!created) {
-        return Response.error(res, 400, 'user was followed already!');
-      }
-      const profileData = await Profile.findOne({
-        attributes: {
-          exclude: ['createdAt', 'updatedAt']
-        },
-        where: {
-          userId: followid,
-        }
-      });
-      if (followed) {
-        return res.status(201).json({
-          status: 201,
-          message: 'User followed successfully',
-          data: profileData || []
-        });
-      }
     } catch (err) {
       return next(err);
     }
@@ -163,41 +164,44 @@ class UserController {
     try {
       const { username } = req.params;
       const { id } = req.decoded;
-
+      const me = await User.findByPk(id);
       const userToUnfollow = await User.findOne({
         where: {
           username,
         }
       });
       if (!userToUnfollow) {
-        return Response.error(res, 404, 'User not found');
+        return Response.error(res, 404, 'User to unfollow not found');
       }
-      const unfollowid = userToUnfollow.dataValues.id;
+      const unfollowid = userToUnfollow.id;
       if (unfollowid === id) {
         return Response.error(res, 400, 'you cannot unfollow yourself');
       }
-      const unfollowed = await Follower.destroy({
-        where: {
-          followerId: id,
-          followingId: unfollowid
-        }
+
+      await me.removeFollowers(userToUnfollow);
+      const myFollowing = await me.getFollowers();
+      const myfollowings = myFollowing.map(item => ({
+        id: item.id,
+        email: item.email,
+        lastname: item.lastname,
+        following: item.UserFollowers
+      }));
+
+      const myFollowed = await me.getFollowed();
+
+      const myfollowed = myFollowed.map(item => ({
+        id: item.id,
+        email: item.email,
+        lastname: item.lastname,
+        followed: item.UserFollowers
+      }));
+
+      return res.status(200).json({
+        status: 200,
+        message: 'User unfollowed successfully',
+        data: myfollowings || [],
+        followers: myfollowed || []
       });
-      const profileData = await Profile.findOne({
-        attributes: {
-          exclude: ['createdAt', 'updatedAt']
-        },
-        where: {
-          userId: userToUnfollow.id,
-        }
-      });
-      if (unfollowed) {
-        return res.status(200).json({
-          status: 200,
-          message: 'User unfollowed successfully',
-          data: profileData || []
-        });
-      }
-      if (!unfollowed) return Response.error(res, 400, 'user was not followed before');
     } catch (err) {
       return next(err);
     }
