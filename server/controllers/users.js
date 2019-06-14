@@ -223,6 +223,42 @@ class UserController {
       return Response.error(res, 401, 'You are not logged in');
     }
   }
+
+  /**
+ * Get users and their corresponding profiles
+ * @async
+ * @param {object} req - Request object
+ * @param {object} res - Response object
+ * @param {object} next The next middleware
+ * @return {json} Returns json object
+ * @static
+ */
+  static async getUsers(req, res, next) {
+    try {
+      const users = await User.findAll({
+        attributes: ['id', 'username', 'firstname', 'lastname'],
+        where: {
+          active: true
+        },
+        include: [
+          {
+            model: models.Profile,
+            as: 'profile',
+            attributes: ['bio', 'avatar', 'location']
+          },
+        ],
+      });
+
+      return res.status(200)
+        .send({
+          status: 'success',
+          message: 'Users and corresponding profiles retrieved successfully',
+          payload: users
+        });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default UserController;

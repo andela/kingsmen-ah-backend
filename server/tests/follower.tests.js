@@ -1,39 +1,21 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import faker from 'faker';
-import models from '@models';
-import Token from '@helpers/Token';
+import { createTestUser, generateToken } from './factory/user-factory';
 import app from '../app';
 
 chai.use(chaiHttp);
 const { expect } = chai;
 
 let firstUserToken, secondUserToken, firstUsername, secondUsername;
-const fakerObject = () => {
-  const username = faker.random.alphaNumeric(6);
-  const email = faker.internet.email();
-  const password = faker.internet.password();
-  return { username, email, password };
-};
-const userOne = fakerObject();
-const userTwo = fakerObject();
 
 describe('TESTS TO FOLLOW A USER', () => {
   before(async () => {
-    const user1 = await models.User.create(userOne);
-    const user2 = await models.User.create(userTwo);
-    const payload1 = {
-      id: user1.dataValues.id,
-      email: user1.dataValues.email
-    };
+    const user1 = await createTestUser({});
+    const user2 = await createTestUser({});
+    firstUserToken = await generateToken({ id: user1.id });
+    secondUserToken = await generateToken({ id: user2.id });
     firstUsername = user1.dataValues.username;
     secondUsername = user2.dataValues.username;
-    firstUserToken = await Token.create(payload1);
-    const payload2 = {
-      id: user2.dataValues.id,
-      email: user2.dataValues.email
-    };
-    secondUserToken = await Token.create(payload2);
   });
 
   it('first-user should follow second-user', (done) => {
