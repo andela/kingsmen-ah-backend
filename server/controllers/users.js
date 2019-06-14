@@ -106,6 +106,7 @@ class UserController {
       const userToFollow = await User.findOne({
         where: {
           username,
+          active: true
         }
       });
       if (!userToFollow) {
