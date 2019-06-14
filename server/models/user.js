@@ -56,7 +56,7 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = (models) => {
     const {
       Follower, Article, Profile, Social, ReportArticle, Rating, PasswordReset,
-      ArticleLike, CommentLike, Role
+      ArticleLike, Comment, CommentLike, Role
     } = models;
 
     User.hasOne(Profile, {
@@ -97,6 +97,10 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.hasMany(ArticleLike, {
+      foreignKey: 'userId'
+    });
+
+    User.hasMany(Comment, {
       foreignKey: 'userId'
     });
 

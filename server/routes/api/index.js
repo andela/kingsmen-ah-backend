@@ -1,6 +1,7 @@
 import express from 'express';
 import userRouter from './users';
 import authRouter from './auth';
+import articleRouter from './article';
 
 const apiRouter = express.Router();
 
@@ -8,5 +9,6 @@ apiRouter.get('/', (request, response) => response.status(200).send('Welcome to 
 
 apiRouter.use('/users', userRouter);
 apiRouter.use('/auth', authRouter);
+articleRouter.use('/auth', articleRouter);
 
 export default apiRouter;
