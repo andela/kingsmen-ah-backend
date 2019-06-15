@@ -78,7 +78,8 @@
     ],
     "exclude": [
       "**/tests/**",
-      "server/migrations"
+      "server/migrations",
+      "server/config"
     ]
   }
 }
