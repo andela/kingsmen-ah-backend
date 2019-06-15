@@ -45,6 +45,5 @@ const testUserNoArgumentPassed = async (username = faker.internet.userName(), em
   return newUser;
 };
 
-export {
-  createTestUser, createTestUserWithoutProfile, testUserNoArgumentPassed, generateToken
-};
+// eslint-disable-next-line object-curly-newline
+export { createTestUser, createTestUserWithoutProfile, testUserNoArgumentPassed, generateToken };
