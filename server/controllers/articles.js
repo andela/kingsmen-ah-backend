@@ -1,10 +1,10 @@
-import sequelize from 'sequelize';
 import models from '@models';
 import { validateArticle } from '@validations/auth';
 import { validationResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
+import articlePayload from '@helpers/articlePayload';
 
-const { Article, User, Rating } = models;
+const { Article, User } = models;
 
 /**
  * @exports ArticleController
@@ -170,50 +170,10 @@ class ArticleController {
    * @memberof ArticleController
    */
   static async findArticle({ articleId, slug }) {
-    const where = {};
-    if (articleId) {
-      where.articleId = articleId;
-    } else if (slug) {
-      where.slug = slug;
-    }
+    articlePayload.where = articleId || slug;
 
     return Article.findOne({
-      where,
-      attributes: [
-        'id',
-        'slug',
-        'title',
-        'body',
-        'image',
-        'createdAt',
-        'updatedAt',
-        'deletedAt',
-        [sequelize.fn('AVG', sequelize.col('articleRatings.ratings')), 'averageRating']
-      ],
-      include: [
-        {
-          model: Rating,
-          as: 'articleRatings',
-          required: false,
-          attributes: []
-        },
-        {
-          model: User,
-          as: 'author',
-          attributes: [
-            'id',
-            'username',
-            'email',
-            'firstname',
-            'lastname',
-            'middlename'
-          ]
-        }
-      ],
-      group: [
-        'Article.id',
-        'author.id'
-      ]
+      articlePayload
     });
   }
 
@@ -226,44 +186,9 @@ class ArticleController {
  * @memberof ArticleController
  */
   static async findAllArticle() {
-    const where = {};
+    delete articlePayload.where;
     return Article.findAll({
-      where,
-      attributes: [
-        'id',
-        'slug',
-        'title',
-        'body',
-        'image',
-        'createdAt',
-        'updatedAt',
-        'deletedAt',
-        [sequelize.fn('AVG', sequelize.col('articleRatings.ratings')), 'averageRating']
-      ],
-      include: [
-        {
-          model: Rating,
-          as: 'articleRatings',
-          required: false,
-          attributes: []
-        },
-        {
-          model: User,
-          as: 'author',
-          attributes: [
-            'id',
-            'username',
-            'email',
-            'firstname',
-            'lastname',
-            'middlename'
-          ]
-        }
-      ],
-      group: [
-        'Article.id',
-        'author.id'
-      ]
+      articlePayload
     });
   }
 }
