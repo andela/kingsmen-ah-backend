@@ -94,7 +94,7 @@ class ProfileController {
       const userToFollow = await User.findOne({
         where: {
           username,
-          // active: true
+          active: true
         }
       });
 
@@ -138,7 +138,7 @@ class ProfileController {
       const userToUnfollow = await User.findOne({
         where: {
           username,
-          // active: true
+          active: true
         }
       });
       if (!userToUnfollow) {
