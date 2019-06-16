@@ -257,7 +257,7 @@ describe('TESTS TO GET ARTICLES', () => {
 });
 
 describe('TESTS TO DELETE AN ARTICLE', () => {
-  let newArticle, userToken;
+  let newArticle, userToken, useNotPermittedToDelete;
   before(async () => {
     const { id, email } = await testUserNoArgumentPassed();
     const payload = {
@@ -266,6 +266,27 @@ describe('TESTS TO DELETE AN ARTICLE', () => {
     };
     userToken = await generateToken(payload);
     newArticle = await createArticles(id, {});
+    const { id: user, email: mail } = await testUserNoArgumentPassed();
+    payload.id = user;
+    payload.email = mail;
+    useNotPermittedToDelete = await generateToken(payload);
+  });
+
+  it('should return no permission to delete article', (done) => {
+    try {
+      chai.request(app)
+        .delete(`/api/v1/articles/${newArticle.slug}`)
+        .set('Authorization', `Bearer ${useNotPermittedToDelete}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(403);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.global).to.eql('You do not have permission to delete this article!');
+          expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
   });
 
   it('should update an article successfully', (done) => {

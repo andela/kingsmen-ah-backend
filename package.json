@@ -79,7 +79,8 @@
     "exclude": [
       "**/tests/**",
       "server/migrations",
-      "server/config"
+      "server/config",
+      "server/helpers/validationResponse.js"
     ]
   }
 }
