@@ -160,7 +160,7 @@ describe('TESTS TO UPDATE AN ARTICLE', () => {
           image: newArticle.image
         })
         .end((err, res) => {
-          expect(res.status).to.equal(401);
+          expect(res.status).to.equal(403);
           expect(res.body.errors).to.be.an('object');
           expect(res.body.errors.global).to.eql('You do not have permission to update this article!');
           expect(res.body).to.have.property('status');
@@ -231,6 +231,22 @@ describe('TESTS TO GET ARTICLES', () => {
           expect(res.body).to.have.property('status');
           expect(res.body.status).to.eql(returnStatus);
           expect(res.body).to.have.property('status', returnStatus);
+          expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should return an artcle does not exist', (done) => {
+    try {
+      chai.request(app)
+        .get(`/api/v1/articles/${newArticle.title}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.global).to.eql('Article does not exist');
           expect(res.body).to.have.property('status');
           done();
         });

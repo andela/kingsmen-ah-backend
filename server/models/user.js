@@ -61,9 +61,16 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'followerId',
       as: 'follower',
     });
+
     User.hasMany(Article, {
       foreignKey: 'userId',
-      as: 'articles',
+      as: 'article',
+    });
+
+    User.belongsToMany(Article, {
+      through: Rating,
+      foreignKey: 'userId',
+      as: 'Ratings',
     });
 
     User.hasMany(Social, {
@@ -89,12 +96,6 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.hasMany(CommentLike, {
-      foreignKey: 'userId'
-    });
-
-    User.belongsToMany(Article, {
-      through: Rating,
-      as: 'Ratings',
       foreignKey: 'userId'
     });
 

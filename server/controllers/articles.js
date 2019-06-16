@@ -2,9 +2,12 @@ import models from '@models';
 import { validateArticle } from '@validations/auth';
 import { validationResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
-import articlePayload from '@helpers/articlePayload';
+import { findAllArticle, findArticle } from '@helpers/articlePayload';
+import validateRating from '@validations/rating';
 
-const { Article, User } = models;
+const {
+  User, Article
+} = models;
 
 /**
  * @exports ArticleController
@@ -32,7 +35,7 @@ class ArticleController {
 
       const createdArticle = await Article.create(createArticleDetails);
       const { slug } = createdArticle.dataValues;
-      const payload = await ArticleController.findArticle({ slug });
+      const payload = await findArticle({ slug });
 
       return res.status(201).json({ status: 'success', message: 'Article created successfully', payload });
     } catch (err) {
@@ -72,14 +75,61 @@ class ArticleController {
       }
 
       if (!canUpdate) {
-        return Response.error(res, 401, 'You do not have permission to update this article!');
+        return Response.error(res, 403, 'You do not have permission to update this article!');
       }
 
       const updateArticle = await getArticle.update(articleDetails);
       const { slug } = updateArticle.dataValues;
-      const payload = await ArticleController.findArticle({ slug });
+      const payload = await findArticle({ slug });
 
       return res.status(200).json({ status: 'success', message: 'Article successfully updated', payload });
+    } catch (err) {
+      if (err.isJoi && err.name === 'ValidationError') {
+        return res.status(400).json({
+          status: 400,
+          errors: validationResponse(err)
+        });
+      }
+      next(err);
+    }
+  }
+
+  /**
+  *
+  *
+  * @static
+  * @param {*} req
+  * @param {*} res
+  * @param {*} next
+  * @returns {json} Returns json object
+  * @memberof ArticleController
+  */
+  static async rate(req, res, next) {
+    try {
+      const userId = req.decoded.id;
+
+      // Validate the rating
+      const articleDetails = await validateRating(req.body);
+
+      const { rate } = articleDetails;
+      const { slug } = req.params;
+
+      const article = await Article.findOne({ where: { slug } });
+
+      if (!article) return Response.error(res, 404, 'Article does not exist');
+
+      const result = await article.addRating(userId, {
+        through: { ratings: rate }
+      });
+
+      const updatedArticle = await findArticle({ slug });
+
+      return Response.success(
+        res,
+        !result || !result[0].dataValues ? 200 : 201,
+        { article: updatedArticle },
+        'Article has been rated'
+      );
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
         return res.status(400).json({
@@ -114,7 +164,7 @@ class ArticleController {
       const deletedArticle = await Article.destroy({ where: { slug, userId } });
 
       if (!deletedArticle) {
-        return Response.error(res, 401, 'You do not have permission to delete this article!');
+        return Response.error(res, 403, 'You do not have permission to delete this article!');
       }
 
       return res.status(200).json({ status: 'success', message: 'Article successfully deleted' });
@@ -134,7 +184,7 @@ class ArticleController {
   */
   static async getAll(req, res, next) {
     try {
-      const getAllArticles = await ArticleController.findAllArticle();
+      const getAllArticles = await findAllArticle();
       const payload = getAllArticles;
       return res.status(200).json({ status: 'success', message: 'Articles successfully retrieved', payload });
     } catch (err) {
@@ -154,42 +204,14 @@ class ArticleController {
   static async getOne(req, res, next) {
     try {
       const { slug } = req.params;
-      const payload = await ArticleController.findArticle({ slug });
+      const payload = await findArticle({ slug });
+      if (!payload) {
+        return Response.error(res, 404, 'Article does not exist');
+      }
       return res.status(200).json({ status: 'success', message: 'Article successfully retrieved', payload });
     } catch (err) {
       next(err);
     }
-  }
-
-  /**
-   *
-   *
-   * @static
-   * @param {*} { articleId, slug }
-   * @returns {object} article details
-   * @memberof ArticleController
-   */
-  static async findArticle({ articleId, slug }) {
-    articlePayload.where = articleId || slug;
-
-    return Article.findOne({
-      articlePayload
-    });
-  }
-
-  /**
- *
- *
- * @static
- * @param {*} { articleId, slug }
- * @returns {object} finds all articles
- * @memberof ArticleController
- */
-  static async findAllArticle() {
-    delete articlePayload.where;
-    return Article.findAll({
-      articlePayload
-    });
   }
 }
 

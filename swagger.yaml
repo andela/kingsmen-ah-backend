@@ -10,6 +10,8 @@ basePath: "/api/v1"
 tags:
 - name: "user"
   description: "User operations"
+- name: "articles"
+  description: "Articles operations"
 schemes:
   - "https"
   - "http"
@@ -318,6 +320,114 @@ paths:
             $ref: "#/definitions/ApiResponse"
         400:
           description: "Title/ body is not allowed to be empty"
+  /articles/{slug}:
+    get:
+      tags:
+      - "article"
+      summary: "user can get all articles"
+      description: "Returns all available articles"
+      operationId: "getArticles"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "fail"
+    delete:
+      tags:
+      - "article"
+      summary: "user can delete an articles"
+      description: "Deletes an article in application"
+      operationId: "deleteArticles"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "fail"
+      security:
+      - api_key: []
+    put:
+      tags:
+      - "article"
+      summary: "Update article"
+      description: "Updates an article in the application"
+      operationId: "updateArticle"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "formData"
+        name: "title"
+        description: "The article title"
+        required: true
+        type: "string"
+        format: "text"
+        minLength: 4
+        maxLength: 500
+      - in: "formData"
+        name: "body"
+        description: "The article body"
+        required: true
+        type: "string"
+        format: "text"
+        minLength: 4
+      - in: "formData"
+        name: "image"
+        description: "The image url"
+        required: false
+        type: "string"
+        format: "text"
+      responses:
+        200:
+          description: "Article updated successfully"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "Title/ body is not allowed to be empty"
+  /articles/{slug}/rate:
+    post:
+      tags:
+      - "article"
+      summary: "Rate Article"
+      description: "Rates an article"
+      operationId: "rateArticle"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "slug"
+        in: "path"
+        description: "Slug of the article to be rated"
+        required: true
+        type: "string"
+        format: "slug"
+      - name: "rate"
+        in: "formData"
+        description: "Rating you are giving to the article"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Rating has been updated"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        201:
+          description: "New rating has been made"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "Invalid rating supplied"
+        404:
+          description: "Article does not exist"
       security:
       - api_key: []
 securityDefinitions:
@@ -373,6 +483,20 @@ definitions:
         type: "string"
       location:
         type: "string"
+  Rating:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      userId:
+        type: "string"
+        format: "uuid"
+      articleId:
+        type: "string"
+        format: "uuid"
+      ratings:
+        type: "integer"
   ApiResponse:
     type: "object"
     properties:

@@ -45,9 +45,10 @@ module.exports = (sequelize, DataTypes) => {
     const {
       User, ArticleLike, Favourite, Rating, Comment, Tag, ReportArticle
     } = models;
+
     Article.belongsTo(User, {
       foreignKey: 'userId',
-      as: 'author'
+      as: 'author',
     });
 
     Article.hasMany(ArticleLike, {
@@ -58,18 +59,13 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'articleId',
     });
 
-    Article.hasMany(Rating, {
-      as: 'articleRatings',
+    Article.belongsToMany(User, {
+      through: Rating,
+      as: 'Ratings',
       foreignKey: 'articleId',
     });
 
     Article.hasMany(Comment, {
-      foreignKey: 'articleId',
-    });
-
-    Article.belongsToMany(User, {
-      through: Rating,
-      as: 'Ratings',
       foreignKey: 'articleId',
     });
 
@@ -78,6 +74,11 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Article.hasMany(Tag, {
+      foreignKey: 'articleId'
+    });
+
+    Article.hasMany(Rating, {
+      as: 'articleRatings',
       foreignKey: 'articleId'
     });
   };
