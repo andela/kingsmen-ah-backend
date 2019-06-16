@@ -26,7 +26,7 @@ class UserController {
   static async create(req, res, next) {
     try {
       const userDetails = await validateSignup(req.body);
-      const user = await User.create(userDetails);
+      const user = await User.create({ ...userDetails, active: true });
       const payload = {
         id: user.id,
         email: user.email
@@ -69,9 +69,11 @@ class UserController {
       const { email, password } = logindetails;
       const user = await User.findOne({
         where: {
-          email,
+          email
         }
       });
+      if (!user.active) return Response.error(res, 400, 'User account not active, contact admin');
+
       if (!user) return Response.error(res, 400, 'Invalid email or password');
       const match = await bcrypt.compare(password, user.password);
       if (!match) return Response.error(res, 400, 'Invalid email or password');
