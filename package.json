@@ -80,7 +80,8 @@
       "**/tests/**",
       "server/migrations",
       "server/config",
-      "server/helpers/validationResponse.js"
+      "server/helpers/validationResponse.js",
+      "server/helpers/logger.js"
     ]
   }
 }
