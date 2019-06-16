@@ -26,11 +26,14 @@ class UserController {
   static async create(req, res, next) {
     try {
       const userDetails = await validateSignup(req.body);
-      const user = await User.create(userDetails);
+      const user = await User.create({ ...userDetails, active: true });
       const payload = {
         id: user.id,
         email: user.email
       };
+
+      await user.createProfile();
+
       const token = await Token.create(payload);
       return res.status(201).json({ status: 'success', message: 'User created successfully', user: userExtractor(user, token) });
     } catch (err) {
@@ -67,8 +70,10 @@ class UserController {
       const user = await User.findOne({
         where: {
           email,
+          active: true
         }
       });
+
       if (!user) return Response.error(res, 400, 'Invalid email or password');
       const match = await bcrypt.compare(password, user.password);
       if (!match) return Response.error(res, 400, 'Invalid email or password');
@@ -120,7 +125,7 @@ class UserController {
   static async getUsers(req, res, next) {
     try {
       const users = await User.findAll({
-        attributes: ['id', 'username', 'firstname', 'lastname'],
+        attributes: ['id', 'username'],
         where: {
           active: true
         },
@@ -128,7 +133,7 @@ class UserController {
           {
             model: models.Profile,
             as: 'profile',
-            attributes: ['bio', 'avatar', 'location']
+            attributes: ['firstname', 'lastname', 'bio', 'avatar', 'location']
           },
         ],
       });
