@@ -101,7 +101,8 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.hasMany(Comment, {
-      foreignKey: 'userId'
+      foreignKey: 'userId',
+      as: 'comment'
     });
 
     User.hasMany(CommentLike, {

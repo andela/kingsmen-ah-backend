@@ -5,6 +5,9 @@ import CommentController from '@controllers/comments';
 
 const articleRouter = express.Router();
 
-articleRouter.post('article/:slug/comment', trim, Token.authorize, CommentController.create);
+articleRouter.post('/:slug/comment', Token.authorize, trim, CommentController.create);
+articleRouter.get('/:slug/comment', Token.authorize, CommentController.getComments);
+articleRouter.put('/:articleId/comment/:id', Token.authorize, trim, CommentController.updateComment);
+articleRouter.delete('/:articleId/comment/:id', Token.authorize, CommentController.deleteComment);
 
 export default articleRouter;
