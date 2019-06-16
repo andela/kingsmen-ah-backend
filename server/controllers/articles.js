@@ -27,7 +27,7 @@ class ArticleController {
   static async create(req, res, next) {
     try {
       const articleDetails = await validateArticle(req.body);
-      const { id: userId } = req.decoded;
+      const { id: userId } = req.user;
       const { title } = articleDetails;
       const createArticleDetails = {
         slug: title, userId, ...articleDetails
@@ -61,7 +61,7 @@ class ArticleController {
   static async update(req, res, next) {
     try {
       const articleDetails = await validateArticle(req.body);
-      const { id: userId } = req.decoded;
+      const { id: userId } = req.user;
       const { slug: updatedSlug } = req.params;
 
       const user = await User.findByPk(userId);
@@ -106,7 +106,7 @@ class ArticleController {
   */
   static async rate(req, res, next) {
     try {
-      const userId = req.decoded.id;
+      const { id: userId } = req.user;
 
       // Validate the rating
       const articleDetails = await validateRating(req.body);
@@ -153,7 +153,7 @@ class ArticleController {
   static async delete(req, res, next) {
     try {
       const { slug } = req.params;
-      const { id: userId } = req.decoded;
+      const { id: userId } = req.user;
 
       const getArticle = await Article.findOne({ where: { slug } });
 
