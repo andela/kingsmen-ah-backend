@@ -1,5 +1,5 @@
 import models from '@models';
-import validateComment from '@validations/index';
+import validateComment from '@validations/comment';
 import { validationResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
 
