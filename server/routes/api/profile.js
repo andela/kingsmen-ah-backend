@@ -1,4 +1,3 @@
-
 import { Router } from 'express';
 import Token from '@helpers/Token';
 import UserController from '@controllers/users';

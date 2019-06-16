@@ -123,7 +123,7 @@ class UserController {
       }
 
       await me.addFollowers(userToFollow);
-      const followedUserProfile = [];
+      const followedUserProfile = await userToFollow.getProfile();
 
       return res.status(201).json({
         status: 201,
@@ -167,7 +167,7 @@ class UserController {
 
       await me.removeFollowers(userToUnfollow);
 
-      const followedUserProfile = [];
+      const followedUserProfile = await userToUnfollow.getProfile();
 
       return res.status(200).json({
         status: 200,
