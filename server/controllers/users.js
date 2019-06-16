@@ -69,10 +69,10 @@ class UserController {
       const { email, password } = logindetails;
       const user = await User.findOne({
         where: {
-          email
+          email,
+          active: true
         }
       });
-      if (!user.active) return Response.error(res, 400, 'User account not active, contact admin');
 
       if (!user) return Response.error(res, 400, 'Invalid email or password');
       const match = await bcrypt.compare(password, user.password);
