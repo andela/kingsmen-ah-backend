@@ -27,7 +27,7 @@ class ArticleController {
   static async create(req, res, next) {
     try {
       const articleDetails = await validateArticle(req.body);
-      const { id: userId } = req.user;
+      const { id: userId } = req.decoded;
       const { title } = articleDetails;
       articleDetails.title = articleDetails.title.replace(/ +/g, ' ');
       const createArticleDetails = {
@@ -62,11 +62,10 @@ class ArticleController {
   static async update(req, res, next) {
     try {
       const articleDetails = await validateArticle(req.body);
-      const { id: userId } = req.user;
+      const { user } = req;
       const { slug: updatedSlug } = req.params;
       articleDetails.title = articleDetails.title.replace(/ +/g, ' ');
 
-      const user = await User.findByPk(userId);
       const getArticle = await Article.findOne({ where: { slug: updatedSlug } });
 
       const canUpdate = await user.hasArticle(getArticle);
