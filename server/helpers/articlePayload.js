@@ -12,6 +12,7 @@ const findAllArticle = () => Article.findAll({
     'slug',
     'title',
     'body',
+    'image',
     'createdAt',
     'updatedAt',
     [
@@ -61,6 +62,7 @@ const findArticle = ({ articleId, slug }) => {
       'slug',
       'title',
       'body',
+      'image',
       'createdAt',
       'updatedAt',
       [

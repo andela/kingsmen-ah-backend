@@ -29,6 +29,7 @@ class ArticleController {
       const articleDetails = await validateArticle(req.body);
       const { id: userId } = req.user;
       const { title } = articleDetails;
+      articleDetails.title = articleDetails.title.replace(/ +/g, ' ');
       const createArticleDetails = {
         slug: title, userId, ...articleDetails
       };
@@ -63,6 +64,7 @@ class ArticleController {
       const articleDetails = await validateArticle(req.body);
       const { id: userId } = req.user;
       const { slug: updatedSlug } = req.params;
+      articleDetails.title = articleDetails.title.replace(/ +/g, ' ');
 
       const user = await User.findByPk(userId);
       const getArticle = await Article.findOne({ where: { slug: updatedSlug } });
