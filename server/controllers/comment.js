@@ -83,7 +83,6 @@ class CommentController {
   static async getComments(req, res, next) {
     try {
       const { slug } = req.params;
-      const userId = req.decoded.id;
 
       const article = await Article.findOne({ where: { slug } });
 
