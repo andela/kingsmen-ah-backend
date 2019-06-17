@@ -66,7 +66,7 @@ class CommentController {
         });
       }
 
-      return next(error);
+      next(error);
     }
   }
 
@@ -113,7 +113,7 @@ class CommentController {
         });
       }
     } catch (error) {
-      return next(error);
+      next(error);
     }
   }
 
@@ -175,7 +175,7 @@ class CommentController {
           errors: validationResponse(error)
         });
       }
-      return next(error);
+      next(error);
     }
   }
 
@@ -227,7 +227,7 @@ class CommentController {
         });
       }
     } catch (error) {
-      return next(error);
+      next(error);
     }
   }
 }
