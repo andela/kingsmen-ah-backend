@@ -163,6 +163,45 @@ describe('TEST TO RATE AN ARTICLE', () => {
     }
   });
 
+  it('should get all article rating', (done) => {
+    try {
+      chai.request(app)
+        .get(`/api/v1/articles/${validArticleSlug}/rate`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.payload).to.be.an('object');
+          expect(res.body).to.have.property('payload');
+          expect(res.body.payload.ratings).to.have.property('rows');
+          expect(res.body.payload.ratings.rows).to.be.an('array');
+
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should get all an article rating paginated', (done) => {
+    try {
+      chai.request(app)
+        .get(`/api/v1/articles/${validArticleSlug}/rate?page1&limit=2`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.payload).to.be.an('object');
+          expect(res.body).to.have.property('payload');
+          // expect(res.body.payload.ratings).text.have.property('rows');
+          // expect(res.body.payload.ratings.rows).to.be.an('array');
+          expect(res.body.payload).to.have.property('metadata');
+          expect(res.body.payload.metadata.limit).to.be.equal(2);
+          expect(res.body.payload.metadata.offset).to.be.equal(0);
+
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
   it('should throw error since object is empty', async (done) => {
     try {
       await expect(ArticleController.findArticle({ })).to.eventually.throw();
