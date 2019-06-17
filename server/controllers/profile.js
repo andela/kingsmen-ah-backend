@@ -112,7 +112,7 @@ class ProfileController {
       return res.status(201).json({
         status: 201,
         message: 'User followed successfully',
-        payload: myProfile || [],
+        payload: myProfile || {},
       });
     } catch (err) {
       return next(err);
@@ -156,7 +156,7 @@ class ProfileController {
       return res.status(200).json({
         status: 200,
         message: 'User unfollowed successfully',
-        payload: myProfile || [],
+        payload: myProfile || {},
       });
     } catch (err) {
       return next(err);
