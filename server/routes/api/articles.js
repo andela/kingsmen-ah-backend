@@ -1,11 +1,16 @@
 import express from 'express';
-import Token from '@helpers/Token';
 import ArticleController from '@controllers/articles';
+import Token from '@helpers/Token';
 import trim from '@middlewares/trim';
 
-const articleRoutes = express.Router();
+const articlesRouter = express.Router();
 
-articleRoutes.post('/:slug/rate', trim, Token.authorize, ArticleController.rate);
-articleRoutes.get('/:slug/rate', ArticleController.getArticleRatings);
+articlesRouter.get('/', ArticleController.getAll);
+articlesRouter.get('/:slug', ArticleController.getOne);
+articlesRouter.post('/', Token.authorize, ArticleController.create);
+articlesRouter.put('/:slug', Token.authorize, ArticleController.update);
+articlesRouter.delete('/:slug', Token.authorize, ArticleController.delete);
+articlesRouter.get('/:slug/rate', ArticleController.getArticleRatings);
+articlesRouter.post('/:slug/rate', trim, Token.authorize, ArticleController.rate);
 
-export default articleRoutes;
+export default articlesRouter;
