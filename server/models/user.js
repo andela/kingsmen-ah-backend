@@ -70,7 +70,7 @@ module.exports = (sequelize, DataTypes) => {
 
     User.hasMany(Article, {
       foreignKey: 'userId',
-      as: 'author',
+      as: 'article',
     });
 
     User.belongsToMany(Article, {
