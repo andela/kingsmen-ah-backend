@@ -34,15 +34,15 @@ class CommentController {
 
       const comment = await article.createComment({ userId, slug, body });
 
-      const payload = await Comment.findOne({
+      const payload = await Comment.findAll({
         attributes: ['id', 'createdAt', 'updatedAt', 'body'],
         where: {
-          id: comment.id
+          articleId: article.id
         },
+        order: ['createdAt'],
         include: [{
           model: models.User,
           attributes: ['username'],
-          where: { id: userId },
           include: [{
             model: models.Profile,
             as: 'profile',
@@ -94,10 +94,10 @@ class CommentController {
         where: {
           articleId: article.id
         },
+        order: ['createdAt'],
         include: [{
           model: models.User,
           attributes: ['username'],
-          where: { id: userId },
           include: [{
             model: models.Profile,
             as: 'profile',
@@ -147,13 +147,13 @@ class CommentController {
         { returning: true, where: { id, userId, articleId } }
       );
 
-      const payload = await Comment.findOne({
+      const payload = await Comment.findAll({
         attributes: ['id', 'createdAt', 'updatedAt', 'body'],
-        where: { id },
+        where: { articleId },
+        order: ['createdAt'],
         include: [{
           model: models.User,
           attributes: ['username'],
-          where: { id: userId },
           include: [{
             model: models.Profile,
             as: 'profile',
@@ -205,10 +205,26 @@ class CommentController {
         where: { id, userId, articleId }
       });
 
+      const payload = await Comment.findAll({
+        attributes: ['id', 'createdAt', 'updatedAt', 'body'],
+        where: { articleId },
+        order: ['createdAt'],
+        include: [{
+          model: models.User,
+          attributes: ['username'],
+          include: [{
+            model: models.Profile,
+            as: 'profile',
+            attributes: ['bio', 'avatar']
+          }]
+        }]
+      });
+
       if (comment) {
         return res.status(200).json({
           status: 200,
-          message: 'Comment deleted successfully.'
+          message: 'Comment deleted successfully.',
+          payload
         });
       }
     } catch (error) {
