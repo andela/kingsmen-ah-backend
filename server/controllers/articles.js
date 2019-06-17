@@ -3,6 +3,7 @@ import { validationResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
 import models from '@models';
 import validateRating from '@validations/rating';
+import Pagination from '@helpers/Pagination';
 
 const {
   User, Article, Rating, Profile
@@ -115,6 +116,58 @@ class ArticleController {
       ],
       group: ['Article.id', 'author.id', 'author->profile.id']
     });
+  }
+
+  /**
+   * Get article ratings
+   * @async
+   * @param  {object} req - Request object
+   * @param {object} res - Response object
+   * @param {object} next The next middleware
+   * @return {json} Returns json object
+   * @static
+   */
+  static async getArticleRatings(req, res, next) {
+    try {
+      const { slug } = req.params;
+      const { page, search } = req.query;
+      const paginate = new Pagination(page, req.query.limit);
+      const { limit, offset } = await paginate.getQueryMetadata();
+
+      // Get the articleId
+      const article = await Article.findOne({ where: { slug } });
+
+      if (!article) return Response.error(res, 404, 'Article does not exist');
+
+      const { id: articleId } = article.dataValues;
+
+      const ratings = await Rating.findAndCountAll({
+        where: { articleId },
+        limit,
+        offset,
+        attributes: ['ratings', 'createdAt', 'updatedAt', 'deletedAt'],
+        include: [{
+          model: User,
+          as: 'rater',
+          attributes: [
+            'id',
+            'username'
+          ],
+          include: [{
+            model: Profile,
+            as: 'profile',
+            attributes: ['firstname', 'lastname', 'bio', 'avatar']
+          }]
+        }
+        ]
+      });
+
+      const extraQuery = search ? `search=${search}` : '';
+
+      return Response.success(res, 200, { ratings, metadata: paginate.getQueryMetadata(ratings.count, `/articles/${slug}/rate`, extraQuery) });
+    } catch (err) {
+      next(err);
+    }
   }
 }
 
