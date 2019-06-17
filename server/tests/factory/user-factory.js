@@ -17,7 +17,7 @@ const createTestUser = async ({
     id: faker.random.uuid(),
     username: username || faker.random.alphaNumeric(6),
     email: email || faker.internet.email(),
-    password: faker.internet.password(),
+    password: password || faker.internet.password(),
     active: true
   });
 
