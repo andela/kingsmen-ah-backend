@@ -6,7 +6,7 @@ import { findAllArticle, findArticle } from '@helpers/articlePayload';
 import validateRating from '@validations/rating';
 
 const {
-  User, Article
+  Article
 } = models;
 
 /**
