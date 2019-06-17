@@ -1,16 +1,15 @@
 import sinon from 'sinon';
 import { validateArticle } from '@validations/auth';
 import { validateRatings } from '@validations/rating';
-import { findAllArticle, findArticle } from '@helpers/articlePayload';
+import { findAllArticle} from '@helpers/articlePayload';
 import ArticleController from '@controllers/articles';
-import { exceptions } from 'winston';
 
 
 describe('ArticleController', () => {
   let sandbox = null;
 
   beforeEach(() => {
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
   });
 
   afterEach(() => {
@@ -63,13 +62,5 @@ describe('ArticleController', () => {
     const next = sinon.spy();
     await ArticleController.getAll({}, {}, next);
     sinon.assert.calledOnce(next);
-  });
-
-  it('should handle cannot get one article', async () => {
-    const articleId = sinon.spy();
-    const stubFunc = { findArticle };
-    sandbox.stub(stubFunc, 'findArticle').rejects('Oops');
-    findArticle({ articleId });
-    sinon.assert.exceptions;
   });
 });

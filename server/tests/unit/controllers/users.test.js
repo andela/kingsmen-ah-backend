@@ -8,7 +8,7 @@ describe('UsersController', () => {
   let sandbox = null;
 
   beforeEach(() => {
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
   });
 
   afterEach(() => {
@@ -45,7 +45,7 @@ describe('Test Token authorize', () => {
   let sandbox = null;
 
   beforeEach(() => {
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
   });
 
   afterEach(() => {
