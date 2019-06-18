@@ -29,17 +29,15 @@ class CommentController {
       const userId = req.decoded.id;
       const { article } = req;
 
-      const comment = await article.createComment({ userId, slug, body });
+      await article.createComment({ userId, slug, body });
 
       const payload = await comments(article.id);
 
-      if (comment) {
-        return res.status(201).json({
-          status: 201,
-          message: 'Comment added successfully.',
-          payload
-        });
-      }
+      return res.status(201).json({
+        status: 201,
+        message: 'Comment added successfully.',
+        payload
+      });
     } catch (error) {
       if (error.isJoi && error.name === 'ValidationError') {
         return res.status(400).json({
@@ -68,13 +66,11 @@ class CommentController {
 
       const payload = await comments(article.id);
 
-      if (payload) {
-        return res.status(200).json({
-          status: 200,
-          message: 'Comments retrieved successfully.',
-          payload
-        });
-      }
+      return res.status(200).json({
+        status: 200,
+        message: 'Comments retrieved successfully.',
+        payload
+      });
     } catch (error) {
       next(error);
     }
@@ -98,20 +94,19 @@ class CommentController {
       const { oldComment } = req;
       const { articleId } = oldComment;
 
-      const commentUpdate = await Comment.update(
+      await Comment.update(
         { body },
         { returning: true, where: { id, userId, articleId } }
       );
 
       const payload = await comments(articleId);
 
-      if (commentUpdate) {
-        return res.status(200).json({
-          status: 200,
-          message: 'Comment updated successfully.',
-          payload
-        });
-      }
+
+      return res.status(200).json({
+        status: 200,
+        message: 'Comment updated successfully.',
+        payload
+      });
     } catch (error) {
       if (error.isJoi && error.name === 'ValidationError') {
         return res.status(400).json({
@@ -140,19 +135,18 @@ class CommentController {
       const { oldComment } = req;
       const { articleId } = oldComment;
 
-      const comment = await Comment.destroy({
+      await Comment.destroy({
         where: { id, userId, articleId }
       });
 
       const payload = await comments(articleId);
 
-      if (comment) {
-        return res.status(200).json({
-          status: 200,
-          message: 'Comment deleted successfully.',
-          payload
-        });
-      }
+
+      return res.status(200).json({
+        status: 200,
+        message: 'Comment deleted successfully.',
+        payload
+      });
     } catch (error) {
       next(error);
     }
