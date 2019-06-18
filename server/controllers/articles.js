@@ -186,9 +186,13 @@ class ArticleController {
   */
   static async getAll(req, res, next) {
     try {
-      const getAllArticles = await findAllArticle();
-      const payload = getAllArticles;
-      return res.status(200).json({ status: 'success', message: 'Articles successfully retrieved', payload });
+      const payload = await findAllArticle(req);
+      const { page, search } = req.query;
+      const paginate = new Pagination(page, req.query.limit);
+
+      const extraQuery = search ? `search=${search}` : '';
+
+      return Response.success(res, 200, { rows: payload, metadata: paginate.getPageMetadata(payload.length, '/articles', extraQuery) }, 'Articles successfully retrieved');
     } catch (err) {
       next(err);
     }
@@ -262,7 +266,7 @@ class ArticleController {
 
       const extraQuery = search ? `search=${search}` : '';
 
-      return Response.success(res, 200, { ratings, metadata: paginate.getQueryMetadata(ratings.count, `/articles/${slug}/rate`, extraQuery) });
+      return Response.success(res, 200, { ratings, metadata: paginate.getPageMetadata(ratings.count, `/articles/${slug}/rate`, extraQuery) });
     } catch (err) {
       next(err);
     }

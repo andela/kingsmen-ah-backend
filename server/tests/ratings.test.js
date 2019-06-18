@@ -1,6 +1,6 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import ArticleController from '@controllers/articles';
+import { findArticle } from '@helpers/articlePayload';
 import app from '../app';
 import { generateToken, createTestUser } from './factory/user-factory';
 import createTestArticle from './factory/article-factory';
@@ -189,11 +189,11 @@ describe('TEST TO RATE AN ARTICLE', () => {
           expect(res.status).to.equal(200);
           expect(res.body.payload).to.be.an('object');
           expect(res.body).to.have.property('payload');
-          // expect(res.body.payload.ratings).text.have.property('rows');
-          // expect(res.body.payload.ratings.rows).to.be.an('array');
           expect(res.body.payload).to.have.property('metadata');
-          expect(res.body.payload.metadata.limit).to.be.equal(2);
-          expect(res.body.payload.metadata.offset).to.be.equal(0);
+          expect(res.body.payload.ratings).to.have.property('rows');
+          expect(res.body.payload.ratings.rows).to.be.an('array');
+          expect(res.body.payload.metadata.totalItems).to.be.equal(1);
+          expect(res.body.payload.metadata).to.have.property('pages');
 
           done();
         });
@@ -204,19 +204,26 @@ describe('TEST TO RATE AN ARTICLE', () => {
 
   it('should throw error since object is empty', async (done) => {
     try {
-      await expect(ArticleController.findArticle({ })).to.eventually.throw();
+      await expect(findArticle({ })).to.eventually.throw();
       done();
     } catch (err) {
       done();
     }
   });
 
-  it('should throw error since articleId does not exist', async (done) => {
+  it('should throw error since articleId does not exist', async () => {
     try {
-      await expect(ArticleController.findArticle({ articleId: 'invalidId' })).to.be.an('object');
-      done();
+      await expect(findArticle({ articleId: 'invalidId' })).to.be.an('object');
     } catch (err) {
-      done();
+      throw err.message;
+    }
+  });
+
+  it('should throw error since slug does not exist', async () => {
+    try {
+      await expect(findArticle({ slug: 'invalid-slug' })).to.be.an('object');
+    } catch (err) {
+      throw err.message;
     }
   });
 });
