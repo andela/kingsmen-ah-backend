@@ -28,10 +28,7 @@ class CommentController {
       const body = data.comment;
       const { slug } = req.params;
       const userId = req.decoded.id;
-
-      const article = await Article.findOne({ where: { slug } });
-
-      if (!article) return Response.error(res, 404, 'Article does not exist');
+      const { article } = req;
 
       const comment = await article.createComment({ userId, slug, body });
 
@@ -68,11 +65,7 @@ class CommentController {
    */
   static async getComments(req, res, next) {
     try {
-      const { slug } = req.params;
-
-      const article = await Article.findOne({ where: { slug } });
-
-      if (!article) return Response.error(res, 404, 'Article does not exist');
+      const { article } = req;
 
       const payload = await comments(article.id);
 
@@ -100,26 +93,20 @@ class CommentController {
    */
   static async updateComment(req, res, next) {
     try {
-      const data = await validateComment(req.body);
-      const body = data.comment;
-      const { articleId, id } = req.params;
-
+      const { comment: body } = await validateComment(req.body);
+      const { id } = req.params;
       const userId = req.decoded.id;
+      const { oldComment } = req;
+      const { articleId } = oldComment;
 
-      const oldComment = await Comment.findOne({
-        where: { id, userId, articleId }
-      });
-
-      if (!oldComment) return Response.error(res, 404, 'Comment does not exist');
-
-      const comment = await Comment.update(
+      const commentUpdate = await Comment.update(
         { body },
         { returning: true, where: { id, userId, articleId } }
       );
 
       const payload = await comments(articleId);
 
-      if (comment) {
+      if (commentUpdate) {
         return res.status(200).json({
           status: 200,
           message: 'Comment updated successfully.',
@@ -149,14 +136,10 @@ class CommentController {
    */
   static async deleteComment(req, res, next) {
     try {
-      const { articleId, id } = req.params;
+      const { id } = req.params;
       const userId = req.decoded.id;
-
-      const oldComment = await Comment.findOne({
-        where: { id, userId, articleId }
-      });
-
-      if (!oldComment) return Response.error(res, 404, 'Comment does not exist');
+      const { oldComment } = req;
+      const { articleId } = oldComment;
 
       const comment = await Comment.destroy({
         where: { id, userId, articleId }

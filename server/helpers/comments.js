@@ -1,4 +1,4 @@
-import models from '../models';
+import models from '@models';
 
 const { Comment } = models;
 
@@ -11,6 +11,7 @@ const comments = async (value) => {
     order: ['createdAt'],
     include: [{
       model: models.User,
+      as: 'author',
       attributes: ['username'],
       include: [{
         model: models.Profile,
