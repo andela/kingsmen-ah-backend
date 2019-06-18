@@ -1,11 +1,11 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
-import CommentController from '../controllers/comments';
-import UserController from '../controllers/users';
-import validateComment from '../validations/comment';
-import { validateSignup, validateLogin } from '../validations/auth';
-import app from '../app';
+import CommentController from '../../../controllers/comments';
+import UserController from '../../../controllers/users';
+import validateComment from '../../../validations/comment';
+import { validateSignup, validateLogin } from '../../../validations/auth';
+import app from '../../../app';
 
 chai.use(chaiHttp);
 const { expect } = chai;

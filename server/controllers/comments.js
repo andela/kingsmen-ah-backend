@@ -2,9 +2,8 @@ import models from '@models';
 import validateComment from '@validations/comment';
 import comments from '@helpers/comments';
 import { validationResponse } from '@helpers/validationResponse';
-import Response from '@helpers/Response';
 
-const { Comment, Article } = models;
+const { Comment } = models;
 
 /**
  * @exports CommentController
