@@ -225,12 +225,9 @@ describe('TESTS TO GET ARTICLES', () => {
       chai.request(app)
         .get('/api/v1/articles')
         .end((err, res) => {
-          const returnStatus = 'success';
           expect(res.status).to.equal(200);
           expect(res.body).to.have.property('status');
           expect(res.body.payload.rows).to.be.an('array');
-          expect(res.body.status).to.eql(returnStatus);
-          expect(res.body).to.have.property('status', returnStatus);
           expect(res.body).to.have.property('status');
           done();
         });

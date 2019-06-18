@@ -15,7 +15,7 @@
     "clean": "rm -rf dist",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "pretest": "rm -rf ./server/database_test.sqlite3 && NODE_ENV=test npm run refreshdb",
-    "test": "NODE_ENV=test nyc --reporter=html --reporter=text --require @babel/register --env=test mocha --timeout 10000 ./server/tests/*.test.js --exit"
+    "test": "NODE_ENV=test nyc --reporter=html --reporter=text --require @babel/register --env=test mocha --timeout 10000 ./server/tests/**/*.test.js --exit"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
@@ -62,7 +62,6 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-import-resolver-babel-module": "^5.1.0",
     "eslint-plugin-import": "^2.17.3",
-    "faker": "^4.1.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.19.1",
     "nyc": "^14.1.1"
