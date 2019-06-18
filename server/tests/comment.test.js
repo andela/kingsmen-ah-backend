@@ -23,7 +23,7 @@ describe('TESTS TO CREATE A COMMENT', () => {
   it('should return `comment is required` if comment is blank ', (done) => {
     try {
       chai.request(app)
-        .post(`/api/v1/articles/${testArticle.slug}/comment`)
+        .post(`/api/v1/articles/${testArticle.slug}/comments`)
         .set('Authorization', `Bearer ${userToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(400);
@@ -39,7 +39,7 @@ describe('TESTS TO CREATE A COMMENT', () => {
   it('should return `Article does not exist` if article doesnt exist', (done) => {
     try {
       chai.request(app)
-        .post('/api/v1/articles/book/comment')
+        .post('/api/v1/articles/book/comments')
         .send({ comment: 'This is beautiful' })
         .set('Authorization', `Bearer ${userToken}`)
         .end((err, res) => {
@@ -56,7 +56,7 @@ describe('TESTS TO CREATE A COMMENT', () => {
   it('should return `Comment added successfully.` ', (done) => {
     try {
       chai.request(app)
-        .post(`/api/v1/articles/${testArticle.slug}/comment`)
+        .post(`/api/v1/articles/${testArticle.slug}/comments`)
         .send({ comment: testComment.body })
         .set('Authorization', `Bearer ${userToken}`)
         .end((err, res) => {
@@ -73,7 +73,7 @@ describe('TESTS TO CREATE A COMMENT', () => {
   it('should return error if no token was provided ', (done) => {
     try {
       chai.request(app)
-        .post(`/api/v1/articles/${testArticle.slug}/comment`)
+        .post(`/api/v1/articles/${testArticle.slug}/comments`)
         .send({ comment: 'This is not beautiful' })
         .end((err, res) => {
           expect(res.status).to.equal(400);
@@ -89,7 +89,7 @@ describe('TESTS TO CREATE A COMMENT', () => {
   it('should return error if an invalid token was provided ', (done) => {
     try {
       chai.request(app)
-        .post(`/api/v1/articles/${testArticle.slug}/comment`)
+        .post(`/api/v1/articles/${testArticle.slug}/comments`)
         .send({ comment: 'This is not beautiful' })
         .set('Authorization', 'Bearer')
         .end((err, res) => {
@@ -109,12 +109,12 @@ describe('TESTS TO GET ALL COMMENTS ON AN ARTICLE', () => {
   it('should return `Comments retrieved successfully.` ', (done) => {
     try {
       chai.request(app)
-        .get(`/api/v1/articles/${testArticle.slug}/comment`)
+        .get(`/api/v1/articles/${testArticle.slug}/comments`)
         .set('Authorization', `Bearer ${userToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body).to.have.property('payload');
-          expect(res.body.payload).to.be.an('object');
+          expect(res.body.payload).to.be.an('array');
           expect(res.body.message).to.eql('Comments retrieved successfully.');
           done();
         });
@@ -125,7 +125,7 @@ describe('TESTS TO GET ALL COMMENTS ON AN ARTICLE', () => {
   it('should return error if no token was provided ', (done) => {
     try {
       chai.request(app)
-        .get(`/api/v1/articles/${testArticle.slug}/comment`)
+        .get(`/api/v1/articles/${testArticle.slug}/comments`)
         .end((err, res) => {
           expect(res.status).to.equal(400);
           expect(res.body).to.have.property('errors');
@@ -140,7 +140,7 @@ describe('TESTS TO GET ALL COMMENTS ON AN ARTICLE', () => {
   it('should return error if an invalid token was provided ', (done) => {
     try {
       chai.request(app)
-        .get(`/api/v1/articles/${testArticle.slug}/comment`)
+        .get(`/api/v1/articles/${testArticle.slug}/comments`)
         .set('Authorization', 'Bearer')
         .end((err, res) => {
           expect(res.status).to.equal(400);
@@ -159,7 +159,7 @@ describe('TESTS TO UPDATE A COMMENT', () => {
   it('should return `comment is required` if comment is blank ', (done) => {
     try {
       chai.request(app)
-        .put(`/api/v1/articles/${articleId}/comment/${testComment.id}`)
+        .put(`/api/v1/articles/${articleId}/comments/${testComment.id}`)
         .set('Authorization', `Bearer ${userToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(400);
@@ -175,7 +175,7 @@ describe('TESTS TO UPDATE A COMMENT', () => {
   it('should return `Comment does not exist` if comment doesnt exist', (done) => {
     try {
       chai.request(app)
-        .put(`/api/v1/articles/book/comment/${testComment.id}`)
+        .put(`/api/v1/articles/book/comments/${testComment.id}`)
         .send({ comment: 'This is beautiful' })
         .set('Authorization', `Bearer ${userToken}`)
         .end((err, res) => {
@@ -192,7 +192,7 @@ describe('TESTS TO UPDATE A COMMENT', () => {
   it('should return `Comment updated successfully.` ', (done) => {
     try {
       chai.request(app)
-        .put(`/api/v1/articles/${articleId}/comment/${testComment.id}`)
+        .put(`/api/v1/articles/${articleId}/comments/${testComment.id}`)
         .send({ comment: 'This is not beautiful' })
         .set('Authorization', `Bearer ${userToken}`)
         .end((err, res) => {
@@ -214,7 +214,7 @@ describe('TESTS TO UPDATE A COMMENT', () => {
     });
     try {
       chai.request(app)
-        .put(`/api/v1/articles/${articleId}/comment/${testComment.id}`)
+        .put(`/api/v1/articles/${articleId}/comments/${testComment.id}`)
         .send({ comment: 'This is not beautiful' })
         .set('Authorization', `Bearer ${userTokenTwo}`)
         .end((err, res) => {
@@ -231,7 +231,7 @@ describe('TESTS TO UPDATE A COMMENT', () => {
   it('should return error if no token was provided ', (done) => {
     try {
       chai.request(app)
-        .put(`/api/v1/articles/${articleId}/comment/${testComment.id}`)
+        .put(`/api/v1/articles/${articleId}/comments/${testComment.id}`)
         .send({ comment: 'This is not beautiful' })
         .end((err, res) => {
           expect(res.status).to.equal(400);
@@ -247,7 +247,7 @@ describe('TESTS TO UPDATE A COMMENT', () => {
   it('should return error if an invalid token was provided ', (done) => {
     try {
       chai.request(app)
-        .put(`/api/v1/articles/${articleId}/comment/${testComment.id}`)
+        .put(`/api/v1/articles/${articleId}/comments/${testComment.id}`)
         .send({ comment: 'This is not beautiful' })
         .set('Authorization', 'Bearer')
         .end((err, res) => {
@@ -267,7 +267,7 @@ describe('TESTS TO DELETE A COMMENT', () => {
   it('should return `Comment deleted successfully.` ', (done) => {
     try {
       chai.request(app)
-        .delete(`/api/v1/articles/${articleId}/comment/${testComment.id}`)
+        .delete(`/api/v1/articles/${articleId}/comments/${testComment.id}`)
         .set('Authorization', `Bearer ${userToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(200);
@@ -282,7 +282,7 @@ describe('TESTS TO DELETE A COMMENT', () => {
   it('should return error if no token was provided ', (done) => {
     try {
       chai.request(app)
-        .delete(`/api/v1/articles/${articleId}/comment/${testComment.id}`)
+        .delete(`/api/v1/articles/${articleId}/comments/${testComment.id}`)
         .end((err, res) => {
           expect(res.status).to.equal(400);
           expect(res.body).to.have.property('errors');
@@ -297,7 +297,7 @@ describe('TESTS TO DELETE A COMMENT', () => {
   it('should return error if an invalid token was provided ', (done) => {
     try {
       chai.request(app)
-        .delete(`/api/v1/articles/${articleId}/comment/${testComment.id}`)
+        .delete(`/api/v1/articles/${articleId}/comments/${testComment.id}`)
         .set('Authorization', 'Bearer')
         .end((err, res) => {
           expect(res.status).to.equal(400);

@@ -1,8 +1,10 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
-import CommentController from '../controllers/comment';
+import CommentController from '../controllers/comments';
+import UserController from '../controllers/users';
 import validateComment from '../validations/comment';
+import { validateSignup, validateLogin } from '../validations/auth';
 import app from '../app';
 
 chai.use(chaiHttp);
@@ -79,6 +81,43 @@ describe('CommentController', () => {
     const next = sinon.spy();
 
     await CommentController.deleteComment({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
+});
+
+describe('UserController', () => {
+  let sandbox = null;
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+  });
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it('should handle error on creation of a new user', async () => {
+    const stubFunc = { validateSignup };
+
+    sandbox.stub(stubFunc, 'validateSignup').rejects('aPi');
+    const next = sinon.spy();
+
+    await UserController.create({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
+
+  it('should handle error on login user', async () => {
+    const stubFunc = { validateLogin };
+
+    sandbox.stub(stubFunc, 'validateLogin').rejects('aPi');
+    const next = sinon.spy();
+
+    await UserController.login({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
+
+  it('should handle error on getting users', async () => {
+    const next = sinon.spy();
+
+    await UserController.getUsers({}, {}, next);
     sinon.assert.calledOnce(next);
   });
 });

@@ -1,5 +1,6 @@
 import models from '@models';
 import validateComment from '@validations/comment';
+import comments from '@helpers/comments';
 import { validationResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
 
@@ -34,22 +35,7 @@ class CommentController {
 
       const comment = await article.createComment({ userId, slug, body });
 
-      const payload = await Comment.findAll({
-        attributes: ['id', 'createdAt', 'updatedAt', 'body'],
-        where: {
-          articleId: article.id
-        },
-        order: ['createdAt'],
-        include: [{
-          model: models.User,
-          attributes: ['username'],
-          include: [{
-            model: models.Profile,
-            as: 'profile',
-            attributes: ['bio', 'avatar']
-          }]
-        }]
-      });
+      const payload = await comments(article.id);
 
       if (comment) {
         return res.status(201).json({
@@ -88,22 +74,7 @@ class CommentController {
 
       if (!article) return Response.error(res, 404, 'Article does not exist');
 
-      const payload = await Comment.findAndCountAll({
-        attributes: ['id', 'createdAt', 'updatedAt', 'body'],
-        where: {
-          articleId: article.id
-        },
-        order: ['createdAt'],
-        include: [{
-          model: models.User,
-          attributes: ['username'],
-          include: [{
-            model: models.Profile,
-            as: 'profile',
-            attributes: ['bio', 'avatar']
-          }]
-        }]
-      });
+      const payload = await comments(article.id);
 
       if (payload) {
         return res.status(200).json({
@@ -146,20 +117,7 @@ class CommentController {
         { returning: true, where: { id, userId, articleId } }
       );
 
-      const payload = await Comment.findAll({
-        attributes: ['id', 'createdAt', 'updatedAt', 'body'],
-        where: { articleId },
-        order: ['createdAt'],
-        include: [{
-          model: models.User,
-          attributes: ['username'],
-          include: [{
-            model: models.Profile,
-            as: 'profile',
-            attributes: ['bio', 'avatar']
-          }]
-        }]
-      });
+      const payload = await comments(articleId);
 
       if (comment) {
         return res.status(200).json({
@@ -204,20 +162,7 @@ class CommentController {
         where: { id, userId, articleId }
       });
 
-      const payload = await Comment.findAll({
-        attributes: ['id', 'createdAt', 'updatedAt', 'body'],
-        where: { articleId },
-        order: ['createdAt'],
-        include: [{
-          model: models.User,
-          attributes: ['username'],
-          include: [{
-            model: models.Profile,
-            as: 'profile',
-            attributes: ['bio', 'avatar']
-          }]
-        }]
-      });
+      const payload = await comments(articleId);
 
       if (comment) {
         return res.status(200).json({
