@@ -1,10 +1,12 @@
 import sinon from 'sinon';
 import {
-  validateSignup, validateLogin, validateForgotPassword, validatePasswordReset
+  validateSignup,
+  validateLogin,
+  validateForgotPassword,
+  validatePasswordReset
 } from '@validations/auth';
 import UsersController from '@controllers/users';
 import Token from '@helpers/Token';
-
 
 describe('UsersController', () => {
   let sandbox = null;
@@ -34,7 +36,6 @@ describe('UsersController', () => {
     await UsersController.login({}, {}, next);
     sinon.assert.calledOnce(next);
   });
-
 
   it('should handle get users', async () => {
     const next = sinon.spy();
@@ -71,7 +72,6 @@ describe('Test Token authorize', () => {
   afterEach(() => {
     sandbox.restore();
   });
-
 
   it('should test user token', async () => {
     const next = sinon.spy();
