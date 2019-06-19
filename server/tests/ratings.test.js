@@ -238,7 +238,7 @@ describe('TEST TO RATE AN ARTICLE', () => {
     } catch (err) {
       throw err.message;
     }
-  })
+  });
 
   it('should throw error since object is empty', async (done) => {
     try {
