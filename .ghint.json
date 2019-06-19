@@ -106,7 +106,7 @@
         "       && body.indexOf('#### Any background context you want to provide?') > -1",
         "       && body.indexOf('#### What are the relevant pivotal tracker stories?') > -1",
         "       && body.indexOf('#### Screenshots (if appropriate)') > -1",
-        "       && body.indexOf('#### Questions') > -1"
+        "       && body.indexOf('#### Questions:') > -1"
       ],
       "message": [
         "The description of the PR should contain the following headings",
@@ -118,7 +118,7 @@
         "`#### Any background context you want to provide?`",
         "`#### What are the relevant pivotal tracker stories?`",
         "`#### Screenshots (if appropriate)`",
-        "`#### Questions`"
+        "`#### Questions:`"
       ]
     }
   }
