@@ -8,9 +8,11 @@ info:
     url: "https://www.apache.org/licenses/LICENSE-2.0.html"
 basePath: "/api/v1"
 tags:
-- name: "user"
+- name: "users"
   description: "User operations"
-- name: "profile"
+- name: "auth"
+  description: "Authentication operations"
+- name: "profiles"
   description: "User profile operations"
 - name: "articles"
   description: "Articles operations"
@@ -21,7 +23,7 @@ paths:
   /users:
     post:
       tags:
-      - "Auth"
+      - "users"
       summary: "Create user"
       description: "Creates a new user in the application"
       operationId: "createUser"
@@ -104,7 +106,7 @@ paths:
       - api_key: []
     put:
       tags:
-      - "Profile"
+      - "profiles"
       summary: "Update User Profile"
       description: "Returns the Updated User Details"
       operationId: "updateProfile"
@@ -154,32 +156,10 @@ paths:
           description: "Invalid Token Provided"
       security:
       - api_key: []
-  /profiles/{username}:
-    get:
-      tags:
-      - "profile"
-      summary: "User Profile details"
-      description: "Returns the profile details of a user"
-      operationId: "getProfile"
-      produces:
-      - "application/json"
-      parameters:
-        - in: path
-          name: username
-          required: false
-          type: string
-          description: "User's username"
-      responses:
-        200:
-          description: "success"
-          schema:
-            $ref: "#/definitions/ApiResponse"
-        404:
-          description: "fail"
   /auth/login:
     post:
       tags:
-      - "Auth"
+      - "auth"
       summary: "User login"
       description: "Logs user into the system"
       operationId: "loginUser"
@@ -212,7 +192,7 @@ paths:
   /auth/forgot_password:
     post:
       tags:
-      - "Auth"
+      - "auth"
       summary: "Forgot Password"
       description: "Send reset token to user email"
       operationId: "forgotPasswordId"
@@ -239,7 +219,7 @@ paths:
   /auth/reset_password:
     post:
       tags:
-      - "Auth"
+      - "auth"
       summary: "Reset Password"
       description: "Reset the user password and send success email"
       operationId: "resetPasswordId"
@@ -292,7 +272,7 @@ paths:
   /profiles/{username}:
     get:
       tags:
-      - "Profile"
+      - "profiles"
       summary: "User Profile details"
       description: "Returns the profile details of a user"
       operationId: "getProfile"
