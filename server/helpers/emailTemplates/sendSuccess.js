@@ -1,26 +1,22 @@
+
 /**
  * @param {string} url
- * @param {string} token reset token
- * @param {string} email user email
  * @return {HTML} returns HTML template
  */
 
 export default (
   url,
-  token,
-  email,
   mailTitle,
   buttonText,
   instructionLbl,
-  alternativeLbl,
   footer
 ) => {
-  const teamName = 'Kingsmen';
+  const teamName = 'Kingsmen Team';
 
   return `<!DOCTYPE html>
   <html>
   <head>
-
+  
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Password Reset</title>
@@ -102,19 +98,19 @@ export default (
       color: #1a82e2;
     }
     </style>
-
+  
   </head>
   <body style="background-color: #e9ecef;">
-
+  
     <!-- start preheader -->
     <div class="preheader" style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;">
       A preheader is the short summary text that follows the subject line when an email is viewed in the inbox.
     </div>
     <!-- end preheader -->
-
+  
     <!-- start body -->
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
-
+  
       <!-- start logo -->
       <tr>
         <td align="center" bgcolor="#e9ecef">
@@ -140,7 +136,7 @@ export default (
         </td>
       </tr>
       <!-- end logo -->
-
+  
       <!-- start hero -->
       <tr>
         <td align="center" bgcolor="#e9ecef">
@@ -164,7 +160,7 @@ export default (
         </td>
       </tr>
       <!-- end hero -->
-
+  
       <!-- start copy block -->
       <tr>
         <td align="center" bgcolor="#e9ecef">
@@ -174,15 +170,15 @@ export default (
           <td align="center" valign="top" width="600">
           <![endif]-->
           <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-
+  
             <!-- start copy -->
             <tr>
               <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-                <p style="margin: 0; text-align: center;">${instructionLbl}</p>
+                <p style="margin: 0; text-align: center">${instructionLbl}</p>
               </td>
             </tr>
             <!-- end copy -->
-
+  
             <!-- start button -->
             <tr>
               <td align="left" bgcolor="#ffffff">
@@ -191,8 +187,8 @@ export default (
                     <td align="center" bgcolor="#ffffff" style="padding: 12px;">
                       <table border="0" cellpadding="0" cellspacing="0">
                         <tr>
-                          <td align="center" bgcolor="#1a82e2" style="border-radius: 6px; text-align: center;">
-                            <a href="${url}?token=${token}&email=${email}" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px; text-align: center;">${buttonText}</a>
+                          <td align="center" bgcolor="green" style="border-radius: 6px;">
+                            <a href="${url}" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">${buttonText}</a>
                           </td>
                         </tr>
                       </table>
@@ -202,16 +198,7 @@ export default (
               </td>
             </tr>
             <!-- end button -->
-
-            <!-- start copy -->
-            <tr>
-              <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; text-align: center;">
-                <p style="margin: 0;">${alternativeLbl}</p>
-                <p style="margin: 0;"><a href="${url}?token=${token}&email=${email}" target="_blank">${url}?token=${token}&email=${email}</a></p>
-              </td>
-            </tr>
-            <!-- end copy -->
-
+  
             <!-- start copy -->
             <tr>
               <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-bottom: 3px solid #d4dadf">
@@ -219,7 +206,7 @@ export default (
               </td>
             </tr>
             <!-- end copy -->
-
+  
           </table>
           <!--[if (gte mso 9)|(IE)]>
           </td>
@@ -229,7 +216,7 @@ export default (
         </td>
       </tr>
       <!-- end copy block -->
-
+  
       <!-- start footer -->
       <tr>
         <td align="center" bgcolor="#e9ecef" style="padding: 24px;">
@@ -239,7 +226,7 @@ export default (
           <td align="center" valign="top" width="600">
           <![endif]-->
           <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-
+  
             <!-- start permission -->
             <tr>
               <td align="center" bgcolor="#e9ecef" style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
@@ -247,7 +234,7 @@ export default (
               </td>
             </tr>
             <!-- end permission -->
-
+  
           </table>
           <!--[if (gte mso 9)|(IE)]>
           </td>
@@ -257,10 +244,10 @@ export default (
         </td>
       </tr>
       <!-- end footer -->
-
+  
     </table>
     <!-- end body -->
-
+  
   </body>
   </html>`;
 };

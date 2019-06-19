@@ -19,6 +19,9 @@
     },
     "BASE_URL": {
       "required": true
+    },
+    "RESET_TOKEN_EXPIRE": {
+      "required": true
     }
   },
   "formation": {},

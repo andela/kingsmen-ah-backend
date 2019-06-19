@@ -1,7 +1,7 @@
 import sgMail from '@sendgrid/mail';
 import { config } from 'dotenv';
 import resetPasswordTemplate from './emailTemplates/sendToken';
-import passwordResetSuccessTemplate from './emailTemplates/resetPasswordSuccess';
+import passwordResetSuccessTemplate from './emailTemplates/sendSuccess';
 
 config();
 
@@ -20,17 +20,17 @@ const sendMail = ({ to, subject, message }) => {
 };
 
 const sendForgotPasswordMail = (token, email) => {
-  const mailType = 'Reset Your Password';
+  const mailTitle = 'Reset Your Password';
   const buttonText = 'Reset Your Password';
   const instructionLbl = "Tap the button below to reset your customer account password. If you didn't request a new password, you can safely delete this email.";
-  const alternativeLbl = "If that doesn't work, copy and paste the following link in your browser:";
+  const alternativeLbl = 'If that doesn\'t work, copy and paste the following link in your browser:';
   const footer = 'You received this email because we received a request for resetting your account password. If you didn\'t request this action, you can safely delete this email.';
 
   const message = resetPasswordTemplate(
     `${url}/auth/reset_password`,
     token,
     email,
-    mailType,
+    mailTitle,
     buttonText,
     instructionLbl,
     alternativeLbl,
@@ -44,7 +44,12 @@ const sendForgotPasswordMail = (token, email) => {
 };
 
 const sendResetSuccessMail = (email) => {
-  const message = passwordResetSuccessTemplate(`${url}/login`);
+  const mailTitle = 'Password Reset Successful';
+  const buttonText = 'Login';
+  const instructionLbl = 'Your password has been successfully reset. Please login to Author\'s Haven by clicking the button below';
+  const footer = 'You received this email because you successfully reset your password.';
+
+  const message = passwordResetSuccessTemplate(`${url}/login`, mailTitle, buttonText, instructionLbl, footer);
 
   return sendMail({
     to: email,

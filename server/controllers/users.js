@@ -194,12 +194,13 @@ class UserController {
       if (!user) return Response.error(res, 404, 'User does not exist');
 
       // Check if the account is active
-      if (!user.active) return Response.error(res, 401, 'Your account is not verified');
+      if (!user.active) return Response.error(res, 403, 'Your account is not verified');
 
       const token = randomString({ length: 40 });
       const resetDetails = {
         resetPasswordToken: token,
-        resetPasswordExpiry: Date.now() + 3600000 // 1 hour from now
+        resetPasswordExpiry: Date.now() + Number(process.env.RESET_TOKEN_EXPIRE
+          || 75600000) // 1 day from now
       };
 
       const userResetToken = await user.getResetToken();

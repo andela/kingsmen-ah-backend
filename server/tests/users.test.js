@@ -382,7 +382,7 @@ describe('TEST TO SEND RESET TOKEN TO EMAIL', () => {
         .post('/api/v1/auth/forgot_password')
         .send({ email: testUser.email })
         .end((err, res) => {
-          expect(res.status).to.equal(401);
+          expect(res.status).to.equal(403);
           expect(res.body.errors).to.be.an('object');
           expect(res.body.errors.global).to.eql('Your account is not verified');
           done();
