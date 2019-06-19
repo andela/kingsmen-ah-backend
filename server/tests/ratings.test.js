@@ -202,6 +202,44 @@ describe('TEST TO RATE AN ARTICLE', () => {
     }
   });
 
+  it('should get all an article rating with extra query', (done) => {
+    try {
+      chai.request(app)
+        .get(`/api/v1/articles/${validArticleSlug}/rate?page1&limit=2&search=kingsmen`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.payload).to.be.an('object');
+          expect(res.body).to.have.property('payload');
+          expect(res.body.payload).to.have.property('metadata');
+          expect(res.body.payload.ratings).to.have.property('rows');
+          expect(res.body.payload.ratings.rows).to.be.an('array');
+          expect(res.body.payload.metadata.totalItems).to.be.equal(1);
+          expect(res.body.payload.metadata).to.have.property('pages');
+
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should return error for invalid article slug', (done) => {
+    try {
+      chai.request(app)
+        .get('/api/v1/articles/kln-vlkndfk/rate')
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body).to.have.property('errors');
+          expect(res.body.errors).to.have.property('global');
+          expect(res.body.errors.global).to.be.equal('Article does not exist');
+
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  })
+
   it('should throw error since object is empty', async (done) => {
     try {
       await expect(findArticle({ })).to.eventually.throw();
