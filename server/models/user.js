@@ -110,6 +110,13 @@ module.exports = (sequelize, DataTypes) => {
       as: 'role',
       foreignKey: 'userId'
     });
+    User.belongsToMany(Article, {
+      foreignKey: 'userId',
+      otherKey: 'articleId',
+      through: 'LikeArticle',
+      as: 'users',
+      timestamps: false,
+    });
   };
   User.hashPassword = async (user) => {
     const hash = await bcrypt.hash(user.dataValues.password, SALT_ROUNDS);

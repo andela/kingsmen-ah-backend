@@ -214,6 +214,52 @@ class ArticleController {
       next(err);
     }
   }
+
+  /**
+  * Users can like an article
+  *
+  * @static
+  * @param {*} req
+  * @param {*} res
+  * @param {*} next
+  * @memberof ArticleController
+  * @return {json} Returns json object
+  */
+  static async like(req, res, next) {
+    try {
+      const me = req.user;
+      const { slug } = req.params;
+      const article = await findArticle({ slug });
+      if (!article) return Response.error(res, 404, 'Article not found');
+      await article.addLike(me);
+      return Response.success(res, 201, article, 'Article has been liked');
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  /**
+ * Users can unlike an article
+ *
+ * @static
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ * @memberof ArticleController
+ * @return {json} Returns json object
+ */
+  static async unlike(req, res, next) {
+    try {
+      const me = req.user;
+      const { slug } = req.params;
+      const articletoUnlike = await findArticle({ slug });
+      if (!articletoUnlike) return Response.error(res, 404, 'Article to unlike was not found');
+      await articletoUnlike.removeLike(me);
+      return Response.success(res, 200, articletoUnlike, 'Article has been unliked');
+    } catch (err) {
+      return next(err);
+    }
+  }
 }
 
 export default ArticleController;

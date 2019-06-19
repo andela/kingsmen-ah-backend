@@ -11,5 +11,8 @@ articlesRouter.post('/', Token.authorize, ArticleController.create);
 articlesRouter.put('/:slug', Token.authorize, ArticleController.update);
 articlesRouter.delete('/:slug', Token.authorize, ArticleController.delete);
 articlesRouter.post('/:slug/rate', trim, Token.authorize, ArticleController.rate);
+articlesRouter.post('/:slug/like', Token.authorize, ArticleController.like);
+articlesRouter.delete('/:slug/like', Token.authorize, ArticleController.unlike);
+
 
 export default articlesRouter;

@@ -81,6 +81,13 @@ module.exports = (sequelize, DataTypes) => {
       as: 'articleRatings',
       foreignKey: 'articleId'
     });
+
+    Article.belongsToMany(User, {
+      foreignKey: 'articleId',
+      through: 'LikeArticle',
+      as: 'Like',
+      timestamps: false,
+    });
   };
 
   Article.createSlug = async (article) => {
