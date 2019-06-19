@@ -7,6 +7,7 @@ let userToken, authToken;
 chai.use(chaiHttp);
 const { expect } = chai;
 const invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZjZDAwNDBmLTI3MDktNGU0Yi05YjU2LWYzZDk3MmRhNjk4OTg5IiwiZW1haWwiOiJqdXN0c2luZUBzbnF3c3QuY29tIiwiaWF0IjoxNTYwMjA3NTAyLCJleHAiOjE1NjAyOTM5MDJ9.FpXu8SrboezKr57MNcrEA_pGhsMRm0G5ptUGqQje12I';
+let testUser, verifiedUser, userResetToken;
 
 describe('TESTS TO SIGNUP A USER', () => {
   it('should return `username is required` if username is absent ', (done) => {
@@ -271,7 +272,7 @@ describe('TESTS TO LOGIN A USER', () => {
 
 describe('TEST TO GET ALL USERS', () => {
   before(async () => {
-    const testUser = await createTestUser({});
+    testUser = await createTestUser({});
     authToken = await generateToken({ id: testUser.id });
   });
   it('should return all users', (done) => {
@@ -314,6 +315,241 @@ describe('TEST TO GET ALL USERS', () => {
           expect(res.status).to.equal(400);
           expect(res.body.errors).to.be.an('object');
           expect(res.body.errors.global).to.eql('Invalid token supplied: format Bearer <token>');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+});
+
+describe('TEST TO SEND RESET TOKEN TO EMAIL', () => {
+  before(async () => {
+    verifiedUser = await createTestUser({ active: true });
+    authToken = await generateToken({ id: verifiedUser.id });
+  });
+
+  it('should fail because the email is not provided', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/forgot_password')
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.email).to.eql('email is required');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should fail because the email is invalid', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/forgot_password')
+        .send({ email: 'this_is_not_an_email' })
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.email).to.eql('email must be a valid email');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should fail because the email does not exist in the database', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/forgot_password')
+        .send({ email: 'fakeemail@fakeemail.fake' })
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.global).to.eql('User does not exist');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should fail because the email account has not been verified', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/forgot_password')
+        .send({ email: testUser.email })
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.global).to.eql('Your account is not verified');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should fail because the user does not have any valid reset token created yet', (done) => {
+    try {
+      chai.request(app)
+        .post(`/api/v1/auth/reset_password?token=this_is_a_fake_token&email=${verifiedUser.email}`)
+        .send({ password: 'emmanuel', confirmPassword: 'emmanuel' })
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.global).to.eql('Invalid Token');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should send email to the user', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/forgot_password')
+        .send({ email: verifiedUser.email })
+        .end((err, res) => {
+          userResetToken = res.body.payload.token;
+          expect(res.status).to.equal(200);
+          expect(res.body.message).to.be.an('string');
+          expect(res.body.message).to.eql('A reset token has been sent to your email address');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should update user token', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/forgot_password')
+        .send({ email: verifiedUser.email })
+        .end((err, res) => {
+          userResetToken = res.body.payload.token;
+          expect(res.status).to.equal(200);
+          expect(res.body.message).to.be.an('string');
+          expect(res.body.message).to.eql('A reset token has been sent to your email address');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+});
+
+describe('TEST TO RESET USER PASSWORD', () => {
+  it('should fail because password and confirm password is not provided', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/reset_password')
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.password).to.eql('password is required');
+          expect(res.body.errors.confirmPassword).to.eql('Passwords do not match');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should fail because password is less than 5 characters', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/reset_password')
+        .send({ password: 'emma' })
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.password).to.eql('password length must be at least 5 characters long');
+          expect(res.body.errors.confirmPassword).to.eql('Passwords do not match');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should fail because password and confirm password do not match', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/reset_password')
+        .send({ password: 'emmanuel', confirmPassword: 'emmanuell' })
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.confirmPassword).to.eql('Passwords do not match');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should fail because email and token were not passed in the request query', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/reset_password')
+        .send({ password: 'emmanuel', confirmPassword: 'emmanuel' })
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.global).to.eql('Please use a valid reset link');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should fail because user does not exist', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/reset_password?token=this_is_a_fake_token&email=fakeemail@fakeemail.fake')
+        .send({ password: 'emmanuel', confirmPassword: 'emmanuel' })
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.global).to.eql('User does not exist');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should fail because the token is different from the one in the database', (done) => {
+    try {
+      chai.request(app)
+        .post(`/api/v1/auth/reset_password?token=this_is_a_fake_token&email=${verifiedUser.email}`)
+        .send({ password: 'emmanuel', confirmPassword: 'emmanuel' })
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.global).to.eql('Invalid Token');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should change user password, delete token and send success email', (done) => {
+    try {
+      chai.request(app)
+        .post(`/api/v1/auth/reset_password?token=${userResetToken}&email=${verifiedUser.email}`)
+        .send({ password: 'emmanuel', confirmPassword: 'emmanuel' })
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.message).to.be.an('string');
+          expect(res.body.message).to.eql('Password reset successful');
           done();
         });
     } catch (err) {

@@ -30,3 +30,69 @@ export const validateSignup = (user) => {
 
   return validateSchema(user, schema);
 };
+
+export const validatePasswordReset = (resetDetails) => {
+  const schema = {
+    password: Joi.string().trim().min(5).max(255)
+      .required(),
+    confirmPassword: Joi
+      .valid(Joi.ref('password')).error(() => 'Passwords do not match')
+      .required()
+  };
+
+  return validateSchema(resetDetails, schema);
+};
+
+export const validateForgotPassword = (user) => {
+  const schema = {
+    email: Joi.string().trim().lowercase().min(5)
+      .max(255)
+      .email()
+      .required()
+  };
+
+  return validateSchema(user, schema);
+};
+
+export const updateDetails = (user) => {
+  const schema = {
+    username: Joi.string().trim().lowercase().min(4)
+      .max(100)
+      .optional()
+      .alphanum(),
+    email: Joi.string().trim().lowercase().min(5)
+      .max(255)
+      .email()
+      .optional(),
+    bio: Joi.string().trim().min(5).max(500)
+      .optional(),
+    image: Joi.string().trim().optional(),
+    password: Joi.string().trim().min(5).max(255)
+      .optional()
+  };
+  return Joi.validate(user, schema, {
+    language: {
+      key: '{{key}} '
+    },
+    abortEarly: false,
+    stripUnknown: true
+  });
+};
+
+export const validateArticle = (article) => {
+  const schema = {
+    title: Joi.string().trim().min(4)
+      .max(500)
+      .required(),
+    body: Joi.string().trim().min(4)
+      .required(),
+    image: Joi.string().trim().optional()
+  };
+  return Joi.validate(article, schema, {
+    language: {
+      key: '{{key}} '
+    },
+    abortEarly: false,
+    stripUnknown: true
+  });
+};
