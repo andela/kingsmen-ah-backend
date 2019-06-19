@@ -55,30 +55,6 @@ paths:
         format: "password"
         minLength: 5
         maxLength: 255
-      - in: "formData"
-        name: "firstname"
-        description: "First name of user"
-        required: false
-        type: "string"
-        format: "text"
-        minLength: 2
-        maxLength: 100
-      - in: "formData"
-        name: "lastname"
-        description: "Last name of user"
-        required: false
-        type: "string"
-        format: "text"
-        minLength: 2
-        maxLength: 100
-      - in: "formData"
-        name: "middlename"
-        description: "Middle name of user"
-        required: false
-        type: "string"
-        format: "text"
-        minLength: 2
-        maxLength: 100
       responses:
         201:
           description: "User created successfully"
@@ -335,7 +311,7 @@ paths:
     get:
       tags:
       - "articles"
-      summary: "user can get all articles"
+      summary: "User can get all articles"
       description: "Returns all available articles"
       operationId: "getArticles"
       produces:
@@ -354,10 +330,16 @@ paths:
       - "articles"
       summary: "User can get all articles"
       description: "Returns all available articles"
-      operationId: "getArticles"
+      operationId: "getArticle"
       produces:
       - "application/json"
-      parameters: []
+      parameters:
+      - name: "slug"
+        in: "path"
+        description: "Slug of the article to retrieve comments"
+        required: true
+        type: "string"
+        format: "slug"
       responses:
         200:
           description: "success"
@@ -458,7 +440,7 @@ paths:
           description: "Article does not exist"
       security:
       - api_key: []
-  /articles/{slug}/comment:
+  /articles/{slug}/comments:
     post:
       tags:
       - "articles"
@@ -517,7 +499,7 @@ paths:
           description: "Article does not exist"
       security:
       - api_key: []
-  /articles/{slug}/comment/{id}:
+  /articles/{slug}/comments/{id}:
     put:
       tags:
       - "articles"
@@ -606,12 +588,6 @@ definitions:
         type: "string"
       password:
         type: "string"
-      firstname:
-        type: "string"
-      lastname:
-        type: "string"
-      middlename:
-        type: "string"
       active:
         type: boolean
   Profile:
@@ -620,6 +596,22 @@ definitions:
       id:
         type: "integer"
         format: "int64"
+      userId:
+        type: "integer"
+        format: "int64"
+      firstname:
+        type: "string"
+      lastname:
+        type: "string"
+      bio:
+        type: "string"
+      avatar:
+        type: "string"
+      phone:
+        type: "integer"
+        format: "int64"
+      location:
+        type: "string"
   Articles:
     type: "object"
     properties:
