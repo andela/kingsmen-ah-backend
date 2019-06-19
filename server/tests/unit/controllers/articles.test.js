@@ -63,4 +63,14 @@ describe('ArticleController', () => {
     await ArticleController.getAll({}, {}, next);
     sinon.assert.calledOnce(next);
   });
+  it('should handle no slug passed to like article', async () => {
+    const next = sinon.spy();
+    await ArticleController.like({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
+  it('should handle no slug passed to unlike article', async () => {
+    const next = sinon.spy();
+    await ArticleController.unlike({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
 });
