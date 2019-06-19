@@ -38,6 +38,7 @@ class Pagination {
     const prev = page <= 1 ? undefined : `${baseUrl}?${extraQuery ? `${extraQuery}&` : ''}page=${page - 1}&limit=${limit}`;
     const next = page >= pages ? undefined : `${baseUrl}?${extraQuery ? `${extraQuery}&` : ''}page=${page + 1}&limit=${limit}`;
 
+    console.log(pages);
     return {
       prev,
       next,

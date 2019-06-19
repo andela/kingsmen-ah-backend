@@ -2,7 +2,8 @@ import models from '@models';
 import { validateArticle } from '@validations/auth';
 import { validationResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
-import { findAllArticle, findArticle } from '@helpers/articlePayload';
+import { findAllArticle, findArticle, findArticleCount } from '@helpers/articlePayload';
+import ratingsPayload from '@helpers/ratingPayload';
 import validateRating from '@validations/rating';
 import Pagination from '@helpers/Pagination';
 
@@ -189,10 +190,11 @@ class ArticleController {
       const payload = await findAllArticle(req);
       const { page, search } = req.query;
       const paginate = new Pagination(page, req.query.limit);
+      const articleCount = await findArticleCount();
 
       const extraQuery = search ? `search=${search}` : '';
 
-      return Response.success(res, 200, { rows: payload, metadata: paginate.getPageMetadata(payload.length, '/articles', extraQuery) }, 'Articles successfully retrieved');
+      return Response.success(res, 200, { rows: payload, metadata: paginate.getPageMetadata(articleCount.length, '/articles', extraQuery) }, 'Articles successfully retrieved');
     } catch (err) {
       next(err);
     }
@@ -242,6 +244,7 @@ class ArticleController {
       if (!article) return Response.error(res, 404, 'Article does not exist');
 
       const { id: articleId } = article.dataValues;
+      const ratingsDetails = await ratingsPayload(articleId);
 
       const ratings = await Rating.findAndCountAll({
         where: { articleId },
@@ -266,7 +269,7 @@ class ArticleController {
 
       const extraQuery = search ? `search=${search}` : '';
 
-      return Response.success(res, 200, { ratings, metadata: paginate.getPageMetadata(ratings.count, `/articles/${slug}/rate`, extraQuery) });
+      return Response.success(res, 200, { ratings, metadata: paginate.getPageMetadata(ratingsDetails.length, `/articles/${slug}/rate`, extraQuery) });
     } catch (err) {
       next(err);
     }
