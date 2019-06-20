@@ -4,10 +4,9 @@ import { validationResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
 import { findAllArticle, findArticle } from '@helpers/articlePayload';
 import validateRating from '@validations/rating';
-import articlesRouter from '@routes/api/articles';
 
 const {
-  Article
+  Article, ReportArticle
 } = models;
 
 /**
@@ -228,11 +227,14 @@ class ArticleController {
    */
   static async report(req, res, next) {
     try {
-      const me = req.user;
+      const userId = req.decoded.id;
       const { slug } = req.params;
-      const articleDetails = await validateReport(req.body);
+      const report = await validateReport(req.body);
       const articleToReport = await findArticle({ slug });
-      return Response.success(res, 201, articleToReport, 'Article successfully reported!');
+      if (!articleToReport) return Response.error(res, 404, 'Article was not found');
+      const { id } = articleToReport;
+      const reportArticle = await ReportArticle.create({ articleId: id, userId, ...report });
+      return Response.success(res, 201, reportArticle, 'Article successfully reported!');
     } catch (err) {
       return next(err);
     }

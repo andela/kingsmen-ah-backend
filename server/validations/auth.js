@@ -76,7 +76,8 @@ export const validateArticle = (article) => {
 
 export const validateReport = (report) => {
   const schema = {
-    message: Joi.string().trim().min(4).required(),
+    report: Joi.string().trim().min(4).required()
+      .label('validating report'),
   };
   return Joi.validate(report, schema, {
     language: {
