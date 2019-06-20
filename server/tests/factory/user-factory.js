@@ -11,14 +11,30 @@ const generateToken = async (userDetails) => {
 };
 
 const createTestUser = async ({
-  username, email, password, active
+  username, email, password
 }) => {
   const newUser = await User.create({
     id: faker.random.uuid(),
     username: username || faker.random.alphaNumeric(6),
     email: email || faker.internet.email(),
     password: password || faker.internet.password(),
-    active: active || false
+    active: true
+  });
+
+  await createProfileWithDetails(newUser, {});
+
+  return newUser;
+};
+
+const createNonActiveUser = async ({
+  username, email, password
+}) => {
+  const newUser = await User.create({
+    id: faker.random.uuid(),
+    username: username || faker.random.alphaNumeric(6),
+    email: email || faker.internet.email(),
+    password: password || faker.internet.password(),
+    active: false
   });
 
   await createProfileWithDetails(newUser, {});
@@ -50,5 +66,10 @@ const testUserNoArgumentPassed = async (username = faker.internet.userName(), em
   return newUser;
 };
 
-// eslint-disable-next-line object-curly-newline
-export { createTestUser, createTestUserWithoutProfile, testUserNoArgumentPassed, generateToken };
+export {
+  createTestUser,
+  createTestUserWithoutProfile,
+  testUserNoArgumentPassed,
+  generateToken,
+  createNonActiveUser
+};

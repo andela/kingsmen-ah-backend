@@ -1,13 +1,13 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../app';
-import { createTestUser, generateToken } from './factory/user-factory';
+import { createTestUser, generateToken, createNonActiveUser } from './factory/user-factory';
 
 let userToken, authToken;
 chai.use(chaiHttp);
 const { expect } = chai;
 const invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZjZDAwNDBmLTI3MDktNGU0Yi05YjU2LWYzZDk3MmRhNjk4OTg5IiwiZW1haWwiOiJqdXN0c2luZUBzbnF3c3QuY29tIiwiaWF0IjoxNTYwMjA3NTAyLCJleHAiOjE1NjAyOTM5MDJ9.FpXu8SrboezKr57MNcrEA_pGhsMRm0G5ptUGqQje12I';
-let testUser, verifiedUser, userResetToken;
+let testUser, unVerifiedUser, userResetToken;
 
 describe('TESTS TO SIGNUP A USER', () => {
   it('should return `username is required` if username is absent ', (done) => {
@@ -325,8 +325,8 @@ describe('TEST TO GET ALL USERS', () => {
 
 describe('TEST TO SEND RESET TOKEN TO EMAIL', () => {
   before(async () => {
-    verifiedUser = await createTestUser({ active: true });
-    authToken = await generateToken({ id: verifiedUser.id });
+    unVerifiedUser = await createNonActiveUser({ active: true });
+    authToken = await generateToken({ id: testUser.id });
   });
 
   it('should fail because the email is not provided', (done) => {
@@ -380,7 +380,7 @@ describe('TEST TO SEND RESET TOKEN TO EMAIL', () => {
     try {
       chai.request(app)
         .post('/api/v1/auth/forgot_password')
-        .send({ email: testUser.email })
+        .send({ email: unVerifiedUser.email })
         .end((err, res) => {
           expect(res.status).to.equal(403);
           expect(res.body.errors).to.be.an('object');
@@ -395,7 +395,7 @@ describe('TEST TO SEND RESET TOKEN TO EMAIL', () => {
   it('should fail because the user does not have any valid reset token created yet', (done) => {
     try {
       chai.request(app)
-        .post(`/api/v1/auth/reset_password?token=this_is_a_fake_token&email=${verifiedUser.email}`)
+        .post(`/api/v1/auth/reset_password?token=this_is_a_fake_token&email=${testUser.email}`)
         .send({ password: 'emmanuel', confirmPassword: 'emmanuel' })
         .end((err, res) => {
           expect(res.status).to.equal(401);
@@ -412,7 +412,7 @@ describe('TEST TO SEND RESET TOKEN TO EMAIL', () => {
     try {
       chai.request(app)
         .post('/api/v1/auth/forgot_password')
-        .send({ email: verifiedUser.email })
+        .send({ email: testUser.email })
         .end((err, res) => {
           userResetToken = res.body.payload.token;
           expect(res.status).to.equal(200);
@@ -429,7 +429,7 @@ describe('TEST TO SEND RESET TOKEN TO EMAIL', () => {
     try {
       chai.request(app)
         .post('/api/v1/auth/forgot_password')
-        .send({ email: verifiedUser.email })
+        .send({ email: testUser.email })
         .end((err, res) => {
           userResetToken = res.body.payload.token;
           expect(res.status).to.equal(200);
@@ -528,7 +528,7 @@ describe('TEST TO RESET USER PASSWORD', () => {
   it('should fail because the token is different from the one in the database', (done) => {
     try {
       chai.request(app)
-        .post(`/api/v1/auth/reset_password?token=this_is_a_fake_token&email=${verifiedUser.email}`)
+        .post(`/api/v1/auth/reset_password?token=this_is_a_fake_token&email=${testUser.email}`)
         .send({ password: 'emmanuel', confirmPassword: 'emmanuel' })
         .end((err, res) => {
           expect(res.status).to.equal(401);
@@ -544,7 +544,7 @@ describe('TEST TO RESET USER PASSWORD', () => {
   it('should change user password, delete token and send success email', (done) => {
     try {
       chai.request(app)
-        .post(`/api/v1/auth/reset_password?token=${userResetToken}&email=${verifiedUser.email}`)
+        .post(`/api/v1/auth/reset_password?token=${userResetToken}&email=${testUser.email}`)
         .send({ password: 'emmanuel', confirmPassword: 'emmanuel' })
         .end((err, res) => {
           expect(res.status).to.equal(200);
