@@ -1,12 +1,20 @@
 import sgMail from '@sendgrid/mail';
+import Mailgen from 'mailgen';
 import { config } from 'dotenv';
-import resetPasswordTemplate from './emailTemplates/sendToken';
-import passwordResetSuccessTemplate from './emailTemplates/sendSuccess';
 
 config();
 
 const url = process.env.BASE_URL || 'https://kingsmen-ah-frontend-staging.herokuapp.com';
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+// Configure the mail gen
+const mailGenerator = new Mailgen({
+  theme: 'cerberus',
+  product: {
+    name: 'Author\'s Haven',
+    link: url
+  }
+});
 
 const sendMail = ({ to, subject, message }) => {
   const mailOptions = {
@@ -19,23 +27,25 @@ const sendMail = ({ to, subject, message }) => {
   sgMail.send(mailOptions);
 };
 
-const sendForgotPasswordMail = (token, email) => {
-  const mailTitle = 'Reset Your Password';
-  const buttonText = 'Reset Your Password';
-  const instructionLbl = "Tap the button below to reset your customer account password. If you didn't request a new password, you can safely delete this email.";
-  const alternativeLbl = 'If that doesn\'t work, copy and paste the following link in your browser:';
-  const footer = 'You received this email because we received a request for resetting your account password. If you didn\'t request this action, you can safely delete this email.';
+const sendForgotPasswordMail = (token, email, name) => {
+  const emailBody = {
+    body: {
+      name,
+      intro: 'You are receiving this email because a password reset request for your account was received.',
+      action: {
+        instructions: 'Tap the button below to reset your customer account password. If you didn\'t request a new password, you can safely delete this email.',
+        button: {
+          color: '#1a82e2',
+          text: 'Reset Your Password',
+          link: `${url}/auth/reset_password`
+        }
+      },
+      outro: `If that doesn't work, copy and paste the following link in your browser:\n\n${url}/auth/reset_password`
+    }
+  };
+  // Generate an HTML email with the provided contents
+  const message = mailGenerator.generate(emailBody);
 
-  const message = resetPasswordTemplate(
-    `${url}/auth/reset_password`,
-    token,
-    email,
-    mailTitle,
-    buttonText,
-    instructionLbl,
-    alternativeLbl,
-    footer
-  );
   return sendMail({
     to: email,
     subject: "Author's Haven: Forgot Password",
@@ -43,13 +53,23 @@ const sendForgotPasswordMail = (token, email) => {
   });
 };
 
-const sendResetSuccessMail = (email) => {
-  const mailTitle = 'Password Reset Successful';
-  const buttonText = 'Login';
-  const instructionLbl = 'Your password has been successfully reset. Please login to Author\'s Haven by clicking the button below';
-  const footer = 'You received this email because you successfully reset your password.';
-
-  const message = passwordResetSuccessTemplate(`${url}/login`, mailTitle, buttonText, instructionLbl, footer);
+const sendResetSuccessMail = (email, name) => {
+  const emailBody = {
+    body: {
+      name,
+      intro: 'You are receiving this email because a password reset request for your account was received.',
+      action: {
+        instructions: 'Your password has been successfully reset. Please login to Author\'s Haven by clicking the button below',
+        button: {
+          color: 'green',
+          text: 'Login',
+          link: `${url}/login`
+        }
+      }
+    }
+  };
+  // Generate an HTML email with the provided contents
+  const message = mailGenerator.generate(emailBody);
 
   return sendMail({
     to: email,

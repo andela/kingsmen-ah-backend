@@ -210,7 +210,7 @@ class UserController {
         await user.createResetToken(resetDetails);
       }
 
-      await sendForgotPasswordMail(token, email);
+      await sendForgotPasswordMail(token, email, user.get().username);
 
       return Response.success(res, 200, { token }, 'A reset token has been sent to your email address');
     } catch (err) {
@@ -268,7 +268,7 @@ class UserController {
       await tokenDetails.destroy();
 
       // Send success email
-      await sendResetSuccessMail(email);
+      await sendResetSuccessMail(email, user.get().username);
 
       return Response.success(res, 200, {}, 'Password reset successful');
     } catch (err) {
