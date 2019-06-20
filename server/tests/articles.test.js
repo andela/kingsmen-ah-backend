@@ -9,7 +9,6 @@ const { expect } = chai;
 
 let wrongToken;
 
-
 describe('TESTS TO CREATE AN ARTICLE', () => {
   let newArticle, userToken;
   before(async () => {
