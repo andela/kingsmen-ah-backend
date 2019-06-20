@@ -132,10 +132,7 @@ class UserController {
     const token = await Token.getToken(req);
     try {
       await DroppedToken.create({ token });
-      return res.status(201).json({
-        status: 201,
-        message: 'You are now logged out'
-      });
+      return Response.success(res, 201, {}, 'You are now logged out');
     } catch (error) {
       return Response.error(res, 401, 'You are not logged in');
     }
