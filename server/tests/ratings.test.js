@@ -1,12 +1,19 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import { findArticle } from '@helpers/articlePayload';
+import {
+  findArticle
+} from '@helpers/articlePayload';
 import app from '../app';
-import { generateToken, createTestUser } from './factory/user-factory';
+import {
+  generateToken,
+  createTestUser
+} from './factory/user-factory';
 import createTestArticle from './factory/articles-factory';
 
 chai.use(chaiHttp);
-const { expect } = chai;
+const {
+  expect
+} = chai;
 
 let userToken;
 let validArticleSlug;
@@ -15,7 +22,9 @@ const invalidArticleId = '00000000-0000-0000-0000-000000000000';
 describe('TEST TO RATE AN ARTICLE', () => {
   before(async () => {
     // Create a user
-    const { id } = await createTestUser({});
+    const {
+      id
+    } = await createTestUser({});
     userToken = `Bearer ${await generateToken({ id })}`;
 
     //  Create an article
@@ -48,7 +57,9 @@ describe('TEST TO RATE AN ARTICLE', () => {
         .request(app)
         .post(`/api/v1/articles/${invalidArticleId}/rate`)
         .set('Authorization', userToken)
-        .send({ rate: '4s' })
+        .send({
+          rate: '4s'
+        })
         .end((err, res) => {
           expect(res.status).to.equal(400);
           expect(res.body.errors).to.be.an('object');
@@ -68,7 +79,9 @@ describe('TEST TO RATE AN ARTICLE', () => {
         .request(app)
         .post(`/api/v1/articles/${invalidArticleId}/rate`)
         .set('Authorization', userToken)
-        .send({ rate: 4.5 })
+        .send({
+          rate: 4.5
+        })
         .end((err, res) => {
           expect(res.status).to.equal(400);
           expect(res.body.errors).to.be.an('object');
@@ -87,7 +100,10 @@ describe('TEST TO RATE AN ARTICLE', () => {
       chai
         .request(app)
         .post(`/api/v1/articles/${invalidArticleId}/rate`)
-        .send({ articleId: '26797322-78a7-4651-8a67-998315381b22', rate: 4.5 })
+        .send({
+          articleId: '26797322-78a7-4651-8a67-998315381b22',
+          rate: 4.5
+        })
         .end((err, res) => {
           expect(res.status).to.equal(400);
           expect(res.body.errors).to.be.an('object');
@@ -107,7 +123,9 @@ describe('TEST TO RATE AN ARTICLE', () => {
         .request(app)
         .post(`/api/v1/articles/${invalidArticleId}/rate`)
         .set('Authorization', userToken)
-        .send({ rate: 4 })
+        .send({
+          rate: 4
+        })
         .end((err, res) => {
           expect(res.status).to.equal(404);
           expect(res.body.errors).to.be.an('object');
@@ -126,7 +144,9 @@ describe('TEST TO RATE AN ARTICLE', () => {
       chai.request(app)
         .post(`/api/v1/articles/${validArticleSlug}/rate`)
         .set('Authorization', userToken)
-        .send({ rate: 4 })
+        .send({
+          rate: 4
+        })
         .end((err, res) => {
           expect(res.status).to.equal(201);
           expect(res.body.payload).to.be.an('object');
@@ -147,7 +167,9 @@ describe('TEST TO RATE AN ARTICLE', () => {
       chai.request(app)
         .post(`/api/v1/articles/${validArticleSlug}/rate`)
         .set('Authorization', userToken)
-        .send({ rate: 3 })
+        .send({
+          rate: 3
+        })
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body.payload).to.be.an('object');
@@ -171,8 +193,8 @@ describe('TEST TO RATE AN ARTICLE', () => {
           expect(res.status).to.equal(200);
           expect(res.body.payload).to.be.an('object');
           expect(res.body).to.have.property('payload');
-          expect(res.body.payload.ratings).to.have.property('rows');
-          expect(res.body.payload.ratings.rows).to.be.an('array');
+          expect(res.body.payload).to.have.property('ratings');
+          expect(res.body.payload.ratings).to.be.an('array');
 
           done();
         });
@@ -190,8 +212,8 @@ describe('TEST TO RATE AN ARTICLE', () => {
           expect(res.body.payload).to.be.an('object');
           expect(res.body).to.have.property('payload');
           expect(res.body.payload).to.have.property('metadata');
-          expect(res.body.payload.ratings).to.have.property('rows');
-          expect(res.body.payload.ratings.rows).to.be.an('array');
+          expect(res.body.payload).to.have.property('ratings');
+          expect(res.body.payload.ratings).to.be.an('array');
           expect(res.body.payload.metadata.totalItems).to.be.equal(1);
           expect(res.body.payload.metadata).to.have.property('pages');
 
@@ -211,8 +233,8 @@ describe('TEST TO RATE AN ARTICLE', () => {
           expect(res.body.payload).to.be.an('object');
           expect(res.body).to.have.property('payload');
           expect(res.body.payload).to.have.property('metadata');
-          expect(res.body.payload.ratings).to.have.property('rows');
-          expect(res.body.payload.ratings.rows).to.be.an('array');
+          expect(res.body.payload).to.have.property('ratings');
+          expect(res.body.payload.ratings).to.be.an('array');
           expect(res.body.payload.metadata.totalItems).to.be.equal(1);
           expect(res.body.payload.metadata).to.have.property('pages');
 
@@ -242,7 +264,7 @@ describe('TEST TO RATE AN ARTICLE', () => {
 
   it('should throw error since object is empty', async (done) => {
     try {
-      await expect(findArticle({ })).to.eventually.throw();
+      await expect(findArticle({})).to.eventually.throw();
       done();
     } catch (err) {
       done();
@@ -251,7 +273,9 @@ describe('TEST TO RATE AN ARTICLE', () => {
 
   it('should throw error since articleId does not exist', async () => {
     try {
-      await expect(findArticle({ articleId: 'invalidId' })).to.be.an('object');
+      await expect(findArticle({
+        articleId: 'invalidId'
+      })).to.be.an('object');
     } catch (err) {
       throw err.message;
     }
@@ -259,7 +283,9 @@ describe('TEST TO RATE AN ARTICLE', () => {
 
   it('should throw error since slug does not exist', async () => {
     try {
-      await expect(findArticle({ slug: 'invalid-slug' })).to.be.an('object');
+      await expect(findArticle({
+        slug: 'invalid-slug'
+      })).to.be.an('object');
     } catch (err) {
       throw err.message;
     }

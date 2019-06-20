@@ -245,7 +245,7 @@ class ArticleController {
       const { id: articleId } = article.dataValues;
       const count = await Rating.count({ where: { articleId } });
 
-      const ratings = await Rating.findAndCountAll({
+      const ratings = await Rating.findAll({
         where: { articleId },
         limit,
         offset,
