@@ -54,44 +54,6 @@ const findAllArticle = async (req) => {
   });
 };
 
-const findArticleCount = async () => Article.findAll({
-  attributes: [
-    'id',
-    'slug',
-    'title',
-    'body',
-    'image',
-    'createdAt',
-    'updatedAt',
-    [
-      sequelize.fn('AVG', sequelize.col('articleRatings.ratings')),
-      'averageRating'
-    ]
-  ],
-  include: [
-    {
-      model: Rating,
-      as: 'articleRatings',
-      required: false,
-      attributes: []
-    },
-    {
-      model: User,
-      as: 'author',
-      attributes: [
-        'id',
-        'username'
-      ],
-      include: [{
-        model: Profile,
-        as: 'profile',
-        attributes: ['firstname', 'lastname', 'bio', 'avatar']
-      }]
-    }
-  ],
-  group: ['Article.id', 'author.id', 'author->profile.id']
-});
-
 const findArticle = ({ articleId, slug }) => {
   const where = {};
   if (!(articleId || slug)) {
@@ -143,4 +105,4 @@ const findArticle = ({ articleId, slug }) => {
   });
 };
 
-export { findAllArticle, findArticle, findArticleCount };
+export { findAllArticle, findArticle };
