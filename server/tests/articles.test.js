@@ -1,6 +1,6 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import { generateToken, testUserNoArgumentPassed } from './factory/user-factory';
+import { generateToken, createNonActiveUser } from './factory/user-factory';
 import createArticles from './factory/article-factory';
 import app from '../app';
 
@@ -13,7 +13,7 @@ let wrongToken;
 describe('TESTS TO CREATE AN ARTICLE', () => {
   let newArticle, userToken;
   before(async () => {
-    const { id, email } = await testUserNoArgumentPassed();
+    const { id, email } = await createNonActiveUser({ });
     const payload = {
       id,
       email
@@ -94,7 +94,7 @@ describe('TESTS TO CREATE AN ARTICLE', () => {
 describe('TESTS TO UPDATE AN ARTICLE', () => {
   let newArticle, userToken;
   before(async () => {
-    const { id, email } = await testUserNoArgumentPassed();
+    const { id, email } = await createNonActiveUser({ });
     const payload = {
       id,
       email
@@ -197,7 +197,7 @@ describe('TESTS TO UPDATE AN ARTICLE', () => {
 describe('TESTS TO GET ARTICLES', () => {
   let newArticle;
   before(async () => {
-    const { id } = await testUserNoArgumentPassed();
+    const { id } = await createNonActiveUser({ });
 
     newArticle = await createArticles(id, {});
   });
@@ -259,14 +259,14 @@ describe('TESTS TO GET ARTICLES', () => {
 describe('TESTS TO DELETE AN ARTICLE', () => {
   let newArticle, userToken, useNotPermittedToDelete;
   before(async () => {
-    const { id, email } = await testUserNoArgumentPassed();
+    const { id, email } = await createNonActiveUser({ });
     const payload = {
       id,
       email
     };
     userToken = await generateToken(payload);
     newArticle = await createArticles(id, {});
-    const { id: user, email: mail } = await testUserNoArgumentPassed();
+    const { id: user, email: mail } = await createNonActiveUser({ });
     payload.id = user;
     payload.email = mail;
     useNotPermittedToDelete = await generateToken(payload);

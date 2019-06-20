@@ -54,22 +54,9 @@ const createTestUserWithoutProfile = async ({ username, email }) => {
   return newUser;
 };
 
-// eslint-disable-next-line max-len
-const testUserNoArgumentPassed = async (username = faker.internet.userName(), email = faker.internet.email()) => {
-  const newUser = await User.create({
-    id: faker.random.uuid(),
-    username,
-    email,
-    password: faker.internet.password()
-  });
-
-  return newUser;
-};
-
 export {
   createTestUser,
   createTestUserWithoutProfile,
-  testUserNoArgumentPassed,
   generateToken,
   createNonActiveUser
 };

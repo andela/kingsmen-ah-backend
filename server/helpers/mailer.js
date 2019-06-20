@@ -28,6 +28,7 @@ const sendMail = ({ to, subject, message }) => {
 };
 
 const sendForgotPasswordMail = (token, email, name) => {
+  const link = `${url}/auth/reset_password?email=${email}&token=${token}`;
   const emailBody = {
     body: {
       name,
@@ -37,10 +38,10 @@ const sendForgotPasswordMail = (token, email, name) => {
         button: {
           color: '#1a82e2',
           text: 'Reset Your Password',
-          link: `${url}/auth/reset_password`
+          link
         }
       },
-      outro: `If that doesn't work, copy and paste the following link in your browser:\n\n${url}/auth/reset_password`
+      outro: `If that doesn't work, copy and paste the following link in your browser:\n\n${link}`
     }
   };
   // Generate an HTML email with the provided contents
