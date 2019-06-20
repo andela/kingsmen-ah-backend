@@ -1,14 +1,29 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../app';
-import { createTestUser, generateToken } from './factory/user-factory';
+import { createTestUser, testUserNoArgumentPassed, generateToken } from './factory/user-factory';
 
 let userToken, authToken;
 chai.use(chaiHttp);
 const { expect } = chai;
 const invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZjZDAwNDBmLTI3MDktNGU0Yi05YjU2LWYzZDk3MmRhNjk4OTg5IiwiZW1haWwiOiJqdXN0c2luZUBzbnF3c3QuY29tIiwiaWF0IjoxNTYwMjA3NTAyLCJleHAiOjE1NjAyOTM5MDJ9.FpXu8SrboezKr57MNcrEA_pGhsMRm0G5ptUGqQje12I';
+let globalResetToken, globalAuthToken, secondUserToken, userMail, resetToken;
 
 describe('TESTS TO SIGNUP A USER', () => {
+  before(async () => {
+    const { email } = await testUserNoArgumentPassed();
+
+    userMail = email;
+  });
+  afterEach(async () => {
+    const { id, email } = await createTestUser({});
+    const payload = {
+      id,
+      email
+    };
+    secondUserToken = await generateToken(payload);
+  });
+
   it('should return `username is required` if username is absent ', (done) => {
     try {
       chai.request(app)
@@ -59,6 +74,8 @@ describe('TESTS TO SIGNUP A USER', () => {
           password: '1234567'
         })
         .end((err, res) => {
+          globalResetToken = res.body.verifyToken;
+          globalAuthToken = res.body.user.token;
           expect(res.status).to.equal(201);
           expect(res.body.user).to.be.an('object');
           expect(res.body.user.token).to.be.a('string');
@@ -205,6 +222,106 @@ describe('TESTS TO LOGIN A USER', () => {
     }
   });
 
+  it('should success email sent ', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/verify_account')
+        .set('Authorization', `Bearer ${globalAuthToken}`)
+        .send({})
+        .end((err, res) => {
+          const { payload } = res.body;
+          globalResetToken = payload.verifyToken;
+          resetToken = payload.verifyToken;
+          expect(res.status).to.equal(200);
+          expect(res.body).to.be.an('object');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should return succesful reset token', (done) => {
+    try {
+      chai.request(app)
+        .post(`/api/v1/auth/activate_user?token=${globalResetToken}&email=justsine@snqwst.com`)
+        .set('Authorization', `Bearer ${globalAuthToken}`)
+        .send({})
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.be.an('object');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should return not found', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/verify_account')
+        .set('Authorization', `Bearer ${secondUserToken}`)
+        .send({})
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.be.an('object');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should no token present', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/auth/activate_user')
+        .set('Authorization', `Bearer ${globalAuthToken}`)
+        .send({})
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body).to.be.an('object');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should return user does not exist', (done) => {
+    try {
+      chai.request(app)
+        .post(`/api/v1/auth/activate_user?token=${resetToken}&email=x0x0xx0x@88.com`)
+        .set('Authorization', `Bearer ${globalAuthToken}`)
+        .send({})
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body).to.be.an('object');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should return Invalid token', (done) => {
+    try {
+      chai.request(app)
+        .post(`/api/v1/auth/activate_user?token=12345&email=${userMail}`)
+        .set('Authorization', `Bearer ${globalAuthToken}`)
+        .send({})
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          expect(res.body).to.be.an('object');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+
   it('should create a dropped token', (done) => {
     try {
       chai.request(app)
@@ -321,3 +438,26 @@ describe('TEST TO GET ALL USERS', () => {
     }
   });
 });
+
+
+// describe('TESTS TO SEND VERIFICATION MAIL', () => {
+//   let firstUserToken, secondUserToken, userMail, resetToken;
+//   before(async () => {
+//     const { id, email } = await testUserNoArgumentPassed();
+//     const payload = {
+//       id,
+//       email
+//     };
+//     userMail = email;
+//     firstUserToken = await generateToken(payload);
+//   });
+//   afterEach(async () => {
+//     const { id, email } = await createTestUser({});
+//     const payload = {
+//       id,
+//       email
+//     };
+//     secondUserToken = await generateToken(payload);
+//   });
+
+// });

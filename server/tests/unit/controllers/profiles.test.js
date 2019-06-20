@@ -28,4 +28,16 @@ describe('ProfileController', () => {
     await ProfileController.getProfile({}, {}, next);
     sinon.assert.calledOnce(next);
   });
+
+  it('should test follow function', async () => {
+    const next = sinon.spy();
+    await ProfileController.follow({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
+
+  it('should test unfollow function', async () => {
+    const next = sinon.spy();
+    await ProfileController.unfollow({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
 });
