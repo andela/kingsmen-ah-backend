@@ -232,7 +232,6 @@ class ArticleController {
       const { slug } = req.params;
       const articleDetails = await validateReport(req.body);
       const articleToReport = await findArticle({ slug });
-      console.log(Object.keys(articleToReport.__proto__));
       return Response.success(res, 201, articleToReport, 'Article successfully reported!');
     } catch (err) {
       return next(err);
