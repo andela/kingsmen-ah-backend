@@ -73,3 +73,14 @@ export const validateArticle = (article) => {
     stripUnknown: true
   });
 };
+
+export const validateReport = (report) => {
+  const schema = {
+    message: Joi.string().trim().min(4).required(),
+  };
+  return Joi.validate(report, schema, {
+    language: {
+      key: '{{key}} '
+    },
+  });
+};

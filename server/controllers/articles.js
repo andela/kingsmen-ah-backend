@@ -1,9 +1,10 @@
 import models from '@models';
-import { validateArticle } from '@validations/auth';
+import { validateArticle, validateReport } from '@validations/auth';
 import { validationResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
 import { findAllArticle, findArticle } from '@helpers/articlePayload';
 import validateRating from '@validations/rating';
+import articlesRouter from '@routes/api/articles';
 
 const {
   Article
@@ -212,6 +213,29 @@ class ArticleController {
       return res.status(200).json({ status: 'success', message: 'Article successfully retrieved', payload });
     } catch (err) {
       next(err);
+    }
+  }
+
+  /**
+   * Users can report an article
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   * @memberof ArticleController
+   * @return {json} return json object
+   */
+  static async report(req, res, next) {
+    try {
+      const me = req.user;
+      const { slug } = req.params;
+      const articleDetails = await validateReport(req.body);
+      const articleToReport = await findArticle({ slug });
+      console.log(Object.keys(articleToReport.__proto__));
+      return Response.success(res, 201, articleToReport, 'Article successfully reported!');
+    } catch (err) {
+      return next(err);
     }
   }
 }

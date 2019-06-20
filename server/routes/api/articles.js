@@ -19,5 +19,6 @@ articlesRouter.get('/:slug', ArticleController.getOne);
 articlesRouter.post('/', Token.authorize, ArticleController.create);
 articlesRouter.put('/:slug', Token.authorize, ArticleController.update);
 articlesRouter.delete('/:slug', Token.authorize, ArticleController.delete);
+articlesRouter.post('/:slug/report', Token.authorize, ArticleController.report);
 
 export default articlesRouter;
