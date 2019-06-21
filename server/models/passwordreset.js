@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 
 const salt = process.env.SALT || 5;
-// eslint-disable-next-line radix
-const SALT_ROUNDS = parseInt(salt);
+
+const SALT_ROUNDS = parseInt(salt, 10);
 
 module.exports = (sequelize, DataTypes) => {
   const PasswordReset = sequelize.define('PasswordReset', {

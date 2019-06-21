@@ -22,6 +22,12 @@
     },
     "RESET_TOKEN_EXPIRE": {
       "required": true
+    },
+    "PROJECT_NAME": {
+      "required": true
+    },
+    "PROJECT_EMAIL": {
+      "required": true
     }
   },
   "formation": {},

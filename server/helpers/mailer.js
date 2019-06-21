@@ -5,20 +5,23 @@ import { config } from 'dotenv';
 config();
 
 const url = process.env.BASE_URL || 'https://kingsmen-ah-frontend-staging.herokuapp.com';
+const projectName = process.env.PROJECT_NAME || 'Author\'s Haven';
+const projectEmail = process.env.PROJECT_EMAIL || 'authorshaven@gmail.com';
+
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Configure the mail gen
 const mailGenerator = new Mailgen({
   theme: 'cerberus',
   product: {
-    name: 'Author\'s Haven',
+    name: projectName,
     link: url
   }
 });
 
 const sendMail = ({ to, subject, message }) => {
   const mailOptions = {
-    from: '"Author\'s Haven" <authorshaven@gmail.com>',
+    from: `${projectName} <${projectEmail}>`,
     to,
     subject,
     html: message
@@ -49,7 +52,7 @@ const sendForgotPasswordMail = (token, email, name) => {
 
   return sendMail({
     to: email,
-    subject: "Author's Haven: Forgot Password",
+    subject: `${projectName}: Forgot Password`,
     message
   });
 };
@@ -60,7 +63,7 @@ const sendResetSuccessMail = (email, name) => {
       name,
       intro: 'You are receiving this email because a password reset request for your account was received.',
       action: {
-        instructions: 'Your password has been successfully reset. Please login to Author\'s Haven by clicking the button below',
+        instructions: `Your password has been successfully reset. Please login to ${projectName} by clicking the button below`,
         button: {
           color: 'green',
           text: 'Login',
@@ -74,7 +77,7 @@ const sendResetSuccessMail = (email, name) => {
 
   return sendMail({
     to: email,
-    subject: "Author's Haven: Reset Success",
+    subject: `${projectName}: Reset Success`,
     message
   });
 };
