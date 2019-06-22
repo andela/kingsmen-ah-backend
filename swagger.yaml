@@ -442,6 +442,28 @@ paths:
           description: "Article does not exist"
       security:
       - api_key: []
+    get:
+      tags:
+      - "articles"
+      summary: "Get ratings"
+      description: "Get all article ratings"
+      operationId: "getArticleRatings"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "slug"
+        in: "path"
+        description: "Slug of the article to be get ratings"
+        required: true
+        type: "string"
+        format: "slug"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "fail"
   /articles/{slug}/comments:
     post:
       tags:

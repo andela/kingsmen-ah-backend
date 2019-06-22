@@ -1,5 +1,6 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import UserController from '@controllers/users';
 import app from '../app';
 import { createTestUser, generateToken, createNonActiveUser } from './factory/user-factory';
 
@@ -7,7 +8,7 @@ let userToken, authToken;
 chai.use(chaiHttp);
 const { expect } = chai;
 const invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZjZDAwNDBmLTI3MDktNGU0Yi05YjU2LWYzZDk3MmRhNjk4OTg5IiwiZW1haWwiOiJqdXN0c2luZUBzbnF3c3QuY29tIiwiaWF0IjoxNTYwMjA3NTAyLCJleHAiOjE1NjAyOTM5MDJ9.FpXu8SrboezKr57MNcrEA_pGhsMRm0G5ptUGqQje12I';
-let testUser, unVerifiedUser, userResetToken;
+let testUser, unVerifiedUser;
 
 describe('TESTS TO SIGNUP A USER', () => {
   it('should return `username is required` if username is absent ', (done) => {
@@ -414,7 +415,6 @@ describe('TEST TO SEND RESET TOKEN TO EMAIL', () => {
         .post('/api/v1/auth/forgot_password')
         .send({ email: testUser.email })
         .end((err, res) => {
-          userResetToken = res.body.payload.token;
           expect(res.status).to.equal(200);
           expect(res.body.message).to.be.an('string');
           expect(res.body.message).to.eql('A reset token has been sent to your email address');
@@ -431,7 +431,6 @@ describe('TEST TO SEND RESET TOKEN TO EMAIL', () => {
         .post('/api/v1/auth/forgot_password')
         .send({ email: testUser.email })
         .end((err, res) => {
-          userResetToken = res.body.payload.token;
           expect(res.status).to.equal(200);
           expect(res.body.message).to.be.an('string');
           expect(res.body.message).to.eql('A reset token has been sent to your email address');
@@ -540,11 +539,18 @@ describe('TEST TO RESET USER PASSWORD', () => {
       throw err.message;
     }
   });
+});
+
+describe('TEST SUCCESSFUL PASSWORD RESET', () => {
+  let resetToken;
+  before(async () => {
+    resetToken = await UserController.updateToken(testUser);
+  });
 
   it('should change user password, delete token and send success email', (done) => {
     try {
       chai.request(app)
-        .post(`/api/v1/auth/reset_password?token=${userResetToken}&email=${testUser.email}`)
+        .post(`/api/v1/auth/reset_password?token=${resetToken}&email=${testUser.email}`)
         .send({ password: 'emmanuel', confirmPassword: 'emmanuel' })
         .end((err, res) => {
           expect(res.status).to.equal(200);

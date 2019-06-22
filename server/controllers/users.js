@@ -193,23 +193,11 @@ class UserController {
       // Check if the account is active
       if (!user.active) return Response.error(res, 403, 'Your account is not verified');
 
-      const token = randomString({ length: 40 });
-      const resetDetails = {
-        resetPasswordToken: token,
-        resetPasswordExpiry: Date.now() + Number(process.env.RESET_TOKEN_EXPIRE
-          || 75600000) // 1 day from now
-      };
-
-      const userResetToken = await user.getResetToken();
-      if (userResetToken) {
-        await userResetToken.update(resetDetails);
-      } else {
-        await user.createResetToken(resetDetails);
-      }
+      const token = await UserController.updateToken(user);
 
       await sendForgotPasswordMail(token, email, user.get().username);
 
-      return Response.success(res, 200, { token }, 'A reset token has been sent to your email address');
+      return Response.success(res, 200, { }, 'A reset token has been sent to your email address');
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
         return res.status(400).json({
@@ -219,6 +207,30 @@ class UserController {
       }
       next(err);
     }
+  }
+
+  /**
+   * Update token
+   * @async
+   * @param {object} user
+   * @return {string} Returns token string
+   * @static
+   */
+  static async updateToken(user) {
+    const token = randomString({ length: 40 });
+    const resetDetails = {
+      resetPasswordToken: token,
+      resetPasswordExpiry: Date.now() + Number(process.env.RESET_TOKEN_EXPIRE
+        || 75600000) // 1 day from now
+    };
+
+    const userResetToken = await user.getResetToken();
+    if (userResetToken) {
+      await userResetToken.update(resetDetails);
+    } else {
+      await user.createResetToken(resetDetails);
+    }
+    return token;
   }
 
   /**
