@@ -8,6 +8,7 @@ const userRouter = express.Router();
 
 userRouter.post('/', trim, UserController.create);
 userRouter.get('/', Token.authorize, UserController.getUsers);
+userRouter.get('/history', Token.authorize, UserController.getReadHistory);
 userRouter.put('/', Token.authorize, trim, ProfileController.updateProfile);
 
 export default userRouter;

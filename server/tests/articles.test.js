@@ -195,16 +195,39 @@ describe('TESTS TO UPDATE AN ARTICLE', () => {
 });
 
 describe('TESTS TO GET ARTICLES', () => {
-  let newArticle;
+  let newArticle, authToken;
   before(async () => {
     const { id } = await testUserNoArgumentPassed();
 
     newArticle = await createArticles(id, {});
+
+    const { id: id2 } = await testUserNoArgumentPassed();
+    authToken = await generateToken({ id: id2 });
   });
   it('should get an article successfully', (done) => {
     try {
       chai.request(app)
         .get(`/api/v1/articles/${newArticle.slug}`)
+        .end((err, res) => {
+          const returnStatus = 'success';
+          expect(res.status).to.equal(200);
+          expect(res.body.payload).to.be.an('object');
+          expect(res.body).to.have.property('status');
+          expect(res.body.status).to.eql(returnStatus);
+          expect(res.body).to.have.property('status', returnStatus);
+          expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should add article to read history', (done) => {
+    try {
+      chai.request(app)
+        .get(`/api/v1/articles/${newArticle.slug}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .end((err, res) => {
           const returnStatus = 'success';
           expect(res.status).to.equal(200);

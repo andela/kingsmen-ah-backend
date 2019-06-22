@@ -39,6 +39,18 @@ describe('UsersController', () => {
     await UsersController.getUsers({}, {}, next);
     sinon.assert.calledOnce(next);
   });
+
+  it('should handle get user\'s history', async () => {
+    const next = sinon.spy();
+    await UsersController.getReadHistory({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
+
+  it('should handle invalid authentication token', async () => {
+    const next = sinon.spy();
+    await Token.authenticate({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
 });
 
 describe('Test Token authorize', () => {

@@ -76,5 +76,38 @@ class Token {
       next(error);
     }
   }
+
+  /**
+   *
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   * @return {null} Returns nothing
+   */
+  static async authenticate(req, res, next) {
+    try {
+      const token = await Token.getToken(req);
+      if (token) {
+        const decoded = jwt.verify(token, tokenSecret);
+        const user = await User.findOne({ where: { id: decoded.id } });
+        if (user) {
+          const droppedToken = await DroppedToken.findOne({
+            where: {
+              token
+            }
+          });
+          if (!droppedToken) {
+            req.user = user;
+            req.decoded = decoded;
+          }
+        }
+      }
+      next();
+    } catch (error) {
+      next();
+    }
+  }
 }
 export default Token;
