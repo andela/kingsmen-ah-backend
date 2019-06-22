@@ -321,3 +321,26 @@ describe('TEST TO GET ALL USERS', () => {
     }
   });
 });
+
+describe('TEST TO GET USER\'S READ HISTORY', () => {
+  before(async () => {
+    const testUser = await createTestUser({});
+    authToken = await generateToken({ id: testUser.id });
+  });
+  it('should return all users', (done) => {
+    try {
+      chai.request(app)
+        .get('/api/v1/users/history')
+        .set('Authorization', `Bearer ${authToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.payload).to.be.an('array');
+          expect(res.body).to.have.property('status');
+          expect(res.body.message).to.equal('Success');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+});

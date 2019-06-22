@@ -5,10 +5,9 @@ import Token from '@helpers/Token';
 import userExtractor from '@helpers/userExtractor';
 import { validationResponse, validateUniqueResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
+import { articleObject, extractArticle } from '@helpers/articlePayload';
 
-const {
-  User, DroppedToken
-} = models;
+const { User, DroppedToken } = models;
 
 /**
  * @exports UserController
@@ -150,6 +149,31 @@ class UserController {
         });
     } catch (error) {
       next(error);
+    }
+  }
+
+  /**
+ *
+ *
+ * @static
+ * @param {*} req Request Object
+ * @param {*} res Response Object
+ * @param {*} next Next middleware
+ * @returns {json} Return JSON object
+ * @memberof UserController
+ */
+  static async getReadHistory(req, res, next) {
+    try {
+      let histories = await req.user.getHistory({
+        ...articleObject,
+        group: ['Article.id', 'author.id', 'author->profile.id', 'ReadHistory.createdAt', 'ReadHistory.updatedAt', 'ReadHistory.userId', 'ReadHistory.articleId'],
+      });
+
+      histories = extractArticle(histories);
+
+      return Response.success(res, 200, histories);
+    } catch (err) {
+      next(err);
     }
   }
 }

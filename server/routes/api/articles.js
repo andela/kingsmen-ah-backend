@@ -14,7 +14,7 @@ articlesRouter.put('/:slug/comments/:id', Token.authorize, trim, commentFinder, 
 articlesRouter.delete('/:slug/comments/:id', Token.authorize, commentFinder, CommentController.deleteComment);
 
 articlesRouter.get('/', ArticleController.getAll);
-articlesRouter.get('/:slug', ArticleController.getOne);
+articlesRouter.get('/:slug', Token.authenticate, ArticleController.getOne);
 articlesRouter.post('/', Token.authorize, ArticleController.create);
 articlesRouter.put('/:slug', Token.authorize, ArticleController.update);
 articlesRouter.delete('/:slug', Token.authorize, ArticleController.delete);
