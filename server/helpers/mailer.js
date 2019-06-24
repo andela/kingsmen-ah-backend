@@ -4,7 +4,7 @@ import { config } from 'dotenv';
 
 config();
 
-const url = process.env.UI_HOST_NAME || 'https://kingsmen-ah-frontend-staging.herokuapp.com';
+const url = 'http://localhost:3000' || 'https://kingsmen-ah-frontend-staging.herokuapp.com';
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 

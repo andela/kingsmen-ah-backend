@@ -227,9 +227,9 @@ class UserController {
     try {
       const { token, email } = req.query;
 
-      if (!token || !email) return Response.error(res, 400, 'Please use a valid reset link');
+      if (!token || !email) return Response.error(res, 400, 'Please use a valid verification link');
       const user = await User.findOne({ where: { email } });
-      if (!user) return Response.error(res, 404, 'User does not exist');
+      if (!user) return Response.error(res, 401, 'Invalid Token');
 
       const tokenDetails = await user.getVerifiedUser({
         where: {
