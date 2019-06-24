@@ -345,7 +345,7 @@ describe('TESTS TO LIKE A COMMENT', () => {
   it('should return `Comment unliked successfully.` ', (done) => {
     try {
       chai.request(app)
-        .delete(`/api/v1/articles/${testSlug}/comments/${testComment.id}/unlike`)
+        .delete(`/api/v1/articles/${testSlug}/comments/${testComment.id}/like`)
         .set('Authorization', `Bearer ${userToken}`)
         .end((err, res) => {
           expect(res.status).to.equal(200);
