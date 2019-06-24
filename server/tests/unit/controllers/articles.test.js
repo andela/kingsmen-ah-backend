@@ -4,11 +4,20 @@ import { validateArticle } from '@validations/auth';
 import validateRatings from '@validations/rating';
 import { findAllArticle, extractArticle } from '@helpers/articlePayload';
 import ArticleController from '@controllers/articles';
+import createArticle from '../../factory/articles-factory';
+import { createTestUser } from '../../factory/user-factory';
 
 const { expect } = chai;
 
 
 describe('ArticleController', () => {
+  let article;
+
+  before(async () => {
+    const { id } = await createTestUser({});
+    article = (await createArticle(id, {})).get();
+  });
+
   let sandbox = null;
 
   beforeEach(() => {
@@ -75,24 +84,7 @@ describe('ArticleController', () => {
 
   it('should return specified article attributes', (done) => {
     const articleMock = {
-      id: '47a4169a-925e-4fca-a3f2-74e44f4aa2c7',
-      slug: 'test-article-7570a315',
-      title: 'Title Changed',
-      body: 'Body Changed',
-      image: null,
-      createdAt: '2019-06-20T20:11:18.314Z',
-      updatedAt: '2019-06-20T20:15:20.598Z',
-      averageRating: null,
-      author: {
-        id: 'fcdb7cb7-4adf-426f-bcbc-58f808c85146',
-        username: 'gerrardezeugwa',
-        profile: {
-          firstname: null,
-          lastname: null,
-          bio: null,
-          avatar: null
-        }
-      },
+      ...article,
       invalidKey: 'This should not be returned',
     };
     const get = () => articleMock;
