@@ -603,39 +603,6 @@ paths:
           description: "Comment does not exist"
       security:
       - api_key: []
-    get:
-      tags:
-      - "articles"
-      summary: "Get comment likes"
-      description: "Gets likes left on a comment"
-      operationId: "likeCount"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "slug"
-        in: "path"
-        description: "Slug of the comment to retrieve likes"
-        required: true
-        type: "string"
-        format: "slug"
-      - name: "id"
-        in: "path"
-        description: "Id of the comment to retrieve likes"
-        required: true
-        type: "string"
-        format: "slug"
-      responses:
-        200:
-          description: "Like count retrieved successfully."
-          schema:
-            $ref: "#/definitions/ApiResponse"
-        400:
-          description: "Bad Request"
-        404:
-          description: "Comment does not exist"
-      security:
-      - api_key: []
-  /articles/{slug}/comments/{id}/unlike:
     delete:
       tags:
       - "articles"

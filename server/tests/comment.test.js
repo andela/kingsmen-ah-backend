@@ -358,21 +358,4 @@ describe('TESTS TO LIKE A COMMENT', () => {
       throw err.message;
     }
   });
-
-  it('should return `Likes retrieved successfully` ', (done) => {
-    try {
-      chai.request(app)
-        .get(`/api/v1/articles/${testSlug}/comments/${testComment.id}/like`)
-        .set('Authorization', `Bearer ${userToken}`)
-        .end((err, res) => {
-          expect(res.status).to.equal(200);
-          expect(res.body).to.have.property('payload');
-          expect(res.body.payload).to.be.an('number');
-          expect(res.body.message).to.eql('Like count retrieved successfully');
-          done();
-        });
-    } catch (err) {
-      throw err.message;
-    }
-  });
 });

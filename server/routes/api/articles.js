@@ -14,9 +14,8 @@ articlesRouter.get('/:slug/comments', Token.authorize, articleFinder, CommentCon
 articlesRouter.put('/:slug/comments/:id', Token.authorize, trim, commentFinder, CommentController.updateComment);
 articlesRouter.delete('/:slug/comments/:id', Token.authorize, commentFinder, CommentController.deleteComment);
 
-articlesRouter.get('/:slug/comments/:id/like', Token.authorize, find, CommentController.likeCount);
 articlesRouter.post('/:slug/comments/:id/like', Token.authorize, find, CommentController.likeComment);
-articlesRouter.delete('/:slug/comments/:id/unlike', Token.authorize, find, CommentController.unlikeComment);
+articlesRouter.delete('/:slug/comments/:id/like', Token.authorize, find, CommentController.unlikeComment);
 
 articlesRouter.get('/', ArticleController.getAll);
 articlesRouter.get('/:slug', ArticleController.getOne);

@@ -3,7 +3,7 @@ import validateComment from '@validations/comment';
 import { comments, singleComment } from '@helpers/comments';
 import { validationResponse } from '@helpers/validationResponse';
 
-const { Comment, CommentLike } = models;
+const { Comment } = models;
 
 /**
  * @exports CommentController
@@ -205,33 +205,6 @@ class CommentController {
       return res.status(200).json({
         status: 200,
         message: 'Comment unliked successfully.',
-        payload
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * Get comment like count
-   * @static
-   * @param {object} req - The Request Object
-   * @param {object} res - The Response Object
-   * @param {object} next - The Next Middleware
-   * @return {json} - Returns json Object
-   * @memberof CommentController
-   * @static
-   */
-  static async likeCount(req, res, next) {
-    try {
-      const { comment } = req;
-      const { id } = comment;
-
-      const payload = await CommentLike.count({ where: { commentId: id } });
-
-      return res.status(200).json({
-        status: 200,
-        message: 'Like count retrieved successfully',
         payload
       });
     } catch (error) {
