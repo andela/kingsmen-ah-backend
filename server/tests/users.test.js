@@ -438,26 +438,3 @@ describe('TEST TO GET ALL USERS', () => {
     }
   });
 });
-
-
-// describe('TESTS TO SEND VERIFICATION MAIL', () => {
-//   let firstUserToken, secondUserToken, userMail, resetToken;
-//   before(async () => {
-//     const { id, email } = await testUserNoArgumentPassed();
-//     const payload = {
-//       id,
-//       email
-//     };
-//     userMail = email;
-//     firstUserToken = await generateToken(payload);
-//   });
-//   afterEach(async () => {
-//     const { id, email } = await createTestUser({});
-//     const payload = {
-//       id,
-//       email
-//     };
-//     secondUserToken = await generateToken(payload);
-//   });
-
-// });
