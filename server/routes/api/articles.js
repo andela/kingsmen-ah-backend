@@ -21,4 +21,7 @@ articlesRouter.post('/', Token.authorize, isUserVerified, ArticleController.crea
 articlesRouter.put('/:slug', Token.authorize, isUserVerified, ArticleController.update);
 articlesRouter.delete('/:slug', Token.authorize, isUserVerified, ArticleController.delete);
 
+articlesRouter.get('/:slug/rate', ArticleController.getArticleRatings);
+articlesRouter.post('/:slug/rate', trim, Token.authorize, ArticleController.rate);
+
 export default articlesRouter;

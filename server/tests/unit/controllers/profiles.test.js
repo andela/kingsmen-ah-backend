@@ -29,13 +29,14 @@ describe('ProfileController', () => {
     sinon.assert.calledOnce(next);
   });
 
-  it('should test follow function', async () => {
+
+  it('should handle no user to follow', async () => {
     const next = sinon.spy();
     await ProfileController.follow({}, {}, next);
     sinon.assert.calledOnce(next);
   });
 
-  it('should test unfollow function', async () => {
+  it('should handle no user to unfollow', async () => {
     const next = sinon.spy();
     await ProfileController.unfollow({}, {}, next);
     sinon.assert.calledOnce(next);
