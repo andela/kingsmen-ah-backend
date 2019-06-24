@@ -296,7 +296,7 @@ describe('TESTS TO LOGIN A USER', () => {
         .set('Authorization', `Bearer ${globalAuthToken}`)
         .send({})
         .end((err, res) => {
-          expect(res.status).to.equal(404);
+          expect(res.status).to.equal(401);
           expect(res.body).to.be.an('object');
           done();
         });
