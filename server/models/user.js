@@ -116,6 +116,12 @@ module.exports = (sequelize, DataTypes) => {
       as: 'history'
     });
 
+    User.belongsToMany(Comment, {
+      through: CommentLike,
+      foreignKey: 'userId',
+      as: 'Like'
+    });
+
     User.belongsToMany(Role, {
       through: 'UserRole',
       as: 'role',
