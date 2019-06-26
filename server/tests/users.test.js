@@ -62,11 +62,10 @@ describe('TESTS TO SIGNUP A USER', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(201);
-          expect(res.body.user).to.be.an('object');
-          expect(res.body.user.token).to.be.a('string');
+          expect(res.body.payload).to.be.an('object');
+          expect(res.body.payload.token).to.be.a('string');
           expect(res.body).to.have.property('status');
-          const returnStatus = 'success';
-          expect(res.body).to.have.property('status', returnStatus);
+          expect(res.body.message).to.equal('User created successfully');
           done();
         });
     } catch (err) {
@@ -131,13 +130,12 @@ describe('TESTS TO LOGIN A USER', () => {
           password: '1234567'
         })
         .end((err, res) => {
-          userToken = res.body.user.token;
+          userToken = res.body.payload.token;
           expect(res.status).to.equal(200);
-          expect(res.body.user).to.be.an('object');
-          expect(res.body.user.token).to.be.a('string');
+          expect(res.body.payload).to.be.an('object');
+          expect(res.body.payload.token).to.be.a('string');
           expect(res.body).to.have.property('status');
-          const returnStatus = 'success';
-          expect(res.body).to.have.property('status', returnStatus);
+          expect(res.body.message).to.equal('User successfully logged in');
           done();
         });
     } catch (err) {
@@ -284,8 +282,7 @@ describe('TEST TO GET ALL USERS', () => {
           expect(res.status).to.equal(200);
           expect(res.body.payload).to.be.an('array');
           expect(res.body).to.have.property('status');
-          const returnStatus = 'success';
-          expect(res.body).to.have.property('status', returnStatus);
+          expect(res.body.message).to.equal('Users and corresponding profiles retrieved successfully');
           done();
         });
     } catch (err) {
