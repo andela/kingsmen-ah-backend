@@ -158,7 +158,6 @@ describe('TESTS TO LOGIN A USER', () => {
       throw err.message;
     }
   });
-
   it('should return an invalid login', (done) => {
     try {
       chai.request(app)
