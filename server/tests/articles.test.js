@@ -33,13 +33,11 @@ describe('TESTS TO CREATE AN ARTICLE', () => {
           body: newArticle.body
         })
         .end((err, res) => {
-          const returnStatus = 'success';
           expect(res.status).to.equal(201);
           expect(res.body.payload).to.be.an('object');
           expect(res.body.payload.title).to.be.a('string');
           expect(res.body).to.have.property('status');
-          expect(res.body.status).to.eql(returnStatus);
-          expect(res.body).to.have.property('status', returnStatus);
+          expect(res.body.message).to.eql('Article created successfully');
           expect(res.body).to.have.property('status');
           done();
         });
@@ -113,13 +111,11 @@ describe('TESTS TO UPDATE AN ARTICLE', () => {
           body: newArticle.body,
         })
         .end((err, res) => {
-          const returnStatus = 'success';
           expect(res.status).to.equal(200);
           expect(res.body.payload).to.be.an('object');
           expect(res.body.payload.title).to.be.a('string');
           expect(res.body).to.have.property('status');
-          expect(res.body.status).to.eql(returnStatus);
-          expect(res.body).to.have.property('status', returnStatus);
+          expect(res.body.message).to.equal('Article successfully updated');
           expect(res.body).to.have.property('status');
           done();
         });
@@ -206,12 +202,10 @@ describe('TESTS TO GET ARTICLES', () => {
       chai.request(app)
         .get(`/api/v1/articles/${newArticle.slug}`)
         .end((err, res) => {
-          const returnStatus = 'success';
           expect(res.status).to.equal(200);
           expect(res.body.payload).to.be.an('object');
           expect(res.body).to.have.property('status');
-          expect(res.body.status).to.eql(returnStatus);
-          expect(res.body).to.have.property('status', returnStatus);
+          expect(res.body.message).to.equal('Article successfully retrieved');
           expect(res.body).to.have.property('status');
           done();
         });

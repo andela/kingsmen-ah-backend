@@ -48,13 +48,7 @@ class UserController {
       await user.createProfile();
 
       const token = await Token.create(payload);
-      return res
-        .status(201)
-        .json({
-          status: 'success',
-          message: 'User created successfully',
-          user: userExtractor(user, token)
-        });
+      return Response.success(res, 201, userExtractor(user, token), 'User created successfully');
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
         return res.status(400).json({
@@ -101,13 +95,7 @@ class UserController {
         email: user.email
       };
       const token = await Token.create(payload);
-      return res
-        .status(200)
-        .json({
-          status: 'success',
-          message: 'User successfully logged in',
-          user: userExtractor(user, token)
-        });
+      return Response.success(res, 200, userExtractor(user, token), 'User successfully logged in');
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
         return res.status(400).json({
@@ -163,11 +151,7 @@ class UserController {
         ]
       });
 
-      return res.status(200).send({
-        status: 'success',
-        message: 'Users and corresponding profiles retrieved successfully',
-        payload: users
-      });
+      return Response.success(res, 200, users, 'Users and corresponding profiles retrieved successfully');
     } catch (error) {
       next(error);
     }
@@ -195,7 +179,7 @@ class UserController {
 
       const token = await UserController.updateToken(user);
 
-      await sendForgotPasswordMail(token, email, user.get().username);
+      sendForgotPasswordMail(token, email, user.get().username);
 
       return Response.success(res, 200, { }, 'A reset token has been sent to your email address');
     } catch (err) {
@@ -277,7 +261,7 @@ class UserController {
       await tokenDetails.destroy();
 
       // Send success email
-      await sendResetSuccessMail(email, user.get().username);
+      sendResetSuccessMail(email, user.get().username);
 
       return Response.success(res, 200, {}, 'Password reset successful');
     } catch (err) {
