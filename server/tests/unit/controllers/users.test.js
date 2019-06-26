@@ -1,7 +1,11 @@
 import sinon from 'sinon';
+import bcrypt from 'bcrypt';
 import { validateSignup, validateLogin } from '@validations/auth';
 import UsersController from '@controllers/users';
+import models from '@models';
 import Token from '@helpers/Token';
+
+const { User } = models;
 
 
 describe('UsersController', () => {
@@ -50,8 +54,120 @@ describe('UsersController', () => {
     await UsersController.logout({}, res);
     sinon.assert.calledOnce(jsonFunc);
   });
-});
 
+  it('should send verify mail', async () => {
+    const jsonFunc = sinon.spy();
+    const next = sinon.spy();
+    const res = {
+      status: () => ({
+        json: jsonFunc
+      })
+    };
+    const req = {
+      user: {
+        id: 'as223e-7yhu',
+        active: false,
+        email: 'email@something.com',
+        username: 'username',
+        getVerifiedUser: () => ({
+          update: () => {}
+        })
+      }
+    };
+    const stubFunc = {
+      createVerifyToken: UsersController.createVerifyToken,
+      sendVerifyMailToken: UsersController.sendVerifyMailToken
+    };
+    sandbox.stub(stubFunc, 'createVerifyToken').resolves('aRandomToken');
+    sandbox.stub(stubFunc, 'sendVerifyMailToken');
+    await UsersController.sendMailToVerifyAccount(req, res, next);
+    sinon.assert.calledOnce(jsonFunc);
+  });
+
+  it('should return already verified', async () => {
+    const jsonFunc = sinon.spy();
+    const next = sinon.spy();
+    const res = {
+      status: () => ({
+        json: jsonFunc
+      })
+    };
+    const req = {
+      user: {
+        id: 'as223e-7yhu',
+        active: true,
+        email: 'email@something.com',
+        username: 'username',
+        getVerifiedUser: () => ({
+          update: () => {}
+        })
+      }
+    };
+    const stubFunc = {
+      createVerifyToken: UsersController.createVerifyToken,
+      sendVerifyMailToken: UsersController.sendVerifyMailToken
+    };
+    sandbox.stub(stubFunc, 'createVerifyToken').resolves('aRandomToken');
+    sandbox.stub(stubFunc, 'sendVerifyMailToken');
+    await UsersController.sendMailToVerifyAccount(req, res, next);
+    sinon.assert.calledOnce(jsonFunc);
+  });
+
+  it('should return activate user successful', async () => {
+    const jsonFunc = sinon.spy();
+    const next = sinon.spy();
+    const res = {
+      status: () => ({
+        json: jsonFunc
+      })
+    };
+    const req = {
+      query: {
+        token: 'as223e-7yhu',
+        email: 'email@something.com',
+      }
+    };
+    sandbox.stub(User, 'findOne').resolves({
+      id: 'nhgtfvrcdftvygbuhn',
+      getVerifiedUser: () => ({
+        verifyToken: 'jhgyvftcdrftvgy',
+        get: () => ({ verifyToken: 'jhgyvftcdrftvgy' }),
+        destroy: () => {},
+      }),
+      update: () => {},
+    });
+    sandbox.stub(bcrypt, 'compare').resolves('token');
+    await UsersController.verifyAccount(req, res, next);
+    sinon.assert.calledOnce(jsonFunc);
+  });
+
+  it('should return activate user successful', async () => {
+    const jsonFunc = sinon.spy();
+    const next = sinon.spy();
+    const res = {
+      status: () => ({
+        json: jsonFunc
+      })
+    };
+    const req = {
+      query: {
+        token: 'as223e-7yhu',
+        email: 'email@something.com',
+      }
+    };
+    sandbox.stub(User, 'findOne').resolves({
+      id: 'nhgtfvrcdftvygbuhn',
+      getVerifiedUser: () => ({
+        verifyToken: 'jhgyvftcdrftvgy',
+        get: () => ({ verifyToken: 'jhgyvftcdrftvgy' }),
+        destroy: () => {},
+      }),
+      update: () => {},
+    });
+    await UsersController.verifyAccount(req, res, next);
+    sinon.assert.calledOnce(jsonFunc);
+  });
+});
 
 describe('Test Token authorize', () => {
   let sandbox = null;

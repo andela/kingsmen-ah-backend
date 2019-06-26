@@ -54,7 +54,7 @@ class UserController {
       await VerifyUser.create({ ...verifyDetails });
       sendVerifyMailToken(verifyToken, user.email, user.username);
       return res.status(201).json({
-        status: 'success', message: 'User created successfully', user: userExtractor(user, token), verifyToken
+        status: 'success', message: 'User created successfully', user: userExtractor(user, token)
       });
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
@@ -171,6 +171,34 @@ class UserController {
   }
 
   /**
+   * Update token
+   * @async
+   * @param {object} user
+   * @return {string} Returns token string
+   * @static
+   */
+  static async createVerifyToken(user) {
+    const { id } = user;
+    const verifyToken = randomstring.generate(40);
+    const tokenExpiry = Date.now() + ((Number(process.env.RESET_TOKEN_EXPIRE)) || 75600000);
+
+    const verifyDetails = {
+      verifyToken, tokenExpiry, userId: id
+    };
+
+    const userDetails = await user.getVerifiedUser({
+      where: {
+        userId: id
+      }
+    });
+
+    await userDetails
+      .update(verifyDetails);
+
+    return verifyToken;
+  }
+
+  /**
   * Sends mail to verify a new user
   * @async
   * @param  {object} req - Request object
@@ -182,29 +210,14 @@ class UserController {
   static async sendMailToVerifyAccount(req, res, next) {
     try {
       const {
-        active, email, id, username
+        active, email, username
       } = req.user;
 
       const { user } = req;
       if (active === false) {
-        const verifyToken = randomstring.generate(40);
-        const tokenExpiry = Date.now() + ((Number(process.env.RESET_TOKEN_EXPIRE)) || 75600000);
-
-        const verifyDetails = {
-          verifyToken, tokenExpiry, userId: id
-        };
-
-        const userDetails = await user.getVerifiedUser({
-          where: {
-            userId: id
-          }
-        });
-
-        await userDetails
-          .update(verifyDetails);
+        const verifyToken = await UserController.createVerifyToken(user);
         sendVerifyMailToken(verifyToken, email, username);
-
-        return Response.success(res, 200, { verifyToken }, 'Verification mail sent');
+        return Response.success(res, 200, 'Verification mail sent');
       }
       if (active) {
         return Response.error(res, 400, 'You are already verified');

@@ -7,7 +7,7 @@ let userToken, authToken;
 chai.use(chaiHttp);
 const { expect } = chai;
 const invalidToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZjZDAwNDBmLTI3MDktNGU0Yi05YjU2LWYzZDk3MmRhNjk4OTg5IiwiZW1haWwiOiJqdXN0c2luZUBzbnF3c3QuY29tIiwiaWF0IjoxNTYwMjA3NTAyLCJleHAiOjE1NjAyOTM5MDJ9.FpXu8SrboezKr57MNcrEA_pGhsMRm0G5ptUGqQje12I';
-let globalResetToken, globalAuthToken, secondUserToken, userMail, resetToken;
+let globalAuthToken, secondUserToken, userMail, resetToken;
 
 describe('TESTS TO SIGNUP A USER', () => {
   before(async () => {
@@ -74,7 +74,6 @@ describe('TESTS TO SIGNUP A USER', () => {
           password: '1234567'
         })
         .end((err, res) => {
-          globalResetToken = res.body.verifyToken;
           globalAuthToken = res.body.user.token;
           expect(res.status).to.equal(201);
           expect(res.body.user).to.be.an('object');
@@ -230,7 +229,6 @@ describe('TESTS TO LOGIN A USER', () => {
         .send({})
         .end((err, res) => {
           const { payload } = res.body;
-          globalResetToken = payload.verifyToken;
           resetToken = payload.verifyToken;
           expect(res.status).to.equal(200);
           expect(res.body).to.be.an('object');
@@ -241,21 +239,6 @@ describe('TESTS TO LOGIN A USER', () => {
     }
   });
 
-  it('should return succesful reset token', (done) => {
-    try {
-      chai.request(app)
-        .post(`/api/v1/auth/activate_user?token=${globalResetToken}&email=justsine@snqwst.com`)
-        .set('Authorization', `Bearer ${globalAuthToken}`)
-        .send({})
-        .end((err, res) => {
-          expect(res.status).to.equal(200);
-          expect(res.body).to.be.an('object');
-          done();
-        });
-    } catch (err) {
-      throw err.message;
-    }
-  });
 
   it('should return not found', (done) => {
     try {
