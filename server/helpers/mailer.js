@@ -4,7 +4,7 @@ import { config } from 'dotenv';
 
 config();
 
-const url = process.env.BASE_URL || 'https://kingsmen-ah-frontend-staging.herokuapp.com';
+const url = process.env.BASE_URL || 'localhost:3000';
 const projectName = process.env.PROJECT_NAME || 'Author\'s Haven';
 const projectEmail = process.env.PROJECT_EMAIL || 'authorshaven@gmail.com';
 

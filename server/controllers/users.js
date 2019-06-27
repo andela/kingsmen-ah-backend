@@ -172,7 +172,7 @@ class UserController {
 
       const user = await User.findOne({ where: { email } });
 
-      if (!user) return Response.error(res, 404, 'User does not exist');
+      if (!user) return Response.error(res, 400, 'Please use a valid reset link');
 
       // Check if the account is active
       if (!user.active) return Response.error(res, 403, 'Your account is not verified');
@@ -238,7 +238,7 @@ class UserController {
 
       // Get the user
       const user = await User.findOne({ where: { email } });
-      if (!user) return Response.error(res, 404, 'User does not exist');
+      if (!user) return Response.error(res, 400, 'Please use a valid reset link');
 
       // Check if the token is in the database
       const tokenDetails = await user.getResetToken({
@@ -250,10 +250,10 @@ class UserController {
       });
 
       // Check if the token is valid
-      if (!tokenDetails) return Response.error(res, 401, 'Invalid Token');
+      if (!tokenDetails) return Response.error(res, 400, 'Please use a valid reset link');
 
       const match = await bcrypt.compare(token, tokenDetails.get().resetPasswordToken);
-      if (!match) return Response.error(res, 401, 'Invalid Token');
+      if (!match) return Response.error(res, 400, 'Please use a valid reset link');
 
 
       // Update password

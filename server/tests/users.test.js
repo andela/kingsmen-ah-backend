@@ -363,9 +363,9 @@ describe('TEST TO SEND RESET TOKEN TO EMAIL', () => {
         .post('/api/v1/auth/forgot_password')
         .send({ email: 'fakeemail@fakeemail.fake' })
         .end((err, res) => {
-          expect(res.status).to.equal(404);
+          expect(res.status).to.equal(400);
           expect(res.body.errors).to.be.an('object');
-          expect(res.body.errors.global).to.eql('User does not exist');
+          expect(res.body.errors.global).to.eql('Please use a valid reset link');
           done();
         });
     } catch (err) {
@@ -395,9 +395,9 @@ describe('TEST TO SEND RESET TOKEN TO EMAIL', () => {
         .post(`/api/v1/auth/reset_password?token=this_is_a_fake_token&email=${testUser.email}`)
         .send({ password: 'emmanuel', confirmPassword: 'emmanuel' })
         .end((err, res) => {
-          expect(res.status).to.equal(401);
+          expect(res.status).to.equal(400);
           expect(res.body.errors).to.be.an('object');
-          expect(res.body.errors.global).to.eql('Invalid Token');
+          expect(res.body.errors.global).to.eql('Please use a valid reset link');
           done();
         });
     } catch (err) {
@@ -510,9 +510,9 @@ describe('TEST TO RESET USER PASSWORD', () => {
         .post('/api/v1/auth/reset_password?token=this_is_a_fake_token&email=fakeemail@fakeemail.fake')
         .send({ password: 'emmanuel', confirmPassword: 'emmanuel' })
         .end((err, res) => {
-          expect(res.status).to.equal(404);
+          expect(res.status).to.equal(400);
           expect(res.body.errors).to.be.an('object');
-          expect(res.body.errors.global).to.eql('User does not exist');
+          expect(res.body.errors.global).to.eql('Please use a valid reset link');
           done();
         });
     } catch (err) {
@@ -526,9 +526,9 @@ describe('TEST TO RESET USER PASSWORD', () => {
         .post(`/api/v1/auth/reset_password?token=this_is_a_fake_token&email=${testUser.email}`)
         .send({ password: 'emmanuel', confirmPassword: 'emmanuel' })
         .end((err, res) => {
-          expect(res.status).to.equal(401);
+          expect(res.status).to.equal(400);
           expect(res.body.errors).to.be.an('object');
-          expect(res.body.errors.global).to.eql('Invalid Token');
+          expect(res.body.errors.global).to.eql('Please use a valid reset link');
           done();
         });
     } catch (err) {
