@@ -9,5 +9,7 @@ const authRouter = express.Router();
 authRouter.post('/login', trim, UserController.login);
 
 authRouter.post('/logout', authorizeAccess, UserController.logout);
+authRouter.post('/forgot_password', trim, UserController.forgotPassword);
+authRouter.post('/reset_password', trim, UserController.resetPassword);
 
 export default authRouter;

@@ -49,7 +49,9 @@ class Token {
   */
   static async authorize(req, res, next) {
     try {
-      if (req.url === '/auth/login') return next();
+      if (req.url === '/auth/login'
+      || req.url === '/auth/forgot_password'
+      || req.url.includes('/auth/reset_password')) return next();
       const token = await Token.getToken(req);
       if (token) {
         const decoded = jwt.verify(token, tokenSecret);
