@@ -40,7 +40,8 @@ const articleObject = {
         attributes: ['firstname', 'lastname', 'bio', 'avatar']
       }]
     }
-  ]
+  ],
+  group: ['Article.id', 'author.id', 'author->profile.id']
 };
 
 const findAllArticle = async (req) => {
@@ -52,8 +53,7 @@ const findAllArticle = async (req) => {
     limit,
     offset,
     subQuery: false,
-    ...articleObject,
-    group: ['Article.id', 'author.id', 'author->profile.id']
+    ...articleObject
   });
 };
 
@@ -70,8 +70,7 @@ const findArticle = ({ articleId, slug }) => {
 
   return Article.findOne({
     where,
-    ...articleObject,
-    group: ['Article.id', 'author.id', 'author->profile.id']
+    ...articleObject
   });
 };
 
