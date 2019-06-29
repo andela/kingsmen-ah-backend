@@ -31,6 +31,29 @@ export const validateSignup = (user) => {
   return validateSchema(user, schema);
 };
 
+export const validatePasswordReset = (resetDetails) => {
+  const schema = {
+    password: Joi.string().trim().min(5).max(255)
+      .required(),
+    confirmPassword: Joi
+      .valid(Joi.ref('password')).error(() => 'Passwords do not match')
+      .required()
+  };
+
+  return validateSchema(resetDetails, schema);
+};
+
+export const validateForgotPassword = (user) => {
+  const schema = {
+    email: Joi.string().trim().lowercase().min(5)
+      .max(255)
+      .email()
+      .required()
+  };
+
+  return validateSchema(user, schema);
+};
+
 export const validateArticle = (article) => {
   const schema = {
     title: Joi.string().trim().min(4)

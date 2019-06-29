@@ -4,7 +4,7 @@ import { validateArticle } from '@validations/auth';
 import validateRatings from '@validations/rating';
 import { findAllArticle, extractArticle } from '@helpers/articlePayload';
 import ArticleController from '@controllers/articles';
-import createArticle from '../../factory/articles-factory';
+import createArticle from '../../factory/article-factory';
 import { createTestUser } from '../../factory/user-factory';
 
 const { expect } = chai;
