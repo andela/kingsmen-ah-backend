@@ -317,11 +317,11 @@ class ArticleController {
     try {
       const me = req.user;
       const { slug } = req.params;
-      let articletoUnlike = await findArticle({ slug });
-      if (!articletoUnlike) return Response.error(res, 404, 'Article to unlike was not found');
-      await articletoUnlike.removeLike(me);
-      articletoUnlike = await findArticle({ slug });
-      return Response.success(res, 200, articletoUnlike, 'Article has been unliked');
+      let article = await findArticle({ slug });
+      if (!article) return Response.error(res, 404, 'Article to unlike was not found');
+      await article.removeLike(me);
+      article = await findArticle({ slug });
+      return Response.success(res, 200, article, 'Article has been unliked');
     } catch (err) {
       return next(err);
     }
