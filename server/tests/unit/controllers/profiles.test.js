@@ -35,6 +35,22 @@ describe('ProfileController', () => {
     sinon.assert.calledOnce(next);
   });
 
+  it('should handle no slug passed to follow profile', async () => {
+    const next = sinon.spy();
+    await ProfileController.follow({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
+
+  it('should handle no slug passed to unfollow profile', async () => {
+    const next = sinon.spy();
+    await ProfileController.unfollow({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
+  it('should handle no slug passed to unfollow profile', async () => {
+    const next = sinon.spy();
+    await ProfileController.unfollow({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
   it('should handle no slug passed to unfollow profile', async () => {
     const next = sinon.spy();
     await ProfileController.unfollow({}, {}, next);

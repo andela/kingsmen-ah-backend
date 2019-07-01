@@ -10,8 +10,8 @@ let firstUserToken, secondUserToken, firstUsername, secondUsername;
 
 describe('TESTS TO FOLLOW A USER', () => {
   before(async () => {
-    const user1 = await createTestUser({});
-    const user2 = await createTestUser({});
+    const user1 = await createTestUser({ });
+    const user2 = await createTestUser({ });
     firstUserToken = await generateToken({ id: user1.id });
     secondUserToken = await generateToken({ id: user2.id });
     firstUsername = user1.dataValues.username;
@@ -27,6 +27,7 @@ describe('TESTS TO FOLLOW A USER', () => {
           expect(res.status).to.equal(201);
           expect(res.body).to.be.an('object');
           expect(res.body.message).to.eql('User followed successfully');
+          expect(res.body).to.have.property('payload');
           expect(res.body).to.have.property('status');
           done();
         });
@@ -113,6 +114,8 @@ describe('TESTS TO UNFOLLOW A USER', () => {
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('payload');
+          expect(res.body.payload).to.be.an('object');
           expect(res.body.message).to.eql('User unfollowed successfully');
           expect(res.body).to.have.property('status');
           done();

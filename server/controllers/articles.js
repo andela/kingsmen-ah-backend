@@ -4,9 +4,10 @@ import { validationResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
 import { findAllArticle, findArticle } from '@helpers/articlePayload';
 import validateRating from '@validations/rating';
+import Pagination from '@helpers/Pagination';
 
 const {
-  Article
+  Article, User, Rating, Profile
 } = models;
 
 /**
@@ -38,7 +39,7 @@ class ArticleController {
       const { slug } = createdArticle.dataValues;
       const payload = await findArticle({ slug });
 
-      return res.status(201).json({ status: 'success', message: 'Article created successfully', payload });
+      return Response.success(res, 201, payload, 'Article created successfully');
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
         return res.status(400).json({
@@ -83,7 +84,7 @@ class ArticleController {
       const { slug } = updateArticle.dataValues;
       const payload = await findArticle({ slug });
 
-      return res.status(200).json({ status: 'success', message: 'Article successfully updated', payload });
+      return Response.success(res, 200, payload, 'Article successfully updated');
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
         return res.status(400).json({
@@ -168,7 +169,7 @@ class ArticleController {
         return Response.error(res, 403, 'You do not have permission to delete this article!');
       }
 
-      return res.status(200).json({ status: 'success', message: 'Article successfully deleted' });
+      return Response.success(res, 200, {}, 'Article successfully deleted');
     } catch (err) {
       next(err);
     }
@@ -185,9 +186,14 @@ class ArticleController {
   */
   static async getAll(req, res, next) {
     try {
-      const getAllArticles = await findAllArticle();
-      const payload = getAllArticles;
-      return res.status(200).json({ status: 'success', message: 'Articles successfully retrieved', payload });
+      const payload = await findAllArticle(req);
+      const { page, search } = req.query;
+      const paginate = new Pagination(page, req.query.limit);
+      const count = await Article.count();
+
+      const extraQuery = search ? `search=${search}` : '';
+
+      return Response.success(res, 200, { rows: payload, metadata: paginate.getPageMetadata(count, '/articles', extraQuery) }, 'Articles successfully retrieved');
     } catch (err) {
       next(err);
     }
@@ -209,7 +215,61 @@ class ArticleController {
       if (!payload) {
         return Response.error(res, 404, 'Article does not exist');
       }
-      return res.status(200).json({ status: 'success', message: 'Article successfully retrieved', payload });
+
+      return Response.success(res, 200, payload, 'Article successfully retrieved');
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  /**
+   * Get article ratings
+   * @async
+   * @param  {object} req - Request object
+   * @param {object} res - Response object
+   * @param {object} next The next middleware
+   * @return {json} Returns json object
+   * @static
+   */
+  static async getArticleRatings(req, res, next) {
+    try {
+      const { slug } = req.params;
+      const { page, search } = req.query;
+      const paginate = new Pagination(page, req.query.limit);
+      const { limit, offset } = await paginate.getQueryMetadata();
+
+      // Get the articleId
+      const article = await Article.findOne({ where: { slug } });
+
+      if (!article) return Response.error(res, 404, 'Article does not exist');
+
+      const { id: articleId } = article.dataValues;
+      const count = await Rating.count({ where: { articleId } });
+
+      const ratings = await Rating.findAll({
+        where: { articleId },
+        limit,
+        offset,
+        attributes: ['ratings', 'createdAt', 'updatedAt', 'deletedAt'],
+        include: [{
+          model: User,
+          as: 'rater',
+          attributes: [
+            'id',
+            'username'
+          ],
+          include: [{
+            model: Profile,
+            as: 'profile',
+            attributes: ['firstname', 'lastname', 'bio', 'avatar']
+          }]
+        }
+        ]
+      });
+
+      const extraQuery = search ? `search=${search}` : '';
+
+      return Response.success(res, 200, { ratings, metadata: paginate.getPageMetadata(count, `/articles/${slug}/rate`, extraQuery) });
     } catch (err) {
       next(err);
     }
@@ -229,9 +289,10 @@ class ArticleController {
     try {
       const me = req.user;
       const { slug } = req.params;
-      const article = await findArticle({ slug });
+      let article = await findArticle({ slug });
       if (!article) return Response.error(res, 404, 'Article not found');
       await article.addLike(me);
+      article = await findArticle({ slug });
       return Response.success(res, 201, article, 'Article has been liked');
     } catch (err) {
       return next(err);
@@ -252,9 +313,10 @@ class ArticleController {
     try {
       const me = req.user;
       const { slug } = req.params;
-      const articletoUnlike = await findArticle({ slug });
+      let articletoUnlike = await findArticle({ slug });
       if (!articletoUnlike) return Response.error(res, 404, 'Article to unlike was not found');
       await articletoUnlike.removeLike(me);
+      articletoUnlike = await findArticle({ slug });
       return Response.success(res, 200, articletoUnlike, 'Article has been unliked');
     } catch (err) {
       return next(err);

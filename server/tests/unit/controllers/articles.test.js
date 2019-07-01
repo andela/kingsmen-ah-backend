@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 import { validateArticle } from '@validations/auth';
-import { validateRatings } from '@validations/rating';
+import validateRatings from '@validations/rating';
 import { findAllArticle } from '@helpers/articlePayload';
 import ArticleController from '@controllers/articles';
 
