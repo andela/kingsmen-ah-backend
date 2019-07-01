@@ -3,7 +3,7 @@ import models from '@models';
 import Pagination from '@helpers/Pagination';
 
 const {
-  Article, User, Rating, Profile
+  Article, Profile, User, Rating
 } = models;
 
 const articleObject = {
@@ -44,7 +44,6 @@ const articleObject = {
   group: ['Article.id', 'author.id', 'author->profile.id']
 };
 
-
 const findAllArticle = async (req) => {
   const { page } = req.query;
   const paginate = new Pagination(page, req.query.limit);
@@ -54,41 +53,7 @@ const findAllArticle = async (req) => {
     limit,
     offset,
     subQuery: false,
-    attributes: [
-      'id',
-      'slug',
-      'title',
-      'body',
-      'image',
-      'createdAt',
-      'updatedAt',
-      [
-        sequelize.fn('AVG', sequelize.col('articleRatings.ratings')),
-        'averageRating'
-      ]
-    ],
-    include: [
-      {
-        model: Rating,
-        as: 'articleRatings',
-        required: false,
-        attributes: []
-      },
-      {
-        model: User,
-        as: 'author',
-        attributes: [
-          'id',
-          'username'
-        ],
-        include: [{
-          model: Profile,
-          as: 'profile',
-          attributes: ['firstname', 'lastname', 'bio', 'avatar']
-        }]
-      }
-    ],
-    group: ['Article.id', 'author.id', 'author->profile.id']
+    ...articleObject
   });
 };
 
@@ -105,41 +70,7 @@ const findArticle = ({ articleId, slug }) => {
 
   return Article.findOne({
     where,
-    attributes: [
-      'id',
-      'slug',
-      'title',
-      'body',
-      'image',
-      'createdAt',
-      'updatedAt',
-      [
-        sequelize.fn('AVG', sequelize.col('articleRatings.ratings')),
-        'averageRating'
-      ]
-    ],
-    include: [
-      {
-        model: Rating,
-        as: 'articleRatings',
-        required: false,
-        attributes: []
-      },
-      {
-        model: User,
-        as: 'author',
-        attributes: [
-          'id',
-          'username'
-        ],
-        include: [{
-          model: Profile,
-          as: 'profile',
-          attributes: ['firstname', 'lastname', 'bio', 'avatar']
-        }]
-      }
-    ],
-    group: ['Article.id', 'author.id', 'author->profile.id']
+    ...articleObject
   });
 };
 

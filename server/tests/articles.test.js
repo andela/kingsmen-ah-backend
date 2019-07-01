@@ -1,6 +1,6 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import { generateToken, createTestUser } from './factory/user-factory';
+import { generateToken, createTestUser, createNonActiveUser } from './factory/user-factory';
 import createArticles from './factory/article-factory';
 import app from '../app';
 
@@ -33,7 +33,6 @@ describe('TESTS TO CREATE AN ARTICLE', () => {
           body: newArticle.body,
         })
         .end((err, res) => {
-          console.log(res.body, 'UserBody');
           expect(res.status).to.equal(201);
           expect(res.body.payload).to.be.an('object');
           expect(res.body.payload.title).to.be.a('string');
@@ -192,11 +191,14 @@ describe('TESTS TO UPDATE AN ARTICLE', () => {
 });
 
 describe('TESTS TO GET ARTICLES', () => {
-  let newArticle;
+  let newArticle, authToken;
   before(async () => {
     const { id } = await createTestUser({ });
 
     newArticle = await createArticles(id, {});
+
+    const { id: id2 } = await createNonActiveUser({ });
+    authToken = await generateToken({ id: id2 });
   });
   it('should get an article successfully', (done) => {
     try {
@@ -208,6 +210,23 @@ describe('TESTS TO GET ARTICLES', () => {
           expect(res.body).to.have.property('status');
           expect(res.body.message).to.equal('Article successfully retrieved');
           expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should add article to read history', (done) => {
+    try {
+      chai.request(app)
+        .get(`/api/v1/articles/${newArticle.slug}`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.payload).to.be.an('object');
+          expect(res.body).to.have.property('status');
+          expect(res.body.message).to.equal('Article successfully retrieved');
           done();
         });
     } catch (err) {
