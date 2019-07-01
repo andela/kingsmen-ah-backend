@@ -226,9 +226,6 @@ describe('TESTS TO LOGIN A USER', () => {
         .set('Authorization', `Bearer ${globalAuthToken}`)
         .send({})
         .end((err, res) => {
-          const { payload } = res.body;
-          globalResetToken = payload.verifyToken;
-          resetToken = payload.verifyToken;
           expect(res.status).to.equal(200);
           expect(res.body).to.be.an('object');
           done();

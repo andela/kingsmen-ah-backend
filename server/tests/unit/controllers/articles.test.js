@@ -4,7 +4,6 @@ import validateRatings from '@validations/rating';
 import { findAllArticle } from '@helpers/articlePayload';
 import ArticleController from '@controllers/articles';
 
-
 describe('ArticleController', () => {
   let sandbox = null;
 
