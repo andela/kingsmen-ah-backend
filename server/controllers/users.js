@@ -181,7 +181,7 @@ class UserController {
    */
   static async createVerifyToken(user) {
     const { id } = user;
-    const verifyToken = randomstring.generate(40);
+    const verifyToken = randomString({ length: 40 });
     const tokenExpiry = Date.now() + ((Number(process.env.RESET_TOKEN_EXPIRE)) || 75600000);
 
     const verifyDetails = {
@@ -212,28 +212,13 @@ class UserController {
   static async sendMailToVerifyAccount(req, res, next) {
     try {
       const {
-        active, email, username, id
+        active, email, username
       } = req.user;
 
       const { user } = req;
       if (active === false) {
-        const verifyToken = randomString({ length: 40 });
-        const tokenExpiry = Date.now() + ((Number(process.env.RESET_TOKEN_EXPIRE)) || 75600000);
-
-        const verifyDetails = {
-          verifyToken, tokenExpiry, userId: id
-        };
-
-        const userDetails = await user.getVerifiedUser({
-          where: {
-            userId: id
-          }
-        });
-
-        await userDetails
-          .update(verifyDetails);
+        const verifyToken = await UserController.createVerifyToken(user);
         sendVerifyMailToken(verifyToken, email, username);
-
         return Response.success(res, 200, 'Verification mail sent');
       }
       if (active) {
@@ -245,14 +230,14 @@ class UserController {
   }
 
   /**
-  * Verifies a new user
-  * @async
-  * @param  {object} req - Request object
-  * @param {object} res - Response object
-  * @param {object} next The next middleware
-  * @return {json} Returns json object
-  * @static
-  */
+* Verifies a new user
+* @async
+* @param  {object} req - Request object
+* @param {object} res - Response object
+* @param {object} next The next middleware
+* @return {json} Returns json object
+* @static
+*/
   static async verifyAccount(req, res, next) {
     try {
       const { token, email } = req.query;
