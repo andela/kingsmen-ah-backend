@@ -1,10 +1,6 @@
 language: node_js
 node_js:
-<<<<<<< HEAD
-- 10.3.0
-=======
   - "10.3.0"
->>>>>>> db145a0b043c0c7595e14b28559281a35509a50b
 cache:
   directories:
     - node_modules
