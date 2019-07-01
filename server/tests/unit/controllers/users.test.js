@@ -1,8 +1,16 @@
 import sinon from 'sinon';
-import { validateSignup, validateLogin } from '@validations/auth';
+import bcrypt from 'bcrypt';
+import models from '@models/';
+import {
+  validateSignup,
+  validateLogin,
+  validateForgotPassword,
+  validatePasswordReset
+} from '@validations/auth';
 import UsersController from '@controllers/users';
 import Token from '@helpers/Token';
 
+const { User } = models;
 
 describe('UsersController', () => {
   let sandbox = null;
@@ -33,6 +41,17 @@ describe('UsersController', () => {
     sinon.assert.calledOnce(next);
   });
 
+  it('should log users out', async () => {
+    const jsonFunc = sinon.spy();
+    const res = {
+      status: () => ({
+        json: jsonFunc
+      })
+    };
+    await UsersController.logout({}, res);
+    sinon.assert.calledOnce(jsonFunc);
+  });
+
 
   it('should handle get users', async () => {
     const next = sinon.spy();
@@ -50,6 +69,24 @@ describe('UsersController', () => {
     await UsersController.logout({}, res);
     sinon.assert.calledOnce(jsonFunc);
   });
+
+  it('should handle forgot password', async () => {
+    const stubFunc = { validateForgotPassword };
+    sandbox.stub(stubFunc, 'validateForgotPassword').rejects('Oops');
+
+    const next = sinon.spy();
+    await UsersController.forgotPassword({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
+
+  it('should handle reset password', async () => {
+    const stubFunc = { validatePasswordReset };
+    sandbox.stub(stubFunc, 'validatePasswordReset').rejects('Oops');
+
+    const next = sinon.spy();
+    await UsersController.resetPassword({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
 });
 
 
@@ -63,7 +100,6 @@ describe('Test Token authorize', () => {
   afterEach(() => {
     sandbox.restore();
   });
-
 
   it('should test user token', async () => {
     const next = sinon.spy();
@@ -81,5 +117,66 @@ describe('Test Token authorize', () => {
     const next = sinon.spy();
     await UsersController.verifyAccount({}, {}, next);
     sinon.assert.calledOnce(next);
+  });
+
+  it('should handle get user\'s history', async () => {
+    const next = sinon.spy();
+    await UsersController.getReadHistory({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
+
+  it('should return activate user successful', async () => {
+    const jsonFunc = sinon.spy();
+    const next = sinon.spy();
+    const res = {
+      status: () => ({
+        json: jsonFunc
+      })
+    };
+    const req = {
+      query: {
+        token: 'as223e-7yhu',
+        email: 'email@something.com',
+      }
+    };
+    sandbox.stub(User, 'findOne').resolves({
+      id: 'nhgtfvrcdftvygbuhn',
+      getVerifiedUser: () => ({
+        verifyToken: 'jhgyvftcdrftvgy',
+        get: () => ({ verifyToken: 'jhgyvftcdrftvgy' }),
+        destroy: () => {},
+      }),
+      update: () => {},
+    });
+    sandbox.stub(bcrypt, 'compare').resolves('token');
+    await UsersController.verifyAccount(req, res, next);
+    sinon.assert.calledOnce(jsonFunc);
+  });
+
+  it('should return activate user successful', async () => {
+    const jsonFunc = sinon.spy();
+    const next = sinon.spy();
+    const res = {
+      status: () => ({
+        json: jsonFunc
+      })
+    };
+    const req = {
+      query: {
+        token: 'as223e-7yhu',
+        email: 'email@something.com',
+      }
+    };
+    sandbox.stub(User, 'findOne').resolves({
+      id: 'nhgtfvrcdftvygbuhn',
+      getVerifiedUser: () => ({
+        verifyToken: 'jhgyvftcdrftvgy',
+        get: () => ({ verifyToken: 'jhgyvftcdrftvgy' }),
+        destroy: () => {},
+      }),
+      update: () => {},
+    });
+    await UsersController.verifyAccount(req, res, next);
+    sinon.assert.calledOnce(jsonFunc);
   });
 });

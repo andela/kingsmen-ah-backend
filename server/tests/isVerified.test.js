@@ -1,7 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import { generateToken, testUserNoArgumentPassed } from './factory/user-factory';
-import createArticles from './factory/articles-factory';
+import { generateToken, createNonActiveUser } from './factory/user-factory';
+import createArticles from './factory/article-factory';
 import app from '../app';
 
 chai.use(chaiHttp);
@@ -10,7 +10,7 @@ const { expect } = chai;
 describe('TESTS TO DELETE AN ARTICLE', () => {
   let newArticle, userToken;
   before(async () => {
-    const { id, email } = await testUserNoArgumentPassed();
+    const { id, email } = await createNonActiveUser({});
     const payload = {
       id,
       email

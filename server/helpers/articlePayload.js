@@ -6,6 +6,44 @@ const {
   Article, User, Rating, Profile
 } = models;
 
+const articleObject = {
+  attributes: [
+    'id',
+    'slug',
+    'title',
+    'body',
+    'image',
+    'createdAt',
+    'updatedAt',
+    [
+      sequelize.fn('AVG', sequelize.col('articleRatings.ratings')),
+      'averageRating'
+    ]
+  ],
+  include: [
+    {
+      model: Rating,
+      as: 'articleRatings',
+      required: false,
+      attributes: []
+    },
+    {
+      model: User,
+      as: 'author',
+      attributes: [
+        'id',
+        'username'
+      ],
+      include: [{
+        model: Profile,
+        as: 'profile',
+        attributes: ['firstname', 'lastname', 'bio', 'avatar']
+      }]
+    }
+  ],
+  group: ['Article.id', 'author.id', 'author->profile.id']
+};
+
 
 const findAllArticle = async (req) => {
   const { page } = req.query;
@@ -105,4 +143,34 @@ const findArticle = ({ articleId, slug }) => {
   });
 };
 
-export { findAllArticle, findArticle };
+const extractArticle = payload => payload.map((article) => {
+  const {
+    id,
+    slug,
+    title,
+    body,
+    image,
+    createdAt,
+    updatedAt,
+    averageRating,
+    author
+  } = article.get();
+  return {
+    id,
+    slug,
+    title,
+    body,
+    image,
+    createdAt,
+    updatedAt,
+    averageRating,
+    author
+  };
+});
+
+export {
+  findAllArticle,
+  findArticle,
+  articleObject,
+  extractArticle
+};
