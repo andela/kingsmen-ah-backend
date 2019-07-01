@@ -1,7 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../app';
-import { createTestUser, generateToken } from './factory/user-factory';
+import { createTestUser, generateToken, generateExpiredToken } from './factory/user-factory';
 import createTestArticle from './factory/article-factory';
 import createTestComment from './factory/comment-factory';
 
@@ -314,10 +314,12 @@ describe('TESTS TO DELETE A COMMENT', () => {
 });
 
 describe('TESTS TO LIKE A COMMENT', () => {
+  let expiredToken;
   before(async () => {
     const testUser = await createTestUser({});
     const { id } = testUser;
     userToken = await generateToken({ id });
+    expiredToken = await generateExpiredToken({ id }, 0);
 
     testArticle = await createTestArticle(id, {});
     const { slug } = testArticle;
@@ -361,7 +363,6 @@ describe('TESTS TO LIKE A COMMENT', () => {
 
   it('should return `Token expired` when expired token is entered. ', (done) => {
     try {
-      const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjgyZDIxYWUwLWJhMWQtNDcxZS04MjJlLTg5N2VmMzZmY2ZmMyIsImVtYWlsIjoiYWRleDAwMUBnbWFpbC5jb20iLCJpYXQiOjE1NjA4ODc2OTAsImV4cCI6MTU2MTU3ODg5MH0.PN0L6GoIywAieY2emeKDtBK704eRM0uNyo6Lxj0v66I';
       chai.request(app)
         .delete(`/api/v1/articles/${testSlug}/comments/${testComment.id}/like`)
         .set('Authorization', `Bearer ${expiredToken}`)
