@@ -287,7 +287,7 @@ class UserController {
 
       if (!user) return Response.error(res, 400, 'Please use a valid reset link');
 
-      // Check if the user account is active
+      // Check if the account is active
       if (!user.active) return Response.error(res, 403, 'Your account is not verified');
 
       const token = await UserController.updateToken(user);
