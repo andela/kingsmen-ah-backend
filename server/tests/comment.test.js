@@ -358,4 +358,22 @@ describe('TESTS TO LIKE A COMMENT', () => {
       throw err.message;
     }
   });
+
+  it('should return `Token expired` when expired token is entered. ', (done) => {
+    try {
+      const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjgyZDIxYWUwLWJhMWQtNDcxZS04MjJlLTg5N2VmMzZmY2ZmMyIsImVtYWlsIjoiYWRleDAwMUBnbWFpbC5jb20iLCJpYXQiOjE1NjA4ODc2OTAsImV4cCI6MTU2MTU3ODg5MH0.PN0L6GoIywAieY2emeKDtBK704eRM0uNyo6Lxj0v66I';
+      chai.request(app)
+        .delete(`/api/v1/articles/${testSlug}/comments/${testComment.id}/like`)
+        .set('Authorization', `Bearer ${expiredToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          expect(res.body).to.have.property('errors');
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body.errors.global).to.eql('Token Expired');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
 });
