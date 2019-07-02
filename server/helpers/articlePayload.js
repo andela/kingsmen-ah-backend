@@ -18,9 +18,6 @@ const articleObject = {
     [
       sequelize.fn('AVG', sequelize.col('articleRatings.ratings')),
       'averageRating'
-    ],
-    [
-      sequelize.fn('COUNT', sequelize.col('ArticleLikes.articleId')), 'numberOfLikes'
     ]
   ],
   include: [
@@ -33,7 +30,7 @@ const articleObject = {
     {
       model: ArticleLike,
       as: 'ArticleLikes',
-      attributes: []
+      attributes: ['id']
     },
     {
       model: User,
@@ -49,7 +46,7 @@ const articleObject = {
       }]
     }
   ],
-  group: ['Article.id', 'author.id', 'author->profile.id', 'ArticleLikes.articleId']
+  group: ['Article.id', 'author.id', 'author->profile.id', 'ArticleLikes.userId', 'ArticleLikes.articleId', 'ArticleLikes.id']
 };
 
 const findAllArticle = async (req) => {
