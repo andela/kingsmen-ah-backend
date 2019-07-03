@@ -1,11 +1,22 @@
 import sinon from 'sinon';
+import chai from 'chai';
 import { validateArticle, validateReport } from '@validations/auth';
-import { validateRatings } from '@validations/rating';
-import { findAllArticle } from '@helpers/articlePayload';
+import validateRatings from '@validations/rating';
+import { findAllArticle, extractArticle } from '@helpers/articlePayload';
 import ArticleController from '@controllers/articles';
+import createArticle from '../../factory/article-factory';
+import { createTestUser } from '../../factory/user-factory';
 
+const { expect } = chai;
 
 describe('ArticleController', () => {
+  let article;
+
+  before(async () => {
+    const { id } = await createTestUser({});
+    article = (await createArticle(id, {})).get();
+  });
+
   let sandbox = null;
 
   beforeEach(() => {
@@ -62,6 +73,31 @@ describe('ArticleController', () => {
     const next = sinon.spy();
     await ArticleController.getAll({}, {}, next);
     sinon.assert.calledOnce(next);
+  });
+  it('should handle no slug passed to like article', async () => {
+    const next = sinon.spy();
+    await ArticleController.like({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
+  it('should handle no slug passed to unlike article', async () => {
+    const next = sinon.spy();
+    await ArticleController.unlike({}, {}, next);
+    sinon.assert.calledOnce(next);
+  });
+
+  it('should return specified article attributes', (done) => {
+    const articleMock = {
+      ...article,
+      invalidKey: 'This should not be returned',
+    };
+    const get = () => articleMock;
+    const articles = [{ ...articleMock, get }];
+
+    const filteredArticle = extractArticle(articles);
+    expect(filteredArticle[0]).to.be.an('object');
+    expect(filteredArticle[0]).to.have.property('id');
+    expect(filteredArticle[0]).to.not.have.property('invalidKey');
+    done();
   });
 
   it('should handle report an article', async () => {

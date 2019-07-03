@@ -1,12 +1,25 @@
 import models from '@models';
 import faker from 'faker';
+import jwt from 'jsonwebtoken';
+import { config } from 'dotenv';
 import Token from '@helpers/Token';
 import { createTestProfile, createProfileWithDetails } from './profile-factory';
+
+config();
 
 const { User } = models;
 
 const generateToken = async (userDetails) => {
   const token = await Token.create(userDetails);
+  return token;
+};
+
+const generateExpiredToken = async (userDetails, expiry) => {
+  const tokenSecret = process.env.SECRET || 'secret';
+  const token = await jwt.sign(userDetails, tokenSecret, {
+    expiresIn: expiry
+  });
+
   return token;
 };
 
@@ -26,6 +39,22 @@ const createTestUser = async ({
   return newUser;
 };
 
+const createNonActiveUser = async ({
+  username, email, password
+}) => {
+  const newUser = await User.create({
+    id: faker.random.uuid(),
+    username: username || faker.random.alphaNumeric(6),
+    email: email || faker.internet.email(),
+    password: password || faker.internet.password(),
+    active: false
+  });
+
+  await createProfileWithDetails(newUser, {});
+
+  return newUser;
+};
+
 const createTestUserWithoutProfile = async ({ username, email }) => {
   const newUser = await User.create({
     id: faker.random.uuid(),
@@ -38,17 +67,10 @@ const createTestUserWithoutProfile = async ({ username, email }) => {
   return newUser;
 };
 
-// eslint-disable-next-line max-len
-const testUserNoArgumentPassed = async (username = faker.internet.userName(), email = faker.internet.email()) => {
-  const newUser = await User.create({
-    id: faker.random.uuid(),
-    username,
-    email,
-    password: faker.internet.password()
-  });
-
-  return newUser;
+export {
+  createTestUser,
+  createTestUserWithoutProfile,
+  generateToken,
+  generateExpiredToken,
+  createNonActiveUser
 };
-
-// eslint-disable-next-line object-curly-newline
-export { createTestUser, createTestUserWithoutProfile, testUserNoArgumentPassed, generateToken };

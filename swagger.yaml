@@ -8,9 +8,11 @@ info:
     url: "https://www.apache.org/licenses/LICENSE-2.0.html"
 basePath: "/api/v1"
 tags:
-- name: "user"
+- name: "users"
   description: "User operations"
-- name: "profile"
+- name: "auth"
+  description: "Authentication operations"
+- name: "profiles"
   description: "User profile operations"
 - name: "articles"
   description: "Articles operations"
@@ -21,7 +23,7 @@ paths:
   /users:
     post:
       tags:
-      - "Auth"
+      - "users"
       summary: "Create user"
       description: "Creates a new user in the application"
       operationId: "createUser"
@@ -53,30 +55,6 @@ paths:
         format: "password"
         minLength: 5
         maxLength: 255
-      - in: "formData"
-        name: "firstname"
-        description: "First name of user"
-        required: false
-        type: "string"
-        format: "text"
-        minLength: 2
-        maxLength: 100
-      - in: "formData"
-        name: "lastname"
-        description: "Last name of user"
-        required: false
-        type: "string"
-        format: "text"
-        minLength: 2
-        maxLength: 100
-      - in: "formData"
-        name: "middlename"
-        description: "Middle name of user"
-        required: false
-        type: "string"
-        format: "text"
-        minLength: 2
-        maxLength: 100
       responses:
         201:
           description: "User created successfully"
@@ -104,7 +82,7 @@ paths:
       - api_key: []
     put:
       tags:
-      - "Profile"
+      - "profiles"
       summary: "Update User Profile"
       description: "Returns the Updated User Details"
       operationId: "updateProfile"
@@ -154,32 +132,31 @@ paths:
           description: "Invalid Token Provided"
       security:
       - api_key: []
-  /profiles/{username}:
+  /users/history:
     get:
       tags:
-      - "profile"
-      summary: "User Profile details"
-      description: "Returns the profile details of a user"
-      operationId: "getProfile"
+      - "users"
+      summary: "User's Read History"
+      description: "Returns a list of articles that user has read"
+      operationId: "getReadHistory"
       produces:
       - "application/json"
-      parameters:
-        - in: path
-          name: username
-          required: false
-          type: string
-          description: "User's username"
+      parameters: []
       responses:
         200:
           description: "success"
           schema:
-            $ref: "#/definitions/ApiResponse"
-        404:
-          description: "fail"
+            $ref: "#/definitions/ApiResponseArray"
+        400:
+          description: "Invalid token supplied: format Bearer <token>"
+        401:
+          description: "Invalid Token Provided"
+      security:
+      - api_key: []
   /auth/login:
     post:
       tags:
-      - "Auth"
+      - "auth"
       summary: "User login"
       description: "Logs user into the system"
       operationId: "loginUser"
@@ -209,6 +186,178 @@ paths:
             $ref: "#/definitions/ApiResponse"
         400:
           description: "Invalid email/password supplied"
+  /auth/forgot_password:
+    post:
+      tags:
+      - "auth"
+      summary: "Forgot Password"
+      description: "Send reset token to user email"
+      operationId: "forgotPasswordId"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "email"
+        in: "formData"
+        description: "The email to reset password"
+        required: true
+        type: "string"
+        format: "email"
+        minLength: 5
+        maxLength: 255
+      responses:
+        200:
+          description: "Reset email sent"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "Invalid email supplied"
+        404:
+          description: "User not found"
+        403:
+          description: "User account has not been verified"
+  /auth/reset_password:
+    post:
+      tags:
+      - "auth"
+      summary: "Reset Password"
+      description: "Reset the user password and send success email"
+      operationId: "resetPasswordId"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "password"
+        in: "formData"
+        description: "New Password"
+        required: true
+        type: "string"
+        format: "password"
+        minLength: 5
+        maxLength: 255
+      - name: "confirmPassword"
+        in: "formData"
+        description: "Confirm Password"
+        required: true
+        type: "string"
+        format: "password"
+        minLength: 5
+        maxLength: 255
+      - name: "email"
+        in: "query"
+        description: "The email to reset password"
+        required: true
+        type: "string"
+        format: "email"
+        minLength: 5
+        maxLength: 255
+      - name: "token"
+        in: "query"
+        description: "Reset token"
+        required: true
+        type: "string"
+        format: "text"
+        minLength: 5
+        maxLength: 255
+      responses:
+        200:
+          description: "Password has been reset"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "Invalid password supplied"
+        404:
+          description: "User not found"
+        401:
+          description: "Invalid token"
+  /auth/verify_account:
+    post:
+      tags:
+      - "auth"
+      summary: "Send Verification mail"
+      description: "Send verification link if previous link has expired"
+      operationId: "verificationAccountId"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "email"
+        in: "query"
+        description: "The email to reset password"
+        required: true
+        type: "string"
+        format: "email"
+        minLength: 5
+        maxLength: 255
+      - name: "token"
+        in: "query"
+        description: "Reset token"
+        required: true
+        type: "string"
+        format: "text"
+        minLength: 5
+        maxLength: 255
+      responses:
+        200:
+          description: "Verification mail sent"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "You are already verified"
+  /auth/activate_user:
+    post:
+      tags:
+      - "auth"
+      summary: "Activate User"
+      description: "Activate user on verification"
+      operationId: "activateUserId"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "token"
+        in: "query"
+        description: "Verify token"
+        required: true
+        type: "string"
+        format: "text"
+        minLength: 5
+        maxLength: 255
+      - name: "email"
+        in: "query"
+        description: "Email"
+        required: true
+        type: "string"
+        format: "text"
+        minLength: 5
+        maxLength: 255
+      responses:
+        200:
+          description: "You a now verified"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "Please use a valid verification link"
+        401:
+          description: "Invalid token"
+  /profiles/{username}:
+    get:
+      tags:
+      - "profiles"
+      summary: "User Profile details"
+      description: "Returns the profile details of a user"
+      operationId: "getProfile"
+      produces:
+      - "application/json"
+      parameters:
+        - in: path
+          name: username
+          required: false
+          type: string
+          description: "User's username"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        404:
+          description: "fail"
   /articles:
     post:
       tags:
@@ -253,7 +402,7 @@ paths:
     get:
       tags:
       - "articles"
-      summary: "user can get all articles"
+      summary: "User can get all articles"
       description: "Returns all available articles"
       operationId: "getArticles"
       produces:
@@ -272,10 +421,16 @@ paths:
       - "articles"
       summary: "User can get all articles"
       description: "Returns all available articles"
-      operationId: "getArticles"
+      operationId: "getArticle"
       produces:
       - "application/json"
-      parameters: []
+      parameters:
+      - name: "slug"
+        in: "path"
+        description: "Slug of the article to retrieve comments"
+        required: true
+        type: "string"
+        format: "slug"
       responses:
         200:
           description: "success"
@@ -283,6 +438,8 @@ paths:
             $ref: "#/definitions/ApiResponse"
         400:
           description: "fail"
+      security:
+      - api_key: []
     delete:
       tags:
       - "articles"
@@ -376,7 +533,56 @@ paths:
           description: "Article does not exist"
       security:
       - api_key: []
-  /articles/{slug}/comment:
+  /articles/{slug}/like:
+    post:
+      tags:
+      - "articles"
+      summary: "Like Article"
+      description: "Likes an article"
+      operationId: "likeArticle"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "slug"
+        in: "path"
+        description: "Slug of the article to be liked"
+        required: true
+        type: "string"
+        format: "slug"
+      responses:
+        201:
+          description: "Article successfully liked"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        404:
+          description: "Article does not exist"
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - "articles"
+      summary: "Unlike Article"
+      description: "Unlikes an article"
+      operationId: "UnlikeArticle"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "slug"
+        in: "path"
+        description: "Slug of the article to be unliked"
+        required: true
+        type: "string"
+        format: "slug"
+      responses:
+        200:
+          description: "Article successfully unliked"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        404:
+          description: "Article does not exist"
+      security:
+      - api_key: []
+  /articles/{slug}/comments:
     post:
       tags:
       - "articles"
@@ -435,7 +641,7 @@ paths:
           description: "Article does not exist"
       security:
       - api_key: []
-  /articles/{slug}/comment/{id}:
+  /articles/{slug}/comments/{id}:
     put:
       tags:
       - "articles"
@@ -524,12 +730,6 @@ definitions:
         type: "string"
       password:
         type: "string"
-      firstname:
-        type: "string"
-      lastname:
-        type: "string"
-      middlename:
-        type: "string"
       active:
         type: boolean
   Profile:
@@ -538,6 +738,22 @@ definitions:
       id:
         type: "integer"
         format: "int64"
+      userId:
+        type: "integer"
+        format: "int64"
+      firstname:
+        type: "string"
+      lastname:
+        type: "string"
+      bio:
+        type: "string"
+      avatar:
+        type: "string"
+      phone:
+        type: "integer"
+        format: "int64"
+      location:
+        type: "string"
   Articles:
     type: "object"
     properties:
@@ -573,6 +789,21 @@ definitions:
         format: "uuid"
       ratings:
         type: "integer"
+  PasswordReset:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      userId:
+        type: "string"
+        format: "uuid"
+      resetPasswordToken:
+        type: "string"
+        format: "text"
+      resetPasswordExpiry:
+        type: "string"
+        format: "date-time"
   ApiResponse:
     type: "object"
     properties:
@@ -583,6 +814,20 @@ definitions:
         type: "object"
         items:
           type: "object"
+  ApiResponseArray:
+    type: "object"
+    properties:
+      status:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
+        format: "text"
+      payload:
+        type: "array"
+        items:
+          type: "object"
 externalDocs:
   description: "Find out more about Author's Haven"
   url: "https://github.com/andela/kingsmen-ah-backend"
+  

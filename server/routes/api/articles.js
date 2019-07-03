@@ -1,24 +1,35 @@
 import express from 'express';
 import ArticleController from '@controllers/articles';
-import Token from '@helpers/Token';
 import trim from '@middlewares/trim';
+import authorizeAccess from '@middlewares/authorizeAccess';
 import CommentController from '@controllers/comments';
 import articleFinder from '@middlewares/articleFinder';
-import commentFinder from '@middlewares/commentFinder';
+import isUserVerified from '@middlewares/isVerified';
+import { find, commentFinder } from '@middlewares/commentFinder';
 
 const articlesRouter = express.Router();
 
-articlesRouter.post('/:slug/rate', trim, Token.authorize, ArticleController.rate);
-articlesRouter.post('/:slug/comments', Token.authorize, trim, articleFinder, CommentController.create);
-articlesRouter.get('/:slug/comments', Token.authorize, articleFinder, CommentController.getComments);
-articlesRouter.put('/:slug/comments/:id', Token.authorize, trim, commentFinder, CommentController.updateComment);
-articlesRouter.delete('/:slug/comments/:id', Token.authorize, commentFinder, CommentController.deleteComment);
+articlesRouter.post('/:slug/comments', authorizeAccess, isUserVerified, trim, articleFinder, CommentController.create);
+articlesRouter.get('/:slug/comments', authorizeAccess, articleFinder, CommentController.getComments);
+articlesRouter.put('/:slug/comments/:id', authorizeAccess, isUserVerified, trim, commentFinder, CommentController.updateComment);
+articlesRouter.delete('/:slug/comments/:id', authorizeAccess, isUserVerified, commentFinder, CommentController.deleteComment);
+
+articlesRouter.post('/:slug/comments/:id/like', authorizeAccess, find, CommentController.likeComment);
+articlesRouter.delete('/:slug/comments/:id/like', authorizeAccess, find, CommentController.unlikeComment);
 
 articlesRouter.get('/', ArticleController.getAll);
 articlesRouter.get('/:slug', ArticleController.getOne);
-articlesRouter.post('/', Token.authorize, ArticleController.create);
-articlesRouter.put('/:slug', Token.authorize, ArticleController.update);
-articlesRouter.delete('/:slug', Token.authorize, ArticleController.delete);
-articlesRouter.post('/:slug/report', Token.authorize, ArticleController.report);
+
+articlesRouter.post('/:slug/like', authorizeAccess, isUserVerified, ArticleController.like);
+articlesRouter.delete('/:slug/like', authorizeAccess, isUserVerified, ArticleController.unlike);
+
+articlesRouter.post('/', authorizeAccess, isUserVerified, ArticleController.create);
+articlesRouter.put('/:slug', authorizeAccess, isUserVerified, ArticleController.update);
+articlesRouter.delete('/:slug', authorizeAccess, isUserVerified, ArticleController.delete);
+
+articlesRouter.get('/:slug/rate', ArticleController.getArticleRatings);
+articlesRouter.post('/:slug/rate', trim, authorizeAccess, isUserVerified, ArticleController.rate);
+
+articlesRouter.post('/:slug/report', authorizeAccess, isUserVerified, ArticleController.report);
 
 export default articlesRouter;

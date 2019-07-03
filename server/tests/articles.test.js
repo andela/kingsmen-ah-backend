@@ -1,7 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import { generateToken, testUserNoArgumentPassed } from './factory/user-factory';
-import createArticles from './factory/articles-factory';
+import { generateToken, createTestUser, createNonActiveUser } from './factory/user-factory';
+import createArticles from './factory/article-factory';
 import app from '../app';
 
 chai.use(chaiHttp);
@@ -9,11 +9,10 @@ const { expect } = chai;
 
 let wrongToken;
 
-
 describe('TESTS TO CREATE AN ARTICLE', () => {
   let newArticle, userToken;
   before(async () => {
-    const { id, email } = await testUserNoArgumentPassed();
+    const { id, email } = await createTestUser({ });
     const payload = {
       id,
       email
@@ -30,16 +29,14 @@ describe('TESTS TO CREATE AN ARTICLE', () => {
         .set('Authorization', `Bearer ${userToken}`)
         .send({
           title: newArticle.title,
-          body: newArticle.body
+          body: newArticle.body,
         })
         .end((err, res) => {
-          const returnStatus = 'success';
           expect(res.status).to.equal(201);
           expect(res.body.payload).to.be.an('object');
           expect(res.body.payload.title).to.be.a('string');
           expect(res.body).to.have.property('status');
-          expect(res.body.status).to.eql(returnStatus);
-          expect(res.body).to.have.property('status', returnStatus);
+          expect(res.body.message).to.eql('Article created successfully');
           expect(res.body).to.have.property('status');
           done();
         });
@@ -94,7 +91,7 @@ describe('TESTS TO CREATE AN ARTICLE', () => {
 describe('TESTS TO UPDATE AN ARTICLE', () => {
   let newArticle, userToken;
   before(async () => {
-    const { id, email } = await testUserNoArgumentPassed();
+    const { id, email } = await createTestUser({ });
     const payload = {
       id,
       email
@@ -113,13 +110,11 @@ describe('TESTS TO UPDATE AN ARTICLE', () => {
           body: newArticle.body,
         })
         .end((err, res) => {
-          const returnStatus = 'success';
           expect(res.status).to.equal(200);
           expect(res.body.payload).to.be.an('object');
           expect(res.body.payload.title).to.be.a('string');
           expect(res.body).to.have.property('status');
-          expect(res.body.status).to.eql(returnStatus);
-          expect(res.body).to.have.property('status', returnStatus);
+          expect(res.body.message).to.equal('Article successfully updated');
           expect(res.body).to.have.property('status');
           done();
         });
@@ -195,24 +190,42 @@ describe('TESTS TO UPDATE AN ARTICLE', () => {
 });
 
 describe('TESTS TO GET ARTICLES', () => {
-  let newArticle;
+  let newArticle, authToken;
   before(async () => {
-    const { id } = await testUserNoArgumentPassed();
+    const { id } = await createTestUser({ });
 
     newArticle = await createArticles(id, {});
+
+    const { id: id2 } = await createNonActiveUser({ });
+    authToken = await generateToken({ id: id2 });
   });
   it('should get an article successfully', (done) => {
     try {
       chai.request(app)
         .get(`/api/v1/articles/${newArticle.slug}`)
         .end((err, res) => {
-          const returnStatus = 'success';
           expect(res.status).to.equal(200);
           expect(res.body.payload).to.be.an('object');
           expect(res.body).to.have.property('status');
-          expect(res.body.status).to.eql(returnStatus);
-          expect(res.body).to.have.property('status', returnStatus);
+          expect(res.body.message).to.equal('Article successfully retrieved');
           expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should add article to read history', (done) => {
+    try {
+      chai.request(app)
+        .get(`/api/v1/articles/${newArticle.slug}`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.payload).to.be.an('object');
+          expect(res.body).to.have.property('status');
+          expect(res.body.message).to.equal('Article successfully retrieved');
           done();
         });
     } catch (err) {
@@ -225,12 +238,9 @@ describe('TESTS TO GET ARTICLES', () => {
       chai.request(app)
         .get('/api/v1/articles')
         .end((err, res) => {
-          const returnStatus = 'success';
           expect(res.status).to.equal(200);
-          expect(res.body.payload).to.be.an('array');
           expect(res.body).to.have.property('status');
-          expect(res.body.status).to.eql(returnStatus);
-          expect(res.body).to.have.property('status', returnStatus);
+          expect(res.body.payload.rows).to.be.an('array');
           expect(res.body).to.have.property('status');
           done();
         });
@@ -239,7 +249,45 @@ describe('TESTS TO GET ARTICLES', () => {
     }
   });
 
-  it('should return an artcle does not exist', (done) => {
+  it('should get all article paginated', (done) => {
+    try {
+      chai.request(app)
+        .get('/api/v1/articles?page=1&limit=2')
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('status');
+          expect(res.body.payload.rows).to.be.an('array');
+          expect(res.body.payload).to.have.property('metadata');
+          expect(res.body.payload.metadata).to.have.property('pages');
+          expect(res.body.payload.metadata).to.have.property('totalItems');
+
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should get all article paginated with extra query', (done) => {
+    try {
+      chai.request(app)
+        .get('/api/v1/articles?page=1&limit=2&search=name')
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('status');
+          expect(res.body.payload.rows).to.be.an('array');
+          expect(res.body.payload).to.have.property('metadata');
+          expect(res.body.payload.metadata).to.have.property('pages');
+          expect(res.body.payload.metadata).to.have.property('totalItems');
+
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should return an article does not exist', (done) => {
     try {
       chai.request(app)
         .get(`/api/v1/articles/${newArticle.title}`)
@@ -259,14 +307,14 @@ describe('TESTS TO GET ARTICLES', () => {
 describe('TESTS TO DELETE AN ARTICLE', () => {
   let newArticle, userToken, useNotPermittedToDelete;
   before(async () => {
-    const { id, email } = await testUserNoArgumentPassed();
+    const { id, email } = await createTestUser({ });
     const payload = {
       id,
       email
     };
     userToken = await generateToken(payload);
     newArticle = await createArticles(id, {});
-    const { id: user, email: mail } = await testUserNoArgumentPassed();
+    const { id: user, email: mail } = await createTestUser({ });
     payload.id = user;
     payload.email = mail;
     useNotPermittedToDelete = await generateToken(payload);
@@ -321,13 +369,97 @@ describe('TESTS TO DELETE AN ARTICLE', () => {
   });
 });
 
+describe('TESTS TO LIKE AND UNLIKE AN ARTICLE', () => {
+  let article, userToken;
+  before(async () => {
+    const { id, email } = await createTestUser({ });
+    const payload = {
+      id,
+      email
+    };
+    userToken = await generateToken(payload);
+    article = await createArticles(id, {});
+    wrongToken = userToken;
+  });
+
+  it('should like an article', (done) => {
+    try {
+      chai.request(app)
+        .post(`/api/v1/articles/${article.slug}/like`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(201);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status');
+          expect(res.body.message).to.eql('Article has been liked');
+          expect(res.body.payload.slug).to.eql(article.slug);
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should display article not found when article is not available', (done) => {
+    try {
+      chai.request(app)
+        .post('/api/v1/articles/errororor/like')
+        .set('Authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body).to.have.property('status');
+          expect(res.body.errors.global).to.eql('Article not found');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should unlike an article', (done) => {
+    try {
+      chai.request(app)
+        .delete(`/api/v1/articles/${article.slug}/like`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status');
+          expect(res.body.message).to.eql('Article has been unliked');
+          expect(res.body.payload.slug).to.eql(article.slug);
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should display article not found when article is not available', (done) => {
+    try {
+      chai.request(app)
+        .delete('/api/v1/articles/errororor/like')
+        .set('Authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body.errors).to.be.an('object');
+          expect(res.body).to.have.property('status');
+          expect(res.body.errors.global).to.eql('Article to unlike was not found');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+});
+
 describe('TESTS TO REPORT AN ARTICLE', () => {
   let userToken, article;
   const reportArticle = {
     report: 'I am reporting this article',
   };
   before(async () => {
-    const { id, email } = await testUserNoArgumentPassed();
+    const { id, email } = await createTestUser({ });
     const payload = {
       id,
       email
