@@ -20,8 +20,8 @@ articlesRouter.delete('/:slug/comments/:id/like', authorizeAccess, find, Comment
 articlesRouter.get('/', ArticleController.getAll);
 articlesRouter.get('/:slug', ArticleController.getOne);
 
-articlesRouter.post('/:slug/like', authorizeAccess, ArticleController.like);
-articlesRouter.delete('/:slug/like', authorizeAccess, ArticleController.unlike);
+articlesRouter.post('/:slug/like', authorizeAccess, isUserVerified, ArticleController.like);
+articlesRouter.delete('/:slug/like', authorizeAccess, isUserVerified, ArticleController.unlike);
 
 articlesRouter.post('/', authorizeAccess, isUserVerified, ArticleController.create);
 articlesRouter.put('/:slug', authorizeAccess, isUserVerified, ArticleController.update);

@@ -372,7 +372,7 @@ describe('TESTS TO DELETE AN ARTICLE', () => {
 describe('TESTS TO LIKE AND UNLIKE AN ARTICLE', () => {
   let article, userToken;
   before(async () => {
-    const { id, email } = await createNonActiveUser({ });
+    const { id, email } = await createTestUser({ });
     const payload = {
       id,
       email
