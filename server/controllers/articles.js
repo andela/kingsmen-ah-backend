@@ -347,8 +347,14 @@ class ArticleController {
       const { id } = article;
       const reportArticle = await ReportArticle.create({ articleId: id, userId, ...report });
       return Response.success(res, 201, reportArticle, 'Article successfully reported!');
-    } catch (err) {
-      return next(err);
+    } catch (error) {
+      if (error.isJoi && error.name === 'ValidationError') {
+        return res.status(400).json({
+          status: 400,
+          errors: validationResponse(error)
+        });
+      }
+      return next(error);
     }
   }
 }

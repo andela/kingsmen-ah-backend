@@ -718,7 +718,7 @@ paths:
         - "articles"
         summary: "Report an Article"
         description: "Reports an article"
-        operationId: "create"
+        operationId: "report"
         produces:
         - "application/json"
         parameters:
