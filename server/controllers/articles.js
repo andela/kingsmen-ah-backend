@@ -2,12 +2,12 @@ import models from '@models';
 import { validateArticle } from '@validations/auth';
 import { validationResponse } from '@helpers/validationResponse';
 import Response from '@helpers/Response';
-import { findAllArticle, findArticle } from '@helpers/articlePayload';
+import { findAllArticle, findArticle, getSpecificTag } from '@helpers/articlePayload';
 import validateRating from '@validations/rating';
 import Pagination from '@helpers/Pagination';
 
 const {
-  Article, User, Rating, Profile
+  Article, User, Rating, Profile, Tag
 } = models;
 
 /**
@@ -29,16 +29,19 @@ class ArticleController {
     try {
       const articleDetails = await validateArticle(req.body);
       const { id: userId } = req.decoded;
-      const { title } = articleDetails;
+      const { title, tags } = articleDetails;
       articleDetails.title = articleDetails.title.replace(/ +/g, ' ');
       const createArticleDetails = {
         slug: title, userId, ...articleDetails
       };
-
       const createdArticle = await Article.create(createArticleDetails);
-      const { slug } = createdArticle.dataValues;
-      const payload = await findArticle({ slug });
-
+      const { slug } = createdArticle;
+      // Create a tag with the article id here
+      await Tag.create({ articleSlug: slug, tagList: tags });
+      const article = await findArticle({ slug });
+      const articleTags = await getSpecificTag(slug);
+      const payload = article.dataValues;
+      payload.articleTags = articleTags.tagList;
       return Response.success(res, 201, payload, 'Article created successfully');
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
