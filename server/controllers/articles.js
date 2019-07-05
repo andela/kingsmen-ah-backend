@@ -44,7 +44,7 @@ class ArticleController {
       const article = await findArticle({ slug });
       const articleTags = await getSpecificTag(slug);
       const payload = article.dataValues;
-      payload.articleTags = articleTags.tagList;
+      payload.tags = articleTags.tagList;
       return Response.success(res, 201, payload, 'Article created successfully');
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
@@ -97,7 +97,7 @@ class ArticleController {
       articleTags = await getSpecificTag(updatedSlug);
 
       const payload = article.dataValues;
-      payload.articleTags = tags;
+      payload.tags = tags;
 
       return Response.success(res, 200, payload, 'Article successfully updated');
     } catch (err) {
@@ -370,6 +370,27 @@ class ArticleController {
         });
       }
       return next(error);
+    }
+  }
+
+  /**
+   * Retrieves all tags
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   * @memberof ArticleController
+   * @returns {json} returns json object
+   */
+  static async getAllTags(req, res, next) {
+    try {
+      const allTags = await Tag.findAll({
+        attributes: ['id', ['articleSlug', 'slug'], ['tagList', 'tags']]
+      });
+      return Response.success(res, 200, allTags, 'All tags retrieved');
+    } catch (err) {
+      return next(err);
     }
   }
 }

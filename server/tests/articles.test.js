@@ -615,9 +615,7 @@ describe('TESTS TO TAG AN ARTICLE', () => {
           expect(res.body).to.have.property('status');
           expect(res.body.message).to.eql('Article created successfully');
           expect(res.body).to.have.property('status');
-          // expect(res.body.payload.articleTags).to.be.an('array');
-          console.log(res.body.payload);
-          
+          // expect(res.body.payload.tags).to.be.an('array');
           done();
         });
     } catch (err) {
@@ -640,6 +638,25 @@ describe('TESTS TO TAG AN ARTICLE', () => {
           expect(res.status).to.equal(400);
           expect(res.body.errors).to.be.an('object');
           expect(res.body.errors.tags).to.eql('tags does not contain 1 required value(s)');
+          expect(res.body).to.have.property('status');
+          done();
+        });
+    } catch (err) {
+      throw err.message;
+    }
+  });
+
+  it('should return all tags successfully', (done) => {
+    try {
+      chai.request(app)
+        .get('/api/v1/tags')
+        .set('Accept', 'application/json')
+        .set('Authorization', `Bearer ${userToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.payload).to.be.an('array');
+          expect(res.body).to.have.property('status');
+          expect(res.body.message).to.eql('All tags retrieved');
           expect(res.body).to.have.property('status');
           done();
         });
@@ -678,7 +695,7 @@ describe('TESTS TO UPDATE A TAGGED ARTICLE', () => {
           expect(res.body.payload.title).to.be.a('string');
           expect(res.body).to.have.property('status');
           expect(res.body.message).to.equal('Article successfully updated');
-          expect(res.body.payload.articleTags).to.be.an('array');
+          expect(res.body.payload.tags).to.be.an('array');
           expect(res.body).to.have.property('status');
           done();
         });
