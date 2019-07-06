@@ -342,7 +342,7 @@ describe('TESTS TO DELETE AN ARTICLE', () => {
     }
   });
 
-  it('should update an article successfully', (done) => {
+  it('should delete an article successfully', (done) => {
     try {
       chai.request(app)
         .delete(`/api/v1/articles/${newArticle.slug}`)
@@ -615,7 +615,6 @@ describe('TESTS TO TAG AN ARTICLE', () => {
           expect(res.body).to.have.property('status');
           expect(res.body.message).to.eql('Article created successfully');
           expect(res.body).to.have.property('status');
-          // expect(res.body.payload.tags).to.be.an('array');
           done();
         });
     } catch (err) {

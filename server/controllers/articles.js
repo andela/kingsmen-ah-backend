@@ -178,12 +178,13 @@ class ArticleController {
         return Response.error(res, 404, 'Article does not exist');
       }
 
+      await Tag.destroy({ where: { articleSlug: slug } });
       const deletedArticle = await Article.destroy({ where: { slug, userId } });
+
 
       if (!deletedArticle) {
         return Response.error(res, 403, 'You do not have permission to delete this article!');
       }
-
       return Response.success(res, 200, {}, 'Article successfully deleted');
     } catch (err) {
       next(err);
