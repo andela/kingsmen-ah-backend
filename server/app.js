@@ -4,6 +4,7 @@ import logger from 'morgan';
 import { config } from 'dotenv';
 import bodyParser from 'body-parser';
 import swaggerUi from 'swagger-ui-express';
+import cors from 'cors';
 import apis from '@routes/api';
 import errorHandler from '@middlewares/errorHandler';
 import swaggerSpec from './config/swagger';
@@ -13,7 +14,15 @@ config();
 
 const app = express();
 const port = process.env.PORT || 3000;
+const corsOptions = {
+  origin: '*',
+  credentials: true,
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
 
+app.use(cors(corsOptions));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
