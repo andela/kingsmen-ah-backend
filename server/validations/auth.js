@@ -61,7 +61,9 @@ export const validateArticle = (article) => {
       .required(),
     body: Joi.string().trim().min(4)
       .required(),
-    image: Joi.string().trim().optional()
+    image: Joi.string().trim().optional(),
+    tags: Joi.array().items(Joi.string().trim().min(2).max(10)
+      .required())
   };
   return Joi.validate(article, schema, {
     language: {
@@ -69,5 +71,17 @@ export const validateArticle = (article) => {
     },
     abortEarly: false,
     stripUnknown: true
+  });
+};
+
+export const validateReport = (report) => {
+  const schema = {
+    report: Joi.string().trim().min(4).required()
+      .label('validating report'),
+  };
+  return Joi.validate(report, schema, {
+    language: {
+      key: '{{key}} '
+    },
   });
 };

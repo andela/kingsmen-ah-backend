@@ -132,6 +132,27 @@ paths:
           description: "Invalid Token Provided"
       security:
       - api_key: []
+  /users/history:
+    get:
+      tags:
+      - "users"
+      summary: "User's Read History"
+      description: "Returns a list of articles that user has read"
+      operationId: "getReadHistory"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/ApiResponseArray"
+        400:
+          description: "Invalid token supplied: format Bearer <token>"
+        401:
+          description: "Invalid Token Provided"
+      security:
+      - api_key: []
   /auth/login:
     post:
       tags:
@@ -247,6 +268,74 @@ paths:
           description: "User not found"
         401:
           description: "Invalid token"
+  /auth/verify_account:
+    post:
+      tags:
+      - "auth"
+      summary: "Send Verification mail"
+      description: "Send verification link if previous link has expired"
+      operationId: "verificationAccountId"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "email"
+        in: "query"
+        description: "The email to reset password"
+        required: true
+        type: "string"
+        format: "email"
+        minLength: 5
+        maxLength: 255
+      - name: "token"
+        in: "query"
+        description: "Reset token"
+        required: true
+        type: "string"
+        format: "text"
+        minLength: 5
+        maxLength: 255
+      responses:
+        200:
+          description: "Verification mail sent"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "You are already verified"
+  /auth/activate_user:
+    post:
+      tags:
+      - "auth"
+      summary: "Activate User"
+      description: "Activate user on verification"
+      operationId: "activateUserId"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "token"
+        in: "query"
+        description: "Verify token"
+        required: true
+        type: "string"
+        format: "text"
+        minLength: 5
+        maxLength: 255
+      - name: "email"
+        in: "query"
+        description: "Email"
+        required: true
+        type: "string"
+        format: "text"
+        minLength: 5
+        maxLength: 255
+      responses:
+        200:
+          description: "You a now verified"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        400:
+          description: "Please use a valid verification link"
+        401:
+          description: "Invalid token"
   /profiles/{username}:
     get:
       tags:
@@ -349,6 +438,8 @@ paths:
             $ref: "#/definitions/ApiResponse"
         400:
           description: "fail"
+      security:
+      - api_key: []
     delete:
       tags:
       - "articles"
@@ -442,28 +533,55 @@ paths:
           description: "Article does not exist"
       security:
       - api_key: []
-    get:
+  /articles/{slug}/like:
+    post:
       tags:
       - "articles"
-      summary: "Get ratings"
-      description: "Get all article ratings"
-      operationId: "getArticleRatings"
+      summary: "Like Article"
+      description: "Likes an article"
+      operationId: "likeArticle"
       produces:
       - "application/json"
       parameters:
       - name: "slug"
         in: "path"
-        description: "Slug of the article to be get ratings"
+        description: "Slug of the article to be liked"
+        required: true
+        type: "string"
+        format: "slug"
+      responses:
+        201:
+          description: "Article successfully liked"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        404:
+          description: "Article does not exist"
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - "articles"
+      summary: "Unlike Article"
+      description: "Unlikes an article"
+      operationId: "UnlikeArticle"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "slug"
+        in: "path"
+        description: "Slug of the article to be unliked"
         required: true
         type: "string"
         format: "slug"
       responses:
         200:
-          description: "success"
+          description: "Article successfully unliked"
           schema:
             $ref: "#/definitions/ApiResponse"
-        400:
-          description: "fail"
+        404:
+          description: "Article does not exist"
+      security:
+      - api_key: []
   /articles/{slug}/comments:
     post:
       tags:
@@ -535,7 +653,7 @@ paths:
       parameters:
       - name: "slug"
         in: "path"
-        description: "Slug of the article to update comment"
+        description: "Id of the article to update comment"
         required: true
         type: "string"
         format: "text"
@@ -594,71 +712,54 @@ paths:
           description: "Article does not exist"
       security:
       - api_key: []
-  /articles/{slug}/comments/{id}/like:
+  /articles/{slug}/report:
     post:
+        tags:
+        - "articles"
+        summary: "Report an Article"
+        description: "Reports an article"
+        operationId: "report"
+        produces:
+        - "application/json"
+        parameters:
+        - name: "slug"
+          in: "path"
+          description: "Slug of the article to report"
+          required: true
+          type: "string"
+          format: "slug"
+        - name: "report"
+          in: "formData"
+          description: "The body of the report"
+          required: true
+          type: "string"
+          format: "text"
+        responses:
+          201:
+            description: "Article successfully reported!"
+            schema:
+              $ref: "#/definitions/ApiResponse"
+          400:
+            description: "Bad Request"
+          404:
+            description: "Article was not found"
+        security:
+        - api_key: []
+  /tags:
+    get:
       tags:
-      - "articles"
-      summary: "Like Comment"
-      description: "Likes a comment"
-      operationId: "likeComment"
+      - "tags"
+      summary: "Retrieves all tags"
+      description: "Retrieves all article tags"
+      operationId: "tags"
       produces:
-      - "application/json"
-      parameters:
-      - name: "slug"
-        in: "path"
-        description: "Slug of the article with the comment"
-        required: true
-        type: "string"
-        format: "text"
-      - name: "id"
-        in: "path"
-        description: "Id of the comment to be liked"
-        required: true
-        type: "integer"
-        format: "int64"
+        - "application/json"
       responses:
         200:
-          description: "Comment liked successfully."
+          description: "All tags retrieved"
           schema:
             $ref: "#/definitions/ApiResponse"
-        400:
-          description: "Bad Request"
-        404:
-          description: "Comment does not exist"
-      security:
-      - api_key: []
-    delete:
-      tags:
-      - "articles"
-      summary: "Unlike Comment"
-      description: "Unlikes a comment"
-      operationId: "unlikeComment"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "slug"
-        in: "path"
-        description: "Slug of the article to unlike comment"
-        required: true
-        type: "string"
-        format: "text"
-      - name: "id"
-        in: "path"
-        description: "Id of the comment to be unliked"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: "Comment unliked successfully."
-          schema:
-            $ref: "#/definitions/ApiResponse"
-        400:
-          description: "Bad Request"
-        404:
-          description: "Comment does not exist"
-      security:
-      - api_key: []
+      
 securityDefinitions:
   api_key:
     type: "apiKey"
@@ -761,6 +862,20 @@ definitions:
         type: "object"
         items:
           type: "object"
+  ApiResponseArray:
+    type: "object"
+    properties:
+      status:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
+        format: "text"
+      payload:
+        type: "array"
+        items:
+          type: "object"
 externalDocs:
   description: "Find out more about Author's Haven"
   url: "https://github.com/andela/kingsmen-ah-backend"
+  
