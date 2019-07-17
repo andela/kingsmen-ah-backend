@@ -268,7 +268,6 @@ class UserController {
       const match = await bcrypt.compare(token, verifyToken);
       if (!match) return Response.error(res, 401, 'Invalid Token');
 
-
       await user.update({ active: true });
       await tokenDetails.destroy();
       return Response.success(res, 200, 'You a now verified');
