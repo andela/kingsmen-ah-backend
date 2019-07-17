@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
 import randomString from 'random-string';
+import jwt from 'jsonwebtoken';
 import { config } from 'dotenv';
 import models from '@models';
 import {
@@ -52,6 +53,8 @@ class UserController {
       await user.createProfile();
 
       const token = await Token.create(payload);
+      const { exp } = jwt.decode(token);
+      user.exp = exp;
 
       const tokenExpiry = Date.now() + ((Number(process.env.RESET_TOKEN_EXPIRE)) || 75600000);
       const verifyToken = randomString({ length: 40 });
@@ -110,6 +113,10 @@ class UserController {
         email: user.email
       };
       const token = await Token.create(payload);
+
+      const { exp } = jwt.decode(token);
+      user.exp = exp;
+
       return Response.success(res, 200, userExtractor(user, token), 'User successfully logged in');
     } catch (err) {
       if (err.isJoi && err.name === 'ValidationError') {
