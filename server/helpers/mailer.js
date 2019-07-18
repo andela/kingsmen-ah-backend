@@ -52,7 +52,7 @@ const sendVerifyMailToken = (token, email, name) => {
 
   return sendMail({
     to: email,
-    subject: `${projectName}: Forgot Password`,
+    subject: `${projectName}: Verify Account`,
     message
   });
 };
