@@ -7,7 +7,7 @@ import UserController from '@controllers/users';
 const authRouter = express.Router();
 
 authRouter.post('/login', trim, UserController.login);
-authRouter.get('/activate_user', UserController.verifyAccount);
+authRouter.post('/activate_user', UserController.verifyAccount);
 authRouter.post('/verify_account', authorizeAccess, UserController.sendMailToVerifyAccount);
 
 authRouter.post('/logout', authorizeAccess, UserController.logout);
