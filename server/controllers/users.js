@@ -228,9 +228,8 @@ class UserController {
         sendVerifyMailToken(verifyToken, email, username);
         return Response.success(res, 200, 'Verification mail sent');
       }
-      if (active) {
-        return Response.error(res, 400, 'You are already verified');
-      }
+      // redundant check was removed
+      return Response.error(res, 400, 'You are already verified');
     } catch (err) {
       next(err);
     }
@@ -267,7 +266,6 @@ class UserController {
 
       const match = await bcrypt.compare(token, verifyToken);
       if (!match) return Response.error(res, 401, 'Invalid Token');
-
 
       await user.update({ active: true });
       await tokenDetails.destroy();
