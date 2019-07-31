@@ -141,8 +141,11 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
   User.hashPassword = async (user) => {
-    const hash = await bcrypt.hash(user.dataValues.password, SALT_ROUNDS);
-    await user.setDataValue('password', hash);
+    const changedDbValue = await user.changed('password', user.dataValues.password);
+    if (changedDbValue._previousDataValues.password !== changedDbValue.dataValues.password) {
+      const hash = await bcrypt.hash(user.dataValues.password, SALT_ROUNDS);
+      await user.setDataValue('password', hash);
+    }
   };
 
   return User;

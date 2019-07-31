@@ -20,9 +20,9 @@ const commentObt = value => ({
   },
   {
     model: models.CommentLike,
-    attributes: []
+    attributes: ['userId']
   }],
-  group: ['Comment.id', 'author.id', 'author->profile.id']
+  group: ['Comment.id', 'author.id', 'author->profile.id', 'CommentLikes.commentId', 'CommentLikes.userId']
 });
 
 export const comments = async (value) => {

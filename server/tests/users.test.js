@@ -239,7 +239,6 @@ describe('TESTS TO LOGIN A USER', () => {
     try {
       chai.request(app)
         .post(`/api/v1/auth/activate_user?token=${globalResetToken}&email=justsine@snqwst.com`)
-        .set('Authorization', `Bearer ${globalAuthToken}`)
         .send({})
         .end((err, res) => {
           expect(res.status).to.equal(401);
@@ -271,7 +270,6 @@ describe('TESTS TO LOGIN A USER', () => {
     try {
       chai.request(app)
         .post('/api/v1/auth/activate_user')
-        .set('Authorization', `Bearer ${globalAuthToken}`)
         .send({})
         .end((err, res) => {
           expect(res.status).to.equal(400);
@@ -287,7 +285,6 @@ describe('TESTS TO LOGIN A USER', () => {
     try {
       chai.request(app)
         .post(`/api/v1/auth/activate_user?token=${resetToken}&email=x0x0xx0x@88.com`)
-        .set('Authorization', `Bearer ${globalAuthToken}`)
         .send({})
         .end((err, res) => {
           expect(res.status).to.equal(401);
@@ -303,7 +300,6 @@ describe('TESTS TO LOGIN A USER', () => {
     try {
       chai.request(app)
         .post(`/api/v1/auth/activate_user?token=12345&email=${userMail}`)
-        .set('Authorization', `Bearer ${globalAuthToken}`)
         .send({})
         .end((err, res) => {
           expect(res.status).to.equal(401);
