@@ -30,7 +30,7 @@ const articleObject = {
     {
       model: ArticleLike,
       as: 'ArticleLikes',
-      attributes: ['id']
+      attributes: ['id', 'userId']
     },
     {
       model: User,
