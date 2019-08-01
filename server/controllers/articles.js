@@ -29,11 +29,11 @@ class ArticleController {
     try {
       const articleDetails = await validateArticle(req.body);
       const { id: userId } = req.decoded;
-      const { title } = articleDetails;
+      const { title, desc } = articleDetails;
       let { tags } = articleDetails;
       articleDetails.title = articleDetails.title.replace(/ +/g, ' ');
       const createArticleDetails = {
-        slug: title, userId, ...articleDetails
+        slug: title, userId, desc, ...articleDetails
       };
       if (typeof tags === 'undefined' || tags === null) {
         tags = [];
