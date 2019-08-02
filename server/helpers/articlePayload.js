@@ -12,6 +12,7 @@ const articleObject = {
     'slug',
     'title',
     'body',
+    'desc',
     'image',
     'createdAt',
     'updatedAt',
