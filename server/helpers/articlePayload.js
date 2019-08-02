@@ -2,6 +2,7 @@ import sequelize from 'sequelize';
 import models from '@models';
 import Pagination from '@helpers/Pagination';
 
+
 const {
   Article, User, Rating, Profile, ArticleLike, Tag
 } = models;
