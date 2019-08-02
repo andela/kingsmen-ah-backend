@@ -12,7 +12,7 @@ const logo = 'https://imgur.com/UJOr0Jp.png';
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
-// Configure the mail gen
+// Configure the mailgen
 const mailGenerator = new Mailgen({
   theme: 'default',
   product: {
