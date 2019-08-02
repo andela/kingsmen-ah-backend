@@ -2,6 +2,7 @@ import sequelize from 'sequelize';
 import models from '@models';
 import Pagination from '@helpers/Pagination';
 
+
 const {
   Article, User, Rating, Profile, ArticleLike, Tag
 } = models;
@@ -12,6 +13,7 @@ const articleObject = {
     'slug',
     'title',
     'body',
+    'desc',
     'image',
     'createdAt',
     'updatedAt',
