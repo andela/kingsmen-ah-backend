@@ -123,31 +123,29 @@ describe('TESTS TO GET ALL COMMENTS ON AN ARTICLE', () => {
       throw err.message;
     }
   });
-  it('should return error if no token was provided ', (done) => {
+  it('should return no errors if no token was provided ', (done) => {
     try {
       chai.request(app)
         .get(`/api/v1/articles/${testSlug}/comments`)
         .end((err, res) => {
-          expect(res.status).to.equal(400);
-          expect(res.body).to.have.property('errors');
-          expect(res.body.errors).to.be.an('object');
-          expect(res.body.errors.global).to.eql('Invalid token supplied: format Bearer <token>');
+          expect(res.status).to.equal(200);
+          expect(res.body.payload).to.be.an('array');
+          expect(res.body.message).to.eql('Comments retrieved successfully.');
           done();
         });
     } catch (err) {
       throw err.message;
     }
   });
-  it('should return error if an invalid token was provided ', (done) => {
+  it('should return no errors if an invalid token was provided ', (done) => {
     try {
       chai.request(app)
         .get(`/api/v1/articles/${testSlug}/comments`)
         .set('Authorization', 'Bearer')
         .end((err, res) => {
-          expect(res.status).to.equal(400);
-          expect(res.body).to.have.property('errors');
-          expect(res.body.errors).to.be.an('object');
-          expect(res.body.errors.global).to.eql('Invalid token supplied: format Bearer <token>');
+          expect(res.status).to.equal(200);
+          expect(res.body.payload).to.be.an('array');
+          expect(res.body.message).to.eql('Comments retrieved successfully.');
           done();
         });
     } catch (err) {

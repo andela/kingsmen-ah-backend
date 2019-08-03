@@ -10,7 +10,7 @@ import { find, commentFinder } from '@middlewares/commentFinder';
 const articlesRouter = express.Router();
 
 articlesRouter.post('/:slug/comments', authorizeAccess, isUserVerified, trim, articleFinder, CommentController.create);
-articlesRouter.get('/:slug/comments', authorizeAccess, articleFinder, CommentController.getComments);
+articlesRouter.get('/:slug/comments', articleFinder, CommentController.getComments);
 articlesRouter.put('/:slug/comments/:id', authorizeAccess, isUserVerified, trim, commentFinder, CommentController.updateComment);
 articlesRouter.delete('/:slug/comments/:id', authorizeAccess, isUserVerified, commentFinder, CommentController.deleteComment);
 
