@@ -16,6 +16,6 @@ apiRouter.use('/users', userRouter);
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/articles', articleRouter);
 apiRouter.use('/profiles', profileRoute);
-apiRouter.use('/tags', tagsRoute)
+apiRouter.use('/tags', tagsRoute);
 
 export default apiRouter;
